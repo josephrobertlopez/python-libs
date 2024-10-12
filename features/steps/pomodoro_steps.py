@@ -29,12 +29,18 @@ def step_impl_hear_alarm(context, minutes):
     # Wait for the specified minutes (use `time.sleep` to simulate the waiting period)
     time.sleep(minutes * 60)  # Adjust to full minutes instead of 59 seconds
     
-    # Capture the output and error logs from the process
-    stdout, stderr = context.process.communicate()
+    # Check the contents of the log file for the alarm message
+    log_file_path = 'resources/logs/app.log'
+    
+    # Check if the log file exists before reading
+    assert os.path.exists(log_file_path), "Log file does not exist."
+
+    # Read the log file
+    with open(log_file_path, 'r') as log_file:
+        log_contents = log_file.read()
 
     # Check if the alarm sound played successfully
-    output = stdout.decode() + stderr.decode()  # Combine standard output and error
-    assert "Alarm sound played successfully." in output, "Expected log message not found in output."
+    assert "Alarm sound played successfully." in log_contents, "Expected log message not found in log file."
 
     # Check if the sound file exists (as in your original implementation)
     sound_file = os.path.join("resources", "sounds", "alarm_sound.wav")
