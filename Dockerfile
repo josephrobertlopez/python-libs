@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y \
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Create logs directory
+RUN mkdir -p resources/logs
+
 # Install Poetry
 RUN pip install poetry
 
