@@ -2,12 +2,11 @@ import os
 import argparse
 import time
 import logging
+import logging.config
 from src.utils.audio import play_alarm_sound  # Adjusted import to reflect package structure
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# Load logging configuration from the .ini file
+logging.config.fileConfig('resources/logging_config.ini')
 
 def main() -> None:
     """
