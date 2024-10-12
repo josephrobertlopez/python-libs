@@ -24,3 +24,6 @@ RUN poetry install --no-interaction --no-ansi
 
 # Set PYTHONPATH to include /app/src
 ENV PYTHONPATH=/app
+
+# Create logs directory
+RUN mkdir -p resources/logs
