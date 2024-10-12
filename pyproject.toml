@@ -1,15 +1,24 @@
 [tool.poetry]
-name = "my-utils-library"
+name = "pomodoro-timer"
 version = "0.1.0"
-description = "A utility library for personal projects"
-authors = ["Your Name <youremail@example.com>"]
+description = "Pomodoro timer for a specific sound file to play after `m` minutes"
+authors = ["Joey <josephrobertlopez@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+# Define packages to include
+packages = [
+    { include = "pomodoro", from = "src" }
+]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
+pygame = "^2.6.1"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.0"  # For running tests
-flake8 = "^4.0"
+[tool.poetry.group.dev.dependencies]
+behave = "^1.2.6"
+pytest = "^8.3.3"
+pytest-mock = "^3.14.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
