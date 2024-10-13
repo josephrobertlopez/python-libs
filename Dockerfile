@@ -1,8 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim
-
-# Pass in the name of the module group to install dependencies for
-ARG MODULE_GROUP  
+FROM python:3.11-slim AS base
 
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:/app
@@ -27,7 +24,13 @@ RUN mkdir -p resources/logs
 
 # Install Poetry
 RUN pip install poetry
-RUN echo "MODULE_GROUP is set to: $MODULE_GROUP"
 
-# Install the Python dependencies using Poetry
-RUN poetry install --with $MODULE_GROUP --without dev --no-interaction --no-ansi -vvv
+# Stage for installing pomodoro dependencies
+FROM base AS pomodoro
+ARG MODULE_GROUP
+RUN poetry install --only=${MODULE_GROUP} --without dev --no-interaction --no-ansi -vvv
+
+# Stage for installing development dependencies
+FROM base AS pomodoro-test
+ARG MODULE_GROUP
+RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv

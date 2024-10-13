@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  pomodoro-app:
+    build:
+      context: .
+      args:
+        MODULE_GROUP: pomodoro  # Use pomodoro dependencies for the application
+    volumes:
+      - .:/app  # Mount the current directory to the container for development
+    environment:
+      - PYTHONPATH=/app/src:/app
+      - AUDIO_OUTPUT=alsa  # Add any additional environment variables as needed
+    entrypoint: ["/bin/bash", "-c"]  # Set entrypoint to allow passing custom commands
+    command: ["poetry run python -m src.pomodoro.pomodoro -m 0"]  # Default command to run the Pomodoro module
+    devices:
+      - /dev/snd  # Required for audio playback
+    privileged: true
+
+  pomodoro-pytest:
+    build:
+      context: .
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+    volumes:
+      - .:/app  # Mount the current directory to the container for testing
+    environment:
+      - PYTHONPATH=/app/src:/app
+    command: ["poetry", "run", "pytest"]  # For running pytest
+
+  pomodoro-behave:
+    build:
+      context: .
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+    volumes:
+      - .:/app  # Mount the current directory to the container for testing
+    environment:
+      - PYTHONPATH=/app/src:/app
+      - AUDIO_OUTPUT=alsa  # Add any additional environment variables as needed
+    command: ["poetry", "run", "behave"]  # For running behave
+    devices:
+      - /dev/snd  # Required for audio playback during tests
+    privileged: true

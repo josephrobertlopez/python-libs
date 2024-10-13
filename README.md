@@ -51,10 +51,15 @@ poetry shell
 docker run --device /dev/snd --privileged -v $(pwd)/resources/logs:/app/resources/logs my_pomodoro_image poetry run python -m src.pomodoro.pomodoro -m 25
 
 # build container 
-  docker build -f Dockerfile --build-arg MODULE_GROUP=pomodoro -t my_pomodoro_image .
-docker run --rm --device /dev/snd --privileged my_pomodoro_image poetry run python -m src.pomodoro.pomodoro -m 0
+docker-compose up --build pomodoro-app
+ docker-compose run --rm pomodoro-app "poetry run python -m src.pomodoro.pomodoro -m 1" 
+pomodoro-test  docker-compose run --rm pomodoro-app
 
 # Build tests
-docker build -f Dockerfile.dev --build-arg MODULE_GROUP=pomodoro -t my_pomodoro_image . 
-  docker run --rm -it your_image_name  poetry run pytest  
-docker run --rm --device /dev/snd --privileged my_pomodoro_image poetry run behave
+
+docker-compose up --build pomodoro-pytest 
+docker-compose run --rm pomodoro-pytest 
+
+
+docker-compose up --build pomodoro-behave
+docker-compose run --rm pomodoro-behave
