@@ -1,6 +1,12 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
+# Pass in the name of the module group to install dependencies for
+ARG MODULE_GROUP  
+
+# Set PYTHONPATH
+ENV PYTHONPATH=/app/src:/app
+
 # Set the working directory in the container
 WORKDIR /app
 
@@ -21,9 +27,7 @@ RUN mkdir -p resources/logs
 
 # Install Poetry
 RUN pip install poetry
+RUN echo "MODULE_GROUP is set to: $MODULE_GROUP"
 
 # Install the Python dependencies using Poetry
-RUN poetry install --no-dev --no-interaction --no-ansi
-
-# Set PYTHONPATH to include /app/src
-ENV PYTHONPATH=/app/src
+RUN poetry install --with $MODULE_GROUP --without dev --no-interaction --no-ansi -vvv

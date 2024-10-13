@@ -6,19 +6,17 @@ authors = ["Joey <josephrobertlopez@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
-# Define packages to include
-packages = [
-    { include = "pomodoro", from = "src" }
-]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pygame = "^2.6.1"
 
 [tool.poetry.group.dev.dependencies]
 behave = "^1.2.6"
 pytest = "^8.3.3"
 pytest-mock = "^3.14.0"
+
+[tool.poetry.group.pomodoro.dependencies]
+pygame = "^2.1.3"  # Ensure pygame is in the pomodoro group
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
