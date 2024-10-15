@@ -4,6 +4,7 @@ services:
   pomodoro-app:
     build:
       context: .
+      target: pomodoro  # Build stage to use for pomodoro app
       args:
         MODULE_GROUP: pomodoro  # Use pomodoro dependencies for the application
     volumes:
@@ -20,6 +21,7 @@ services:
   pomodoro-pytest:
     build:
       context: .
+      target: pomodoro-test  # Build stage to use for pytest
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for testing
     volumes:
@@ -31,6 +33,7 @@ services:
   pomodoro-behave:
     build:
       context: .
+      target: pomodoro-test  # Build stage to use for behave
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for testing
     volumes:

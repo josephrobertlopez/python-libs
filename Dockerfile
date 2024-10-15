@@ -1,6 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim AS base
 
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim AS base
+
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:/app
 
@@ -18,9 +21,6 @@ RUN apt-get update && apt-get install -y \
 
 # Copy the current directory contents into the container at /app
 COPY . /app
-
-# Create logs directory
-RUN mkdir -p resources/logs
 
 # Install Poetry
 RUN pip install poetry
