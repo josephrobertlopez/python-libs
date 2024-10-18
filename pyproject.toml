@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "pomodoro-timer"
+name = "python monorepo"
 version = "0.1.0"
-description = "Pomodoro timer for a specific sound file to play after `m` minutes"
+description = "This is my monorepo for personal projects"
 authors = ["Joey <josephrobertlopez@gmail.com>"]
 license = "MIT"
 readme = "README.md"
