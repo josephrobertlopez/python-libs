@@ -18,5 +18,3 @@ def setup_logging():
     # Load logging configuration from the .ini file
     logging.config.fileConfig('resources/logging_config.ini')
 
-# Call the setup_logging function to initialize logging when this module is imported
-setup_logging()
