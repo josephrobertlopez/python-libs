@@ -1,9 +1,6 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim AS base
 
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim AS base
-
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:/app
 
@@ -14,10 +11,12 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libsdl2-mixer-2.0-0 \
     libglib2.0-dev \
-    libasound2-dev \
-    alsa-utils \
-    pulseaudio \
     && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables to use a dummy audio driver
+# This will prevent SDL from trying to use ALSA or PulseAudio
+ENV SDL_AUDIODRIVER=dummy
+ENV AUDIODEV=null
 
 # Copy the current directory contents into the container at /app
 COPY . /app
