@@ -1,7 +1,7 @@
 # tests/utils/test_audio.py
 
 import pytest
-from src.pomodoro.pomodoro import play_alarm_sound
+from src.utils.audio import play_alarm_sound
 
 def test_play_alarm_sound_success(mock_pygame_init, mock_get_init, mock_sound, mock_get_busy):
     """Test play_alarm_sound with a valid sound file."""
