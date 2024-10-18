@@ -1,5 +1,5 @@
-import pytest
 import os
+import pytest
 from src.utils.logging_setup import setup_logging
 
 @pytest.mark.parametrize("log_dir, log_files", [
@@ -14,6 +14,13 @@ def test_setup_logging(mock_file_staging_with_logging, log_dir, log_files):
     # Call the function that should trigger file operations
     setup_logging()
 
+    # Print out the calls to the mocks for inspection
+    print("Mocked os.makedirs calls:", mock_makedirs.call_args_list)
+    print("Mocked os.path.exists calls:", mock_exists.call_args_list)
+    print("Mocked open calls:", mock_open.call_args_list)
+    print("Mocked logging.Logger.info calls:", mock_log.call_args_list)
+    print("Mocked logging.config.fileConfig calls:", mock_file_config.call_args_list)
+
     # Verify that makedirs was called with the correct directory path
     mock_makedirs.assert_called_once_with(log_dir, exist_ok=True)
 
@@ -24,3 +31,6 @@ def test_setup_logging(mock_file_staging_with_logging, log_dir, log_files):
 
     # Verify that the logging configuration was loaded
     mock_file_config.assert_called_once_with('resources/logging_config.ini')
+
+    # Ensure that the log files are not actually created during the test
+    mock_open.assert_called()
