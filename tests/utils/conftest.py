@@ -45,7 +45,7 @@ def mock_file_staging(mocker):
 
 
 @pytest.fixture
-def mock_file_staging_with_logging(mocker, mock_file_staging):
+def mock_file_staging_with_logging(mock_file_staging, mocker):
     """Fixture that extends mock_file_staging to add logging functionality."""
     mock_makedirs, mock_exists, mock_open = mock_file_staging
 
