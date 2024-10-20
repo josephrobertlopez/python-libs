@@ -2,6 +2,7 @@ import pygame
 import sys
 import time
 import logging
+from src.utils.get_resource_path import get_resource_path
 
 def play_alarm_sound(sound_file: str) -> None:
     """Play an alarm sound from the provided file.
@@ -16,7 +17,7 @@ def play_alarm_sound(sound_file: str) -> None:
 
     logging.info(f"Attempting to load sound file from: {sound_file}")
     try:
-        alarm_sound = pygame.mixer.Sound(sound_file)
+        alarm_sound = pygame.mixer.Sound(get_resource_path(sound_file))
         alarm_sound.play()
         while pygame.mixer.get_busy():
             time.sleep(0.1)
