@@ -7,14 +7,14 @@ ENV PYTHONPATH=/app/src:/app
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies required by pygame
-RUN apt-get update && apt-get install -y \
+# Install system dependencies required by pygame, pyinstaller, curl, and xz-utils
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libsdl2-mixer-2.0-0 \
     libglib2.0-dev \
-    && rm -rf /var/lib/apt/lists/*
+    binutils \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables to use a dummy audio driver
-# This will prevent SDL from trying to use ALSA or PulseAudio
 ENV SDL_AUDIODRIVER=dummy
 ENV AUDIODEV=null
 
@@ -32,4 +32,20 @@ RUN poetry install --only=${MODULE_GROUP} --without dev --no-interaction --no-an
 # Stage for installing development dependencies
 FROM base AS pomodoro-test
 ARG MODULE_GROUP
+RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv
+
+## Stage for PyInstaller binary creation
+FROM base AS pyinstaller-binary
+ARG MODULE_GROUP
+
+# Create a non-root user
+RUN useradd -m myuser
+
+# Change ownership of the app directory to myuser
+RUN chown -R myuser:myuser /app
+
+# Switch to non-root user
+USER myuser
+
+# Install pyinstaller
 RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv

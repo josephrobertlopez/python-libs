@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  make-executable:
-    build:
-      context: .
-      target: pomodoro  # Use the build stage defined for pomodoro app
-    volumes:
-      - .:/app  # Mount the current directory to the container
-    environment:
-      - PYTHONPATH=/app/src:/app
-      - AUDIO_OUTPUT=dummy  # Use the dummy audio output
-    entrypoint: ["/bin/bash", "-c"]  # Set entrypoint to allow custom commands
-    command: ["poetry build --format wheel && poetry install --no-dev && poetry run pyinstaller --onefile src/pomodoro/pomodoro.py"]
-    profiles:
-      - make-executable  # Use this profile when needed
-
   pomodoro-pytest:
     build:
       context: .
@@ -26,6 +12,8 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "pytest"]  # For running pytest
+    profiles:
+      - pytest  # Profile for running pytest
 
   pomodoro-behave:
     build:
@@ -39,3 +27,20 @@ services:
       - PYTHONPATH=/app/src:/app
       - AUDIO_OUTPUT=dummy  # Use the dummy audio output for tests as well
     command: ["poetry", "run", "behave"]  # For running behave
+    profiles:
+      - behave  # Profile for running behave
+
+  pomodoro-pyinstaller:
+    build:
+      context: .
+      target: pyinstaller-binary  # New build stage for PyInstaller
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
+    volumes:
+      - .:/app  # Mount the current directory
+    profiles:
+      - pyinstaller  # Profile for PyInstaller build
+    command: ["poetry", "run", "pyinstaller", "--onefile", "--add-data", "resources/logging_config.ini:resources", "--add-data", "resources/sounds/alarm_sound.wav:resources/sounds", "src/pomodoro/pomodoro.py"]
+    environment:
+      - PYTHONPATH=/app/src:/app
+    user: myuser
