@@ -8,7 +8,8 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.14"
+pyinstaller = "^6.11.0"
 
 [tool.poetry.group.dev.dependencies]
 behave = "^1.2.6"
