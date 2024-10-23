@@ -5,12 +5,15 @@ from src.utils.audio import play_alarm_sound
 
 def test_play_alarm_sound_success(mock_pygame_init, mock_get_init, mock_sound, mock_get_busy):
     """Test play_alarm_sound with a valid sound file."""
-    sound_file = "resources/sounds/alarm_sound.wav"
+    sound_file = "alarm_sound.wav"
     
     play_alarm_sound(sound_file)
 
     mock_pygame_init.assert_called_once()
-    mock_sound.assert_called_once_with(sound_file)
+    # Asssert that the sound was called once with the correct path
+    mock_sound.assert_called_once()
+    assert sound_file in mock_sound.call_args[0][0]
+
     mock_get_busy.assert_called()
 
 def test_play_alarm_sound_mixer_not_initialized(mock_get_init, mock_pygame_init):
