@@ -1,51 +1,44 @@
-# Use an official Python runtime as a parent image
+# Base stage for setting up Python and environment variables
 FROM python:3.11-slim AS base
 
-# Set PYTHONPATH
+# Set PYTHONPATH and working directory in the container
 ENV PYTHONPATH=/app/src:/app
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies required by pygame, pyinstaller, curl, and xz-utils
+# Install Poetry
+RUN pip install poetry
+
+# Create a non-root user
+RUN useradd -m myuser
+
+# Initial setup stage for installing system dependencies and audio drivers
+FROM base AS init_pomodoro
+
+# Temporarily switch to root to install system dependencies
+USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libsdl2-mixer-2.0-0 \
     libglib2.0-dev \
     binutils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables to use a dummy audio driver
-ENV SDL_AUDIODRIVER=dummy
-ENV AUDIODEV=null
+# Switch back to non-root user for security
+USER myuser
 
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Install Poetry
-RUN pip install poetry
-
-# Stage for installing pomodoro dependencies
-FROM base AS pomodoro
+# Stage for installing Pomodoro dependencies (excluding development dependencies)
+FROM init_pomodoro AS pomodoro
 ARG MODULE_GROUP
-RUN poetry install --only=${MODULE_GROUP} --without dev --no-interaction --no-ansi -vvv
+# Install only the necessary dependencies for running the Pomodoro app
+RUN poetry install --with ${MODULE_GROUP} --without dev --no-interaction --no-ansi -vvv
 
 # Stage for installing development dependencies
-FROM base AS pomodoro-test
+FROM init_pomodoro AS pomodoro-test
 ARG MODULE_GROUP
-RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv
-
-## Stage for PyInstaller binary creation
-FROM base AS pyinstaller-binary
-ARG MODULE_GROUP
-
-# Create a non-root user
-RUN useradd -m myuser
-
-# Change ownership of the app directory to myuser
-RUN chown -R myuser:myuser /app
-
-# Switch to non-root user
-USER myuser
-
-# Install pyinstaller
+# Set environment variables to use a dummy audio driver
+ENV SDL_AUDIODRIVER=dummy
+ENV AUDIODEV=null
+# Install all dependencies, including development, for testing
 RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv

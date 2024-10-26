@@ -25,7 +25,6 @@ services:
       - .:/app  # Mount the current directory to the container for testing
     environment:
       - PYTHONPATH=/app/src:/app
-      - AUDIO_OUTPUT=dummy  # Use the dummy audio output for tests as well
     command: ["poetry", "run", "behave"]  # For running behave
     profiles:
       - behave  # Profile for running behave
@@ -33,7 +32,7 @@ services:
   pomodoro-pyinstaller:
     build:
       context: .
-      target: pyinstaller-binary  # New build stage for PyInstaller
+      target: pomodoro  # New build stage for PyInstaller
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
     volumes:
@@ -44,3 +43,23 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
     user: myuser
+
+
+  pomodoro-app:
+    build:
+      context: .
+      target: pomodoro  # Use the pomodoro build stage
+      args:
+        MODULE_GROUP: pomodoro  # Use runtime dependencies
+    volumes:
+      - .:/app  # Mount the current directory
+      - /dev/snd:/dev/snd  # Forward the sound device
+    devices:
+      - /dev/snd
+    environment:
+      - PYTHONPATH=/app/src:/app
+      - AUDIO_OUTPUT=alsa
+    command: ["sh", "-c", "poetry run python -m src.pomodoro.pomodoro -m $MINS"]
+    profiles:
+      - pomodorop  # Profile for running the Pomodoro app
+    privileged: true  # Grant extended privileges for audio playback
