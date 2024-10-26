@@ -28,6 +28,7 @@ def play_alarm_sound(sound_file: str) -> None:
 
         while pygame.mixer.get_busy():
             time.sleep(0.1)
+        print("Alarm sound played successfully.")
     except pygame.error as e:
         raise RuntimeError(f"Error playing sound: {e}")
 
