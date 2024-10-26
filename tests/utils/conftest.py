@@ -1,7 +1,6 @@
-# tests/conftest.py
-
 import pytest
 import pygame
+import os
 
 @pytest.fixture
 def mock_pygame_init(mocker):
@@ -31,34 +30,23 @@ def mock_sound_loading_error(mocker):
 @pytest.fixture
 def mock_file_staging(mocker):
     """Generic fixture to mock file staging components."""
-
-    # Mock os.makedirs to simulate creting the log directory
+    # Mock os.makedirs to simulate creating the log directory
     mock_makedirs = mocker.patch('os.makedirs', autospec=True)
 
-    # Mock os.path.exists to simulate checking if the log file exists
-    mock_exists = mocker.patch('os.path.exists', autospec=True)
+    mock_path_exists = mocker.patch("os.path.exists", autospec=True)
+    mock_path_join = mocker.patch("os.path.join", autospec=True)
 
     # Mock open to simulate creating the log file
     mock_open = mocker.patch('builtins.open', autospec=True)
 
-    return mock_makedirs, mock_exists, mock_open
+    # Customize path joining for tests
+    mock_path_join.side_effect = lambda *args: "/".join(args)
 
+    return mock_makedirs, mock_path_exists, mock_path_join, mock_open
 
 @pytest.fixture
-def mock_file_staging_with_logging(mock_file_staging, mocker):
-    """Fixture that extends mock_file_staging to add logging functionality."""
-    mock_makedirs, mock_exists, mock_open = mock_file_staging
-
-    # Additional mocking logic for logging
-    mock_log = mocker.patch('logging.Logger.info', autospec=True)
-
-    # Mock logging configuration file loading
-    mock_file_config = mocker.patch('logging.config.fileConfig', autospec=True)
-
-    # Set up side effect for mock_exists to simulate that log files do not exist
-    def mock_exists_side_effect(path):
-        return path == 'resources/logs'  # Only return True for the directory, not for files
-
-    mock_exists.side_effect = mock_exists_side_effect
-
-    return mock_makedirs, mock_exists, mock_open, mock_log, mock_file_config
+def mock_logging(mocker):
+    """Fixture to mock logging setup."""
+    mock_log = mocker.patch('logging.getLogger')
+    mock_file_config = mocker.patch('logging.config.fileConfig')
+    return mock_log, mock_file_config

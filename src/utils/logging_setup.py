@@ -5,10 +5,19 @@ import sys
 import builtins  # Import builtins to override print
 from src.utils.environment import get_resource_path
 
+
 def print_to_logger(message, level=logging.INFO):
     """Log print messages to the logger."""
     if message.strip():  # Avoid logging empty messages
-        logging.log(level, message)
+        if level == logging.DEBUG:
+            logging.debug(message)
+        elif level == logging.WARNING:
+            logging.warning(message)
+        elif level == logging.ERROR:
+            logging.error(message)
+        else:
+            logging.info(message)
+
 
 def create_log_directory(log_dir: str) -> None:
     """Create the log directory if it doesn't exist."""
@@ -17,6 +26,7 @@ def create_log_directory(log_dir: str) -> None:
         print(f"Log directory created: {log_dir}")  # This will be redirected to logging
     except OSError as e:
         raise RuntimeError(f"Failed to create log directory '{log_dir}': {e}")
+
 
 def initialize_log_files(log_dir: str, log_files: list) -> None:
     """Create log files if they don't exist."""
@@ -29,6 +39,7 @@ def initialize_log_files(log_dir: str, log_files: list) -> None:
             except OSError as e:
                 raise RuntimeError(f"Failed to create log file '{log_file_path}': {e}")
 
+
 def load_logging_config(config_path: str) -> None:
     """Load logging configuration from the specified .ini file."""
     try:
@@ -37,10 +48,12 @@ def load_logging_config(config_path: str) -> None:
     except Exception as e:
         raise RuntimeError(f"Failed to load logging configuration from '{config_path}': {e}")
 
+
 def log_uncaught_exceptions(exc_type, exc_value, exc_traceback) -> None:
     """Log uncaught exceptions to the error log."""
     logger = logging.getLogger()
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
 
 def setup_logging() -> None:
     """Set up logging for the application."""
@@ -77,7 +90,8 @@ def setup_logging() -> None:
     print("Logging setup complete.")
 
     # Set the global exception handler
-    sys.excepthook = log_uncaught_exceptions    
+    sys.excepthook = log_uncaught_exceptions
+
 
 if __name__ == "__main__":
     setup_logging()
