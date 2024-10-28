@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import sys
 from typing import Dict
 
@@ -111,3 +112,16 @@ def get_docker_info() -> Dict[str, str]:
         raise EnvironmentError(f"An error occurred while checking Docker: {e}")
 
     raise EnvironmentError("Not running in Docker.")
+
+
+def load_environment_variables(env_file: str = '.env') -> None:
+    """Load environment variables from a specified .env file.
+
+    Args:
+        env_file (str): The path to the .env file to load.
+    """
+    if not os.path.exists(env_file):
+        raise FileNotFoundError(f"{env_file} not found.")
+
+    load_dotenv(env_file)
+    print(f"Environment variables loaded from {env_file}")
