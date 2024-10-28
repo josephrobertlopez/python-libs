@@ -57,7 +57,7 @@ def test_setup_logging_creates_log_directory(mock_file_staging, mock_logging):
     mock_makedirs, mock_path_exists, _, _ = mock_file_staging
     mock_path_exists.return_value = True  # Assume log files exist
 
-    setup_logging()
+    setup_logging("resources/logging_config.ini")
 
     # Verify that the log directory was created
     mock_makedirs.assert_called_once_with('resources/logs', exist_ok=True)
@@ -69,7 +69,8 @@ def test_setup_logging_loads_logging_config(mock_file_staging, mock_logging):
 
     mock_makedirs, mock_path_exists, mock_path_join, _ = mock_file_staging
     mock_path_exists.return_value = True  # Assume log files exist
-    setup_logging()
+
+    setup_logging("resources/logging_config.ini")
 
     # Verify that the logging configuration was loaded
     mock_file_config.assert_called_once()
@@ -82,7 +83,7 @@ def test_log_uncaught_exceptions_logs_error(mock_logging):
     exc_type = ValueError
     exc_value = ValueError("Test exception")
 
-    setup_logging()  # Ensure logging is set up
+    setup_logging("resources/logging_config.ini")
 
     log_uncaught_exceptions(exc_type, exc_value, None)
 

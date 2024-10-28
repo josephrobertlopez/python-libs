@@ -3,10 +3,10 @@ import logging
 import logging.config
 import sys
 import builtins  # Import builtins to override print
-from src.utils.environment import get_resource_path
+from typing import List
 
 
-def print_to_logger(message, level=logging.INFO):
+def print_to_logger(message: str, level: int = logging.INFO) -> None:
     """Log print messages to the logger."""
     if message.strip():  # Avoid logging empty messages
         if level == logging.DEBUG:
@@ -28,7 +28,7 @@ def create_log_directory(log_dir: str) -> None:
         raise RuntimeError(f"Failed to create log directory '{log_dir}': {e}")
 
 
-def initialize_log_files(log_dir: str, log_files: list) -> None:
+def initialize_log_files(log_dir: str, log_files: List[str]) -> None:
     """Create log files if they don't exist."""
     for log_file in log_files:
         log_file_path = os.path.join(log_dir, log_file)
@@ -49,13 +49,13 @@ def load_logging_config(config_path: str) -> None:
         raise RuntimeError(f"Failed to load logging configuration from '{config_path}': {e}")
 
 
-def log_uncaught_exceptions(exc_type, exc_value, exc_traceback) -> None:
+def log_uncaught_exceptions(exc_type: type, exc_value: Exception, exc_traceback: any) -> None:
     """Log uncaught exceptions to the error log."""
     logger = logging.getLogger()
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
-def setup_logging() -> None:
+def setup_logging(config_path: str) -> None:  # Accept config_path as argument
     """Set up logging for the application."""
     if getattr(sys, 'frozen', False):  # Running as a PyInstaller executable
         logging.disable(logging.CRITICAL)  # Disable all logging
@@ -64,7 +64,7 @@ def setup_logging() -> None:
     # Redirect print statements to logger
     original_print = print  # Save the original print function
 
-    def new_print(*args, **kwargs):
+    def new_print(*args: any, **kwargs: dict) -> None:
         # Create a formatted message
         message = ' '.join(map(str, args))
         print_to_logger(message, level=logging.INFO)
@@ -83,7 +83,6 @@ def setup_logging() -> None:
     initialize_log_files(log_dir, log_files)
 
     # Load logging configuration
-    config_path = get_resource_path('resources/logging_config.ini')
     load_logging_config(config_path)
 
     # Log a test message to confirm setup
@@ -94,4 +93,4 @@ def setup_logging() -> None:
 
 
 if __name__ == "__main__":
-    setup_logging()
+    setup_logging("resources/logging_config.ini")  # Example usage

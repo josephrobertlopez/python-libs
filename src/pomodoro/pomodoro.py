@@ -2,6 +2,7 @@ import os
 import argparse
 import time
 import logging
+from src.utils.environment import get_env_var, load_environment_variables
 from src.utils.audio import play_alarm_sound  # Adjusted import to reflect package structure
 from src.utils.logging_setup import setup_logging  # Import logging setup before anything else
 
@@ -29,5 +30,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    setup_logging()
+    load_environment_variables('.env')
+
+    SOUND_FILE = get_env_var("SOUND_FILE")
+    LOG_CONFIG_FILE = get_env_var("LOG_CONFIG_FILE")
+
+    setup_logging(LOG_CONFIG_FILE)
     main()
