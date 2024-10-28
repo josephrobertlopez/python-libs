@@ -1,10 +1,12 @@
 import pytest
 import sys
 
+
 @pytest.fixture
 def mock_sleep(mocker):
     """Fixture to mock time.sleep to avoid actual delays."""
     return mocker.patch("time.sleep", autospec=True)
+
 
 @pytest.fixture
 def mock_sys_argv(mocker):

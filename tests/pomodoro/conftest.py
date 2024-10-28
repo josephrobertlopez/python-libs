@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def mock_play_alarm_sound(mocker):
     """Fixture to mock the play_alarm_sound function."""
