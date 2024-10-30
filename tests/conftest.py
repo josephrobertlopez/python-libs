@@ -2,6 +2,7 @@ import pytest
 import sys
 import argparse
 
+
 @pytest.fixture
 def mock_sleep(mocker):
     """Fixture to mock time.sleep to avoid actual delays."""

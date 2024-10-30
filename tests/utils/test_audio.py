@@ -11,7 +11,7 @@ def test_play_alarm_sound_success(mock_pygame_init, mock_get_init, mock_sound, m
     play_alarm_sound(sound_file)
 
     mock_pygame_init.assert_called_once()
-    # Asssert that the sound was called once with the correct path
+    # Assert that the sound was called once with the correct path
     mock_sound.assert_called_once()
     assert sound_file in mock_sound.call_args[0][0]
 
