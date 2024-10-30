@@ -2,6 +2,7 @@ import os
 import argparse
 import time
 from src.utils.audio import play_alarm_sound
+from src.utils.environment import get_env_var
 
 
 def main(*args) -> None:
@@ -18,12 +19,13 @@ def main(*args) -> None:
 
     minutes = parsed_args.minutes
     if minutes < 0:
-        print("Minutes must be a positive integer.")
+        print("Minutes must be a natural number.")
         return
 
     seconds = minutes * 60
     print(f"Pomodoro timer set for {minutes} minutes.")
     time.sleep(seconds)
-    sound_file = os.path.join("resources", "sounds", "alarm_sound.wav")
 
-    play_alarm_sound(sound_file)
+    SOUND_FILE = get_env_var("SOUND_FILE")
+
+    play_alarm_sound(SOUND_FILE)
