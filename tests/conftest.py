@@ -1,6 +1,7 @@
-import pytest
-import sys
 import argparse
+import sys
+
+import pytest
 
 
 @pytest.fixture
@@ -14,7 +15,7 @@ def mock_sys_argv(mocker):
     """Fixture to mock sys.argv for testing main function."""
 
     # Patch `sys.argv`
-    argv_mock = mocker.patch.object(sys, 'argv', new=[])
+    argv_mock = mocker.patch.object(sys, "argv", new=[])
 
     # Define a function to set sys.argv to specific test arguments
     def set_sys_argv(test_args):
@@ -27,13 +28,16 @@ def mock_sys_argv(mocker):
 
 @pytest.fixture
 def mock_argparse(mocker):
-    # Patch `ArgumentParser` in `argparse` and configure `parse_args` dynamically
-    parser_mock = mocker.patch('argparse.ArgumentParser', autospec=True)
+    # Patch `ArgumentParser` in `argparse` and configure `parse_args`
+    # dynamically
+    parser_mock = mocker.patch("argparse.ArgumentParser", autospec=True)
 
-    # This nested function will allow setting specific return values for `parse_args`
+    # This nested function will allow setting specific return values for
+    # `parse_args`
     def _set_args(**kwargs):
         # Set each argument value in the mock's `parse_args`
-        parser_mock.return_value.parse_args.return_value = argparse.Namespace(**kwargs)
+        parser_mock.return_value.parse_args.return_value = argparse.Namespace(
+            **kwargs)
 
     # Return both the parser mock and the nested function
     yield parser_mock, _set_args

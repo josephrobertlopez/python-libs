@@ -1,7 +1,8 @@
 import os
-from dotenv import load_dotenv
 import sys
 from typing import Dict
+
+from dotenv import load_dotenv
 
 
 def get_resource_path(relative_path: str) -> str:
@@ -16,7 +17,7 @@ def get_resource_path(relative_path: str) -> str:
     Raises:
         FileNotFoundError: If the resource is not found.
     """
-    if getattr(sys, 'frozen', False):  # Running in a PyInstaller bundle
+    if getattr(sys, "frozen", False):  # Running in a PyInstaller bundle
         base_path = sys._MEIPASS  # PyInstaller's temp folder
     else:
         base_path = os.path.abspath(".")  # Current working directory
@@ -38,7 +39,7 @@ def get_running_in_pyinstaller() -> str:
     Raises:
         EnvironmentError: If not running in a PyInstaller bundle.
     """
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         return sys.executable  # Return the path to the executable
     raise EnvironmentError("Not running in a PyInstaller bundle.")
 
@@ -52,9 +53,9 @@ def get_virtual_env() -> str:
     Raises:
         EnvironmentError: If not running in a virtual environment.
     """
-    if hasattr(sys, 'real_prefix'):
+    if hasattr(sys, "real_prefix"):
         return sys.prefix  # Return the path to the virtual environment
-    elif hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
+    elif hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix:
         return sys.prefix  # Return the path to the virtual environment
     raise EnvironmentError("Not running in a virtual environment.")
 
@@ -92,17 +93,18 @@ def get_docker_info() -> Dict[str, str]:
     docker_info = {}
 
     try:
-        with open('/proc/1/cgroup', 'rt') as f:
+        with open("/proc/1/cgroup", "rt") as f:
             cgroup_info = f.read()
-            if 'docker' in cgroup_info:
-                docker_info['running'] = True
+            if "docker" in cgroup_info:
+                docker_info["running"] = True
 
                 # Attempt to get container ID
-                docker_info['container_id'] = cgroup_info.split('/')[-1].strip()
+                docker_info["container_id"] = cgroup_info.split(
+                    "/")[-1].strip()
 
                 # Get hostname
-                with open('/etc/hostname', 'rt') as hostname_file:
-                    docker_info['hostname'] = hostname_file.read().strip()
+                with open("/etc/hostname", "rt") as hostname_file:
+                    docker_info["hostname"] = hostname_file.read().strip()
 
                 return docker_info
 
@@ -114,7 +116,7 @@ def get_docker_info() -> Dict[str, str]:
     raise EnvironmentError("Not running in Docker.")
 
 
-def load_environment_variables(env_file: str = '.env') -> None:
+def load_environment_variables(env_file: str = ".env") -> None:
     """Load environment variables from a specified .env file.
 
     Args:

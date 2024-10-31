@@ -1,8 +1,8 @@
-import os
+import builtins  # Import builtins to override print
 import logging
 import logging.config
+import os
 import sys
-import builtins  # Import builtins to override print
 from typing import List
 
 
@@ -23,7 +23,8 @@ def create_log_directory(log_dir: str) -> None:
     """Create the log directory if it doesn't exist."""
     try:
         os.makedirs(log_dir, exist_ok=True)
-        print(f"Log directory created: {log_dir}")  # This will be redirected to logging
+        # This will be redirected to logging
+        print(f"Log directory created: {log_dir}")
     except OSError as e:
         raise RuntimeError(f"Failed to create log directory '{log_dir}': {e}")
 
@@ -34,30 +35,44 @@ def initialize_log_files(log_dir: str, log_files: List[str]) -> None:
         log_file_path = os.path.join(log_dir, log_file)
         if not os.path.exists(log_file_path):
             try:
-                open(log_file_path, 'w').close()  # Create an empty log file
-                print(f"Log file created: {log_file_path}")  # This will be redirected to logging
+                open(log_file_path, "w").close()  # Create an empty log file
+                print(
+                    f"Log file created: {log_file_path}"
+                )  # This will be redirected to logging
             except OSError as e:
-                raise RuntimeError(f"Failed to create log file '{log_file_path}': {e}")
+                raise RuntimeError(
+                    f"Failed to create log file '{log_file_path}': {e}")
 
 
 def load_logging_config(config_path: str) -> None:
     """Load logging configuration from the specified .ini file."""
     try:
         logging.config.fileConfig(config_path)
-        print(f"Logging configuration loaded from: {config_path}")  # This will be redirected to logging
+        print(
+            f"Logging configuration loaded from: {config_path}"
+        )  # This will be redirected to logging
     except Exception as e:
-        raise RuntimeError(f"Failed to load logging configuration from '{config_path}': {e}")
+        raise RuntimeError(
+            f"Failed to load logging configuration from '{config_path}': {e}"
+        )
 
 
-def log_uncaught_exceptions(exc_type: type, exc_value: Exception, exc_traceback: any) -> None:
+def log_uncaught_exceptions(
+    exc_type: type, exc_value: Exception, exc_traceback: any
+) -> None:
     """Log uncaught exceptions to the error log."""
     logger = logging.getLogger()
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    logger.error(
+        "Uncaught exception",
+        exc_info=(
+            exc_type,
+            exc_value,
+            exc_traceback))
 
 
 def setup_logging(config_path: str) -> None:  # Accept config_path as argument
     """Set up logging for the application."""
-    if getattr(sys, 'frozen', False):  # Running as a PyInstaller executable
+    if getattr(sys, "frozen", False):  # Running as a PyInstaller executable
         logging.disable(logging.CRITICAL)  # Disable all logging
         return
 
@@ -66,15 +81,15 @@ def setup_logging(config_path: str) -> None:  # Accept config_path as argument
 
     def new_print(*args: any, **kwargs: dict) -> None:
         # Create a formatted message
-        message = ' '.join(map(str, args))
+        message = " ".join(map(str, args))
         print_to_logger(message, level=logging.INFO)
 
     # Override the built-in print function
     builtins.print = new_print
 
     # Define the log directory and files
-    log_dir = 'resources/logs'
-    log_files = ['app.log', 'error.log']
+    log_dir = "resources/logs"
+    log_files = ["app.log", "error.log"]
 
     # Create the log directory
     create_log_directory(log_dir)

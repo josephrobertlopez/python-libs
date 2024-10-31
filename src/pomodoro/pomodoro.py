@@ -1,6 +1,6 @@
-import os
 import argparse
 import time
+
 from src.utils.audio import play_alarm_sound
 from src.utils.environment import get_env_var
 
@@ -13,9 +13,15 @@ def main(*args) -> None:
     - --minutes: Set the Pomodoro timer for this many minutes.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m", "--minutes", type=int, required=True,
-                        help="Set the Pomodoro timer for this many minutes.")
-    parsed_args = parser.parse_args(args)  # Parse the arguments passed from run.py
+    parser.add_argument(
+        "-m",
+        "--minutes",
+        type=int,
+        required=True,
+        help="Set the Pomodoro timer for this many minutes.",
+    )
+    # Parse the arguments passed from run.py
+    parsed_args = parser.parse_args(args)
 
     minutes = parsed_args.minutes
     if minutes < 0:

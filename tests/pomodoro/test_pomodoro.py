@@ -1,8 +1,11 @@
 import pytest
+
 from src.pomodoro.pomodoro import main
 
 
-def test_main_function_with_mocks(mock_play_alarm_sound, mock_sleep, mock_argparse, mock_get_env_var):
+def test_main_function_with_mocks(
+    mock_play_alarm_sound, mock_sleep, mock_argparse, mock_get_env_var
+):
     """Test the main function with mocked play_alarm_sound and get_env_var."""
     sound_file = "resources/sounds/alarm_sound.wav"
     minutes = 5  # Test with 5 minutes

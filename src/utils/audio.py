@@ -1,12 +1,15 @@
-import pygame
 import time
+
+import pygame
 
 
 def initialize_pygame_mixer() -> None:
     """Initialize the pygame mixer and check for successful initialization."""
     pygame.mixer.init()
     if not pygame.mixer.get_init():
-        raise RuntimeError("Mixer not initialized. Ensure that your audio subsystem is set up correctly.")
+        raise RuntimeError(
+            "Mixer not initialized. Ensure that your audio subsystem is set up correctly."
+        )
 
 
 def play_alarm_sound(sound_file: str) -> None:
@@ -14,7 +17,7 @@ def play_alarm_sound(sound_file: str) -> None:
 
     Args:
         sound_file (str): The path to the sound file to play.
-    
+
     Raises:
         RuntimeError: If the mixer is not initialized or if there is an error playing the sound.
     """
@@ -55,7 +58,7 @@ def set_volume(volume: float) -> None:
 
     Args:
         volume (float): Volume level between 0.0 (mute) and 1.0 (max).
-    
+
     Raises:
         ValueError: If volume is out of range.
     """
@@ -86,7 +89,7 @@ def load_sound(sound_file: str) -> None:
 
     Args:
         sound_file (str): The path to the sound file to load.
-    
+
     Raises:
         RuntimeError: If there is an error loading the sound.
     """
