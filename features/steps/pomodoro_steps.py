@@ -8,7 +8,7 @@ from behave import given, when, then
 @given("I have set the Pomodoro timer for {minutes:d} minute(s)")
 def step_impl_set_timer(context, minutes):
     context.minutes = minutes
-    context.timer_command = f"python3 -m src.pomodoro.pomodoro -m {context.minutes}"
+    context.timer_command = f"python3  run.py pomodoro --minutes {context.minutes}"
     context.process = subprocess.Popen(
         context.timer_command,
         shell=True,
@@ -20,7 +20,7 @@ def step_impl_set_timer(context, minutes):
 @given('I have set the Pomodoro timer for "{invalid_input}"')
 def step_impl_set_invalid_timer(context, invalid_input):
     context.minutes = invalid_input
-    context.timer_command = f"python3 -m src.pomodoro.pomodoro -m {context.minutes}"
+    context.timer_command = f"python3  run.py pomodoro --minutes {context.minutes}"
     context.process = subprocess.Popen(
         context.timer_command,
         shell=True,
@@ -31,7 +31,7 @@ def step_impl_set_invalid_timer(context, invalid_input):
 
 @given("I have not provided any timer arguments")
 def step_impl_no_arguments(context):
-    context.timer_command = "python3 -m src.pomodoro.pomodoro"  # No arguments provided
+    context.timer_command = f"python3  run.py pomodoro --minutes {context.minutes}"
     context.process = subprocess.Popen(
         context.timer_command,
         shell=True,
