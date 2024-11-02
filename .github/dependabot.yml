@@ -2,12 +2,20 @@ version: 2
 updates:
   # Check for Python dependencies updates (Poetry)
   - package-ecosystem: "poetry"
-    directory: "/"  # Location of your pyproject.toml file
+    directory: "/"
     schedule:
-      interval: "weekly"  # You can also use "daily" or "monthly"
-    
+      interval: "weekly"  # Regular updates
+    ignore:
+      - dependency-name: "some-package"  # Example to ignore
+
+  # Check for vulnerabilities in dependencies
+  - package-ecosystem: "poetry"
+    directory: "/"
+    schedule:
+      interval: "daily"  # More frequent checks for vulnerabilities
+
   # Check for GitHub Actions updates
   - package-ecosystem: "github-actions"
-    directory: "/"  # Location of your workflow files
+    directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "weekly"  # Regular checks for GitHub Actions updates
