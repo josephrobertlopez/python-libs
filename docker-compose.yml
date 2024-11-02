@@ -15,6 +15,7 @@ services:
     profiles:
       - pytest  # Profile for running pytest
 
+
   pomodoro-behave:
     build:
       context: .
@@ -28,6 +29,7 @@ services:
     command: ["poetry", "run", "behave"]  # For running behave
     profiles:
       - behave  # Profile for running behave
+
 
   pomodoro-pyinstaller:
     build:
@@ -43,6 +45,7 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
     user: myuser
+
 
 
   pomodoro-app:
