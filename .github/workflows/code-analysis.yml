@@ -38,3 +38,8 @@ jobs:
       - name: Run flake8
         run: |
           poetry run flake8 .
+
+      # Step 6: Run pytest
+      - name: Run pytest
+        run: |
+          poetry run pytest
