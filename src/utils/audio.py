@@ -8,7 +8,8 @@ def initialize_pygame_mixer() -> None:
     pygame.mixer.init()
     if not pygame.mixer.get_init():
         raise RuntimeError(
-            "Mixer not initialized. Ensure that your audio subsystem is set up correctly."
+            "Mixer not initialized. "
+            "Ensure that your audio subsystem is set up correctly."
         )
 
 
@@ -19,7 +20,8 @@ def play_alarm_sound(sound_file: str) -> None:
         sound_file (str): The path to the sound file to play.
 
     Raises:
-        RuntimeError: If the mixer is not initialized or if there is an error playing the sound.
+        RuntimeError: If the mixer is not initialized or
+        if there is an error playing the sound.
     """
     initialize_pygame_mixer()
 

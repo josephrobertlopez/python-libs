@@ -1,8 +1,11 @@
 import os
 
 import pytest
-
-from src.utils.logging_setup import *
+from src.utils.logging_setup import (create_log_directory,
+                                     initialize_log_files,
+                                     load_logging_config,
+                                     setup_logging,
+                                     log_uncaught_exceptions)
 
 
 def test_create_log_directory_failure(mock_file_staging):
@@ -16,7 +19,10 @@ def test_create_log_directory_failure(mock_file_staging):
 
 def test_initialize_log_files_creates_log_file(mock_file_staging):
     """Test that initialize_log_files creates a single log file."""
-    mock_makedirs, mock_path_exists, mock_path_join, mock_open = mock_file_staging
+    (mock_makedirs,
+     mock_path_exists,
+     mock_path_join,
+     mock_open) = mock_file_staging
     log_dir = "resources/logs"
     log_file = "app.log"
 
@@ -31,7 +37,10 @@ def test_initialize_log_files_creates_log_file(mock_file_staging):
 
 def test_initialize_log_files_does_not_create_existing_file(mock_file_staging):
     """Test that initialize_log_files does not create an existing log file."""
-    mock_makedirs, mock_path_exists, mock_path_join, mock_open = mock_file_staging
+    (mock_makedirs,
+     mock_path_exists,
+     mock_path_join,
+     mock_open) = mock_file_staging
     log_dir = "resources/logs"
     log_file = "app.log"
 

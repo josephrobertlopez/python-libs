@@ -33,7 +33,8 @@ def mock_get_busy(mocker):
 
 @pytest.fixture
 def mock_sound_loading_error(mocker):
-    """Fixture to mock pygame.mixer.Sound to raise an error when loading sound."""
+    """Fixture to mock pygame.mixer.
+    Sound to raise an error when loading sound."""
     return mocker.patch(
         "pygame.mixer.Sound", side_effect=pygame.error("Error loading sound")
     )

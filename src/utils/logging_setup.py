@@ -77,8 +77,6 @@ def setup_logging(config_path: str) -> None:  # Accept config_path as argument
         return
 
     # Redirect print statements to logger
-    original_print = print  # Save the original print function
-
     def new_print(*args: any, **kwargs: dict) -> None:
         # Create a formatted message
         message = " ".join(map(str, args))

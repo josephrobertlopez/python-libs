@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 
 def get_resource_path(relative_path: str) -> str:
-    """Get the absolute path to a resource, works for development and PyInstaller.
+    """Get the absolute path to a resource, works for
+    development and PyInstaller.
 
     Args:
         relative_path (str): The relative path to the resource.
@@ -79,7 +80,8 @@ def get_env_var(var_name: str) -> str:
 
 
 def get_docker_info() -> Dict[str, str]:
-    """Check if the script is running inside a Docker container and return relevant info.
+    """Check if the script is running inside a
+    Docker container and return relevant info.
 
     Returns:
         Dict[str, str]: Information about the Docker environment, including:
