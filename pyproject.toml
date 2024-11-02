@@ -18,7 +18,6 @@ pytest = "^8.3.3"
 pytest-mock = "^3.14.0"
 flake8 = "^7.1.1"  # Ensures flake8 is available
 
-
 [tool.poetry.group.pomodoro.dependencies]
 pygame = "^2.1.3"  # Ensure pygame is in the pomodoro group
 
