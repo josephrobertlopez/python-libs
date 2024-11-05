@@ -43,21 +43,10 @@ A brief description of what your project does.
 To activate the virtual environment and start working on the project:
 
 ```bash
-poetry shell
-
-# forward logs to local
-docker run --device /dev/snd --privileged -v $(pwd)/resources/logs:/app/resources/logs my_pomodoro_image poetry run python -m src.pomodoro.pomodoro -m 25
-
-# build container 
-docker-compose up --build pomodoro-app
- docker-compose run --rm pomodoro-app "poetry run python -m src.pomodoro.pomodoro -m 1" 
-pomodoro-test  docker-compose run --rm pomodoro-app
-
 # Build tests
 
 docker-compose build --no-cache pomodoro-pytest 
 docker-compose run --rm pomodoro-pytest 
-
 
 docker-compose build --no-cache pomodoro-behave
 docker-compose run --rm pomodoro-behave
