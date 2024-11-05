@@ -1,8 +1,8 @@
 import argparse
 import time
 
-from src.utils.audio import play_alarm_sound
-from src.utils.env_checks import get_env_var
+from src.utils.media.audio import play_alarm_sound
+from src.utils.env.env_checks import get_env_var
 
 
 def main(*args) -> None:

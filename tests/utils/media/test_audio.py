@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.utils.audio import play_alarm_sound
+from src.utils.media.audio import play_alarm_sound
 
 
 def test_play_alarm_sound_success(
