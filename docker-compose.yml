@@ -62,7 +62,7 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
       - AUDIO_OUTPUT=alsa
-    command: ["sh", "-c", "poetry run python -m src.pomodoro.pomodoro -m $MINS"]
+    command: ["sh", "-c", "poetry run python -m run pomodoro -m $MINS"]
     profiles:
       - pomodorop  # Profile for running the Pomodoro app
     privileged: true  # Grant extended privileges for audio playback
