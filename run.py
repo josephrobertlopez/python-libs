@@ -1,7 +1,7 @@
 import os
 import argparse
 import importlib
-from src.utils.environment import load_environment_variables
+from src.utils.environment import load_environment_variables, get_env_var
 from src.utils.logging_setup import setup_logging
 
 
@@ -20,7 +20,7 @@ def main(module_name: str, module_args: list) -> None:
 if __name__ == "__main__":
     load_environment_variables(".env")
 
-    LOG_CONFIG_FILE = os.getenv("LOG_CONFIG_FILE")
+    LOG_CONFIG_FILE = get_env_var("LOG_CONFIG_FILE")
     setup_logging(LOG_CONFIG_FILE)
 
     parser = argparse.ArgumentParser(description="Run the specified module.")
