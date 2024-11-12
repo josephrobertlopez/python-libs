@@ -2,6 +2,7 @@ import pytest
 
 from src.utils.test.MockFixture import MockFixture
 
+
 @pytest.fixture
 def mock_pomodoro_deps(mocker):
     """Fixture to mock pomodoro's deps"""
@@ -10,4 +11,6 @@ def mock_pomodoro_deps(mocker):
         "get_env_var": "resources/sounds/alarm_sound.wav"
     }
 
-    return MockFixture(mocker,"src.pomodoro.pomodoro",default_behaviors)
+    return MockFixture(mocker,
+                       "src.pomodoro.pomodoro",
+                       default_behaviors)

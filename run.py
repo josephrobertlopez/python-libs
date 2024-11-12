@@ -1,6 +1,7 @@
 import argparse
 import importlib
-from src.utils.env.env_checks import load_environment_variables, get_env_var
+from src.utils.env_checks.env_checks import (load_environment_variables,
+                                             get_env_var)
 from src.utils.logging.logging_setup import setup_logging
 
 
