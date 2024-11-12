@@ -3,6 +3,8 @@ import sys
 
 import pytest
 
+from src.utils.test.MockFixture import MockFixture
+
 
 @pytest.fixture
 def mock_sleep(mocker):
@@ -41,3 +43,15 @@ def mock_argparse(mocker):
 
     # Return both the parser mock and the nested function
     yield parser_mock, _set_args
+
+@pytest.fixture
+def mock_os_path(mocker):
+    """Mock fixture for `os.path` methods using MockFixture."""
+    # Use MockFixture to mock both `os.path.exists` and `os.path.abspath`
+    mock_paths = {
+        "exists": True,
+        "abspath": "/mocked/path"
+    }
+    with MockFixture(mocker, "os.path", default_behaviors=mock_paths) as mock_os:
+        yield mock_os
+
