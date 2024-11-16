@@ -53,6 +53,5 @@ def mock_os_path(mocker):
         "exists": True,
         "abspath": "/mocked/path"
     }
-    with MockFixture(mocker, "os.path",
-                     default_behaviors=mock_paths) as mock_os:
+    with MockFixture("os.path", mock_paths) as mock_os:
         yield mock_os

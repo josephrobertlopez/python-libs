@@ -1,44 +1,45 @@
+from unittest.mock import patch
+
+
 class MockFixture:
     """
-    Manages patching multiple methods in a module or class using pytest-mock.
+    Manages patching multiple methods in a module or class.
 
     Attributes:
-        mocker: The pytest-mock mocker fixture.
         mock_path: Path to the module or class to patch.
         default_behaviors: Dict of method names to return
             values or side effects.
         mocks: Dict of created mock objects, keyed by method name.
+        patchers: Dict of patcher objects for managing teardown.
     """
 
-    def __init__(self, mocker: object,
-                 mock_path: object,
-                 default_behaviors: object = None) -> object:
+    def __init__(self, mock_path, default_behaviors=None):
         """
         Initializes MockFixture to mock specified methods.
 
         Args:
-            mocker: pytest-mock's mocker fixture for patching.
             mock_path: Base path of the module or class to patch.
             default_behaviors: Optional dict of method names and
                 their return values or side effects.
         """
-        self.mocker = mocker
         self.mock_path = mock_path
         self.default_behaviors = default_behaviors or {}
         self.mocks = {}
+        self.patchers = {}
         self._patch_methods()
 
     def _patch_methods(self):
-        """Patches each method in `default_behaviors` with the g
-            iven return value or side effect."""
+        """Patches each method in `default_behaviors`."""
         for method_name, return_value in self.default_behaviors.items():
             full_path = f"{self.mock_path}.{method_name}"
-            patcher = self.mocker.patch(full_path, autospec=True)
+            patcher = patch(full_path, autospec=True)
+            mock_obj = patcher.start()
             if callable(return_value):
-                patcher.side_effect = return_value
+                mock_obj.side_effect = return_value
             else:
-                patcher.return_value = return_value
-            self.mocks[method_name] = patcher
+                mock_obj.return_value = return_value
+            self.mocks[method_name] = mock_obj
+            self.patchers[method_name] = patcher
 
     def get_mock_obj(self, method_name):
         """
@@ -52,10 +53,16 @@ class MockFixture:
         """
         return self.mocks.get(method_name)
 
+    def reset_mocks(self):
+        """Stop all patchers and clear the patchers/mocks."""
+        for mock in self.mocks.values():
+            mock.reset_mock()
+
     def __enter__(self):
         """Enters the context, returning the MockFixture instance."""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exits the context."""
-        pass
+        """Exits the context, stopping all mocks."""
+        for patcher in self.patchers.values():
+            patcher.stop()

@@ -4,13 +4,20 @@ from src.utils.test.MockFixture import MockFixture
 
 
 @pytest.fixture
-def mock_pomodoro_deps(mocker):
-    """Fixture to mock pomodoro's deps"""
-    default_behaviors = {
-        "play_alarm_sound": lambda x: None,
-        "get_env_var": "resources/sounds/alarm_sound.wav"
-    }
+def mock_pomodoro_deps():
+    """
+    Provides a MockFixture instance pre-configured to mock
+    specific dependencies in the Pomodoro module.
 
-    return MockFixture(mocker,
-                       "src.pomodoro.pomodoro",
-                       default_behaviors)
+    Returns:
+        MockFixture: The fixture used for mocking.
+    """
+    mock_path = "src.pomodoro.pomodoro"
+    SOUND_FILE = "resources/sounds/alarm_sound.wav"
+    default_behaviors = {
+        "get_env_var": lambda _: SOUND_FILE,
+        "play_alarm_sound": None,
+    }
+    # Initialize MockFixture
+    return MockFixture(mock_path=mock_path,
+                       default_behaviors=default_behaviors)
