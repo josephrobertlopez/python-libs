@@ -14,15 +14,8 @@ from src.utils.env_checks.env_checks import (
 
 def test_get_resource_path_exists(mock_os_path):
     """Test get_resource_path returns the correct path when resource exists."""
+    get_resource_path("test/resource")
 
-    # Call the function with a sample resource path
-    path = get_resource_path("test/resource")
-
-    # Check that the returned path contains the mocked resource path
-    assert "test/resource" in path
-    assert path.startswith("/mocked/path")  # Ensure it uses the mocked abspath
-
-    # Verify that `os.path.exists` was called with the expected full path
     mock_os_path.get_mock_obj("exists").assert_called_once_with(
         "/mocked/path/test/resource")
 

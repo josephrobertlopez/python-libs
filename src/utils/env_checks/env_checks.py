@@ -45,22 +45,6 @@ def get_running_in_pyinstaller() -> str:
     raise EnvironmentError("Not running in a PyInstaller bundle.")
 
 
-def get_virtual_env() -> str:
-    """Check if the script is running in a virtual environment.
-
-    Returns:
-        str: Path to the virtual environment.
-
-    Raises:
-        EnvironmentError: If not running in a virtual environment.
-    """
-    if hasattr(sys, "real_prefix"):
-        return sys.prefix  # Return the path to the virtual environment
-    elif hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix:
-        return sys.prefix  # Return the path to the virtual environment
-    raise EnvironmentError("Not running in a virtual environment.")
-
-
 def get_env_var(var_name: str) -> str:
     """Get an environment variable.
 
@@ -77,45 +61,6 @@ def get_env_var(var_name: str) -> str:
         return os.environ[var_name]
     except KeyError:
         raise KeyError(f"Environment variable '{var_name}' not found.")
-
-
-def get_docker_info() -> Dict[str, str]:
-    """Check if the script is running inside a
-    Docker container and return relevant info.
-
-    Returns:
-        Dict[str, str]: Information about the Docker environment, including:
-            - 'running': True
-            - 'container_id': ID of the Docker container
-            - 'hostname': Hostname of the container
-
-    Raises:
-        EnvironmentError: If not running in Docker or an error occurred.
-    """
-    docker_info = {}
-
-    try:
-        with open("/proc/1/cgroup", "rt") as f:
-            cgroup_info = f.read()
-            if "docker" in cgroup_info:
-                docker_info["running"] = True
-
-                # Attempt to get container ID
-                docker_info["container_id"] = cgroup_info.split(
-                    "/")[-1].strip()
-
-                # Get hostname
-                with open("/etc/hostname", "rt") as hostname_file:
-                    docker_info["hostname"] = hostname_file.read().strip()
-
-                return docker_info
-
-    except FileNotFoundError:
-        raise EnvironmentError("Not running in Docker.")
-    except Exception as e:
-        raise EnvironmentError(f"An error occurred while checking Docker: {e}")
-
-    raise EnvironmentError("Not running in Docker.")
 
 
 def load_environment_variables(env_file: str = ".env_checks") -> None:
