@@ -32,19 +32,11 @@ def test_get_resource_path_exists(mock_os_path, mock_sys):
 def test_get_running_in_pyinstaller(mock_sys):
     """Test get_running_in_pyinstaller when running inside PyInstaller."""
     path = get_running_in_pyinstaller()  # Assuming this checks sys.executable
-    assert path == "fake_executable_path"
+    assert path == mock_sys.get_mock_obj("executable")
 
-    # """Test get_running_in_pyinstaller raises EnvironmentError
-    #     when not in PyInstaller."""
-    # # Ensures 'frozen' is not set in sys
-    # with mock.patch.dict('sys.__dict__', {}, clear=True):
-    #     with pytest.raises(EnvironmentError,
-    #                        match="Not running in a PyInstaller bundle"):
-    #         get_running_in_pyinstaller()
-    # with MockFixture("sys",{"frozen":True,"executable":"fake_executable_path"}) as m:
-    #     path = get_running_in_pyinstaller()
-    #     assert path == "fake_executable_path"
-
+    with pytest.raises(EnvironmentError):
+        mock_sys.remove_patch("frozen")
+        get_running_in_pyinstaller()
 
 
 

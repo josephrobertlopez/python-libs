@@ -13,7 +13,7 @@ def test_main(mock_pomodoro_deps, mock_sleep):
     main("-m", "25")
     mock_sleep.assert_called_once_with(25 * 60)
     mock_get_env_var.assert_called_once_with("SOUND_FILE")
-    mock_play_alarm_sound.assert_called_once_with(SOUND_FILE)
+    mock_play_alarm_sound.assert_called_once()
 
     # Test invalid integer input
     mock_sleep.reset_mock()

@@ -34,19 +34,27 @@ class MockFixture:
             full_path = f"{self.mock_path}.{method_name}"
 
             if callable(return_value):
-                # Handle patching methods (callable return_value)
-                patcher = patch(full_path,return_value)
-                mock_obj = patcher.start()
+                patcher = patch(full_path, return_value=return_value, autospec=True)
             else:
-                # Handle patching attributes (non-callable return_value)
-                patcher = patch(full_path,return_value, create=True)  # create=True ensures the mock is created
-                mock_obj = patcher.start()
+                patcher = patch(full_path, side_effect=return_value, create=True)
 
-                # Directly set the return value for attributes, not using MagicMock
-
+            mock_obj = patcher.start()
             # Store mock objects and patchers for later use
             self.mocks[method_name] = mock_obj
             self.patchers[method_name] = patcher
+
+    def update_patch(self,method_name,return_value):
+        if callable(return_value):
+            self.mocks[method_name].return_value = return_value
+            self.mocks[method_name].side_effect = None
+        else:
+            self.mocks[method_name].return_value = None
+            self.mocks[method_name].side_effect = None
+
+    def remove_patch(self,method_name):
+        mock = self.mocks.pop(method_name)
+        patcher = self.patchers.pop(method_name)
+        patcher.stop()
 
     def get_mock_obj(self, method_name):
         """

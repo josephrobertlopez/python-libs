@@ -73,7 +73,7 @@ def mock_sys():
     Preconfigured MockFixture for sys module
     """
     default_behaviors = {
-        "frozen":True,
+        "frozen":False,
         "executable":"fake_executable_path"
     }
     return MockFixture(mock_path="sys",
