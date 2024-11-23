@@ -1,6 +1,8 @@
 import pygame
 import pytest
 
+from src.utils.test.MockFixture import MockFixture
+
 
 @pytest.fixture
 def mock_pygame_init(mocker):
@@ -64,3 +66,15 @@ def mock_logging(mocker):
     mock_log = mocker.patch("logging.getLogger")
     mock_file_config = mocker.patch("logging.config.fileConfig")
     return mock_log, mock_file_config
+
+@pytest.fixture
+def mock_sys():
+    """
+    Preconfigured MockFixture for sys module
+    """
+    default_behaviors = {
+        "frozen":True,
+        "executable":"fake_executable_path"
+    }
+    return MockFixture(mock_path="sys",
+                       default_behaviors=default_behaviors)

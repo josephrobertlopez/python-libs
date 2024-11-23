@@ -32,12 +32,19 @@ class MockFixture:
         """Patches each method in `default_behaviors`."""
         for method_name, return_value in self.default_behaviors.items():
             full_path = f"{self.mock_path}.{method_name}"
-            patcher = patch(full_path, autospec=True)
-            mock_obj = patcher.start()
+
             if callable(return_value):
-                mock_obj.side_effect = return_value
+                # Handle patching methods (callable return_value)
+                patcher = patch(full_path,return_value)
+                mock_obj = patcher.start()
             else:
-                mock_obj.return_value = return_value
+                # Handle patching attributes (non-callable return_value)
+                patcher = patch(full_path,return_value, create=True)  # create=True ensures the mock is created
+                mock_obj = patcher.start()
+
+                # Directly set the return value for attributes, not using MagicMock
+
+            # Store mock objects and patchers for later use
             self.mocks[method_name] = mock_obj
             self.patchers[method_name] = patcher
 

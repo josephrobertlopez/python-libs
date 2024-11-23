@@ -45,13 +45,27 @@ def mock_argparse(mocker):
     yield parser_mock, _set_args
 
 
+# MockFixture for `os.path`
 @pytest.fixture
-def mock_os_path(mocker):
+def mock_os_path():
     """Mock fixture for `os.path` methods using MockFixture."""
-    # Use MockFixture to mock both `os.path.exists` and `os.path.abspath`
     mock_paths = {
-        "exists": True,
-        "abspath": "/mocked/path"
+        "exists": lambda path: path,
+        "abspath": lambda _: f"/mocked/path/"
     }
     with MockFixture("os.path", mock_paths) as mock_os:
         yield mock_os
+
+
+# MockFixture for `sys` attributes
+@pytest.fixture
+def mock_sys():
+    """Mock fixture for `sys` module."""
+    mock_paths ={"__dict__" :{
+        "frozen": False,
+        "_MEIPASS": "/mocked/pyinstaller",  # Ensure this is a string, not a MagicMock
+        "executable": "fake_executable_path"
+    }}
+    with MockFixture("sys", mock_paths) as s:
+        yield s
+
