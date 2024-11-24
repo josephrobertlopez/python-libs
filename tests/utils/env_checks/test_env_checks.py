@@ -1,32 +1,11 @@
 import os
-import sys
 import pytest
 from unittest import mock
 from src.utils.env_checks.env_checks import (
-    get_resource_path,
     get_running_in_pyinstaller,
     get_env_var,
     load_environment_variables,
 )
-
-import os
-import sys
-from unittest import mock
-from src.utils.env_checks.env_checks import get_resource_path
-
-import os
-import sys
-from unittest import mock
-from src.utils.env_checks.env_checks import get_resource_path
-from src.utils.test.MockFixture import MockFixture
-
-
-def test_get_resource_path_exists(mock_os_path, mock_sys):
-    """Test get_resource_path returns the correct path when resource exists."""
-
-    get_resource_path("test/resource")
-    mock_os_path.get_mock_obj("exists").assert_called_once_with(
-        "/mocked/path/test/resource")
 
 
 def test_get_running_in_pyinstaller(mock_sys):
@@ -39,12 +18,12 @@ def test_get_running_in_pyinstaller(mock_sys):
         get_running_in_pyinstaller()
 
 
-
 def test_get_env_var():
     with mock.patch.dict(os.environ, {"TEST_VAR": "test_value"}):
         value = get_env_var("TEST_VAR")
         assert value == "test_value"
-    with pytest.raises(KeyError, match="Environment variable 'NON_EXISTENT_VAR' not found"):
+    with pytest.raises(KeyError, match="Environment variable "
+                                       "'NON_EXISTENT_VAR' not found"):
         get_env_var("NON_EXISTENT_VAR")
 
 
@@ -65,4 +44,3 @@ def test_load_environment_variables_file_exists():
             with pytest.raises(FileNotFoundError,
                                match="fake_env_file not found"):
                 load_environment_variables("fake_env_file")
-

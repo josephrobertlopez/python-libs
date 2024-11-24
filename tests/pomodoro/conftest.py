@@ -16,7 +16,7 @@ def mock_pomodoro_deps():
     SOUND_FILE = "resources/sounds/alarm_sound.wav"
     default_behaviors = {
         "get_env_var": lambda _: SOUND_FILE,
-        "play_alarm_sound":lambda _: None,
+        "play_alarm_sound": lambda _: None,
     }
     # Initialize MockFixture
     return MockFixture(mock_path=mock_path,

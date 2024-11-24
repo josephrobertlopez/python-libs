@@ -4,8 +4,6 @@ import pytest
 
 def test_main(mock_pomodoro_deps, mock_sleep):
     """Test main method of pomodoro."""
-    SOUND_FILE = "resources/sounds/alarm_sound.wav"
-
     mock_get_env_var = mock_pomodoro_deps.get_mock_obj("get_env_var")
     mock_play_alarm_sound = mock_pomodoro_deps.get_mock_obj("play_alarm_sound")
 
