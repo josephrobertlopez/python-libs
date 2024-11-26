@@ -132,14 +132,10 @@ class MockFixture:
         """
         return self.mocks.get(name)
 
-    def reset_mocks(self):
-        """Stops all patchers and clears the patchers/mocks."""
-        for mock in self.mocks.values():
-            mock.reset_mock()
-
     def __enter__(self):
         """Enters the context, returning the MockFixture instance."""
-        return self
+        for mock in self.mocks.values():
+            mock.reset_mock()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exits the context, stopping all mocks."""
