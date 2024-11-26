@@ -11,12 +11,11 @@ def mock_sleep(mocker):
 @pytest.fixture
 def mock_sys():
     """
-    Preconfigured MockFixture for sys module
+    Preconfigured MockFixture for sys module.
     """
-    default_behaviors = {
-        "frozen": False,
+    default_attr = {
+        "frozen": True,
         "executable": "fake_executable_path",
-        "_MEIPASS": "pyinstaller/path"
+        "_MEIPASS": "pyinstaller/path",
     }
-    return MockFixture(mock_path="sys",
-                       default_behaviors=default_behaviors)
+    return MockFixture(mock_path="sys", default_attributes=default_attr)
