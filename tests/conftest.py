@@ -1,5 +1,5 @@
 import pytest
-from src.utils.test.MockFixture import MockFixture
+from src.utils.test.MockManager import MockManager
 
 
 @pytest.fixture
@@ -18,4 +18,4 @@ def mock_sys():
         "executable": "fake_executable_path",
         "_MEIPASS": "pyinstaller/path",
     }
-    return MockFixture(mock_path="sys", default_attributes=default_attr)
+    return MockManager(target_path="sys", attribute_values=default_attr)
