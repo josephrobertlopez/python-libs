@@ -19,3 +19,11 @@ def mock_sys():
         "_MEIPASS": "pyinstaller/path",
     }
     return MockManager(target_path="sys", attribute_values=default_attr)
+
+
+@pytest.fixture
+def mock_os():
+    default_behaviors = {"path.exists": True,
+                         "environ": {"TEST_VAR": "test_value"}
+                         }
+    return MockManager(target_path="os", method_behaviors=default_behaviors)
