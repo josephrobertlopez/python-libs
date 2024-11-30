@@ -1,9 +1,6 @@
 from typing import Mapping
-from src.utils.test.MockStrategies import PatcherStrategy, MethodPatcherStrategy, AttributePatcherStrategy, \
+from src.utils.test.MockStrategies import MethodPatcherStrategy, AttributePatcherStrategy, \
     MappingPatcherStrategy
-from unittest.mock import patch
-
-
 
 
 class MockManager:
