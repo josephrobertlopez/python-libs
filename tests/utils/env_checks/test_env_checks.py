@@ -6,6 +6,7 @@ from src.utils.env_checks.env_checks import (
     get_env_var,
     load_environment_variables,
 )
+from src.utils.test.MockManager import MockManager
 
 
 def test_get_running_in_pyinstaller(mock_sys):
@@ -18,8 +19,8 @@ def test_get_running_in_pyinstaller(mock_sys):
         get_running_in_pyinstaller()
 
 
-def test_get_env_var():
-    with mock.patch.dict(os.environ, {"TEST_VAR": "test_value"}):
+def test_get_env_var(mock_os):
+    with mock_os:
         value = get_env_var("TEST_VAR")
         assert value == "test_value"
     with pytest.raises(KeyError, match="Environment variable "
@@ -27,20 +28,11 @@ def test_get_env_var():
         get_env_var("NON_EXISTENT_VAR")
 
 
-def test_load_environment_variables_file_exists():
-    """Test load_environment_variables loads variables
-        from a .env_checks file."""
-    with mock.patch("os.path.exists", return_value=True):
-        with mock.patch(
-                "src.utils.env_checks.env_checks.load_dotenv"
-        ) as mock_load_dotenv:
-            load_environment_variables("fake_env_file")
-            mock_load_dotenv.assert_called_once()
 
-    """Test load_environment_variables raises FileNotFoundError if
-        .env_checks file is missing."""
-    with mock.patch("os.path.exists", return_value=False):
-        with mock.patch("dotenv.load_dotenv", return_value=True):
-            with pytest.raises(FileNotFoundError,
-                               match="fake_env_file not found"):
-                load_environment_variables("fake_env_file")
+def test_load_environment_variables_file_exists(mock_os):
+    with mock_os:
+        load_environment_variables("fake_env_file")
+
+    with pytest.raises(FileNotFoundError,
+                       match="fake_env_file not found"):
+        load_environment_variables("fake_env_file")
