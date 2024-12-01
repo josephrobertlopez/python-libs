@@ -71,10 +71,9 @@ class MockManager:
 
         yield  # Yield to allow for cleanup within the context
 
-    @contextmanager
     def get_mock(self, name):
         """Retrieves the mock object for a specific method, attribute, or dict."""
-        yield self.active_mocks.get(name)
+        return self.active_mocks.get(name)
 
     def __enter__(self):
         """Enters the context, resetting all mocks."""
