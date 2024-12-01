@@ -32,9 +32,11 @@ def mock_os():
                          }
     return MockManager(target_path="os", method_behaviors=default_behaviors)
 
+
 @pytest.fixture
 def mock_builtins():
     default_behaviors = {
-        "open":Mock()
+        "open":Mock(),
+        "print":Mock()
     }
     return MockManager(target_path="builtins",method_behaviors=default_behaviors)
