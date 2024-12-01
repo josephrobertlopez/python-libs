@@ -71,7 +71,7 @@ def log_uncaught_exceptions(
 
 def setup_logging(config_path: str) -> None:  # Accept config_path as argument
     """Set up logging for the application."""
-    if getattr(sys, "frozen", False):  # Running as a PyInstaller executable
+    if not getattr(sys, "frozen"):  # Running as a PyInstaller executable
         logging.disable(logging.CRITICAL)  # Disable all logging
         return
 
