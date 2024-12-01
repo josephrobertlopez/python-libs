@@ -21,12 +21,11 @@ def print_to_logger(message: str, level: int = logging.INFO) -> None:
 
 def create_log_directory(log_dir: str) -> None:
     """Create the log directory if it doesn't exist."""
-    try:
-        os.makedirs(log_dir, exist_ok=True)
-        # This will be redirected to logging
-        print(f"Log directory created: {log_dir}")
-    except OSError as e:
-        raise RuntimeError(f"Failed to create log directory '{log_dir}': {e}")
+    if not os.path.exists(log_dir):
+        raise RuntimeError(f"Failed to create log directory '{log_dir}'")
+
+    os.makedirs(log_dir)
+    print(f"Log directory created: {log_dir}")
 
 
 def initialize_log_files(log_dir: str, log_files: List[str]) -> None:
