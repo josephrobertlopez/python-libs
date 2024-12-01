@@ -1,7 +1,6 @@
 from typing import Mapping
-from src.utils.test.MockStrategies import MethodPatcherStrategy, AttributePatcherStrategy, \
-    MappingPatcherStrategy
-
+from src.utils.test.MockStrategies import MethodPatcherStrategy, AttributePatcherStrategy, MappingPatcherStrategy
+from contextlib import contextmanager
 
 class MockManager:
     """
@@ -40,7 +39,7 @@ class MockManager:
             mock_obj = patcher.start()
             self.active_mocks[attr_name] = mock_obj
             self.active_patchers[attr_name] = patcher
-
+    @contextmanager
     def update_patch(self, name, new_value):
         """Updates the patch for a specific method, attribute, or dict."""
         if name in self.method_behaviors:
@@ -58,6 +57,9 @@ class MockManager:
         self.active_mocks[name] = new_mock_obj  # Update mock
         self.method_behaviors[name] = new_value  # Update stored behavior
 
+        yield new_mock_obj  # Yield the new mock object to be used in the context
+
+    @contextmanager
     def remove_patch(self, name):
         """Removes the patch for a specific method, attribute, or dict."""
         if name not in self.active_mocks:
@@ -67,17 +69,26 @@ class MockManager:
         patcher.stop()
         self.active_mocks.pop(name)
 
+        yield  # Yield to allow for cleanup within the context
+
+    @contextmanager
     def get_mock(self, name):
         """Retrieves the mock object for a specific method, attribute, or dict."""
-        return self.active_mocks.get(name)
+        yield self.active_mocks.get(name)
 
     def __enter__(self):
-        """Enters the context, resetting all mocks."""
+        """Enters the context, returning self to allow method chaining."""
+        # Reset mocks before starting the context
         for mock in self.active_mocks.values():
             mock.reset_mock()
-        return self
+        yield self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exits the context, stopping all mocks."""
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exits the context, cleaning up mocks."""
+        # Clean up by stopping all active patchers
         for patcher in self.active_patchers.values():
             patcher.stop()
+        self.active_mocks.clear()
+        self.active_patchers.clear()
+        # If any exception occurred, suppress it by returning True (optional behavior)
+        return False
