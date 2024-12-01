@@ -56,22 +56,22 @@ def load_logging_config(config_path: str) -> None:
         )
 
 
-def log_uncaught_exceptions(
-    exc_type: type, exc_value: Exception, exc_traceback: any
-) -> None:
-    """Log uncaught exceptions to the error log."""
-    logger = logging.getLogger()
-    logger.error(
-        "Uncaught exception",
-        exc_info=(
-            exc_type,
-            exc_value,
-            exc_traceback))
+# def log_uncaught_exceptions(
+#     exc_type: type, exc_value: Exception, exc_traceback: any
+# ) -> None:
+#     """Log uncaught exceptions to the error log."""
+#     logger = logging.getLogger()
+#     logger.error(
+#         "Uncaught exception",
+#         exc_info=(
+#             exc_type,
+#             exc_value,
+#             exc_traceback))
 
 
 def setup_logging(config_path: str) -> None:  # Accept config_path as argument
     """Set up logging for the application."""
-    if not getattr(sys, "frozen"):  # Running as a PyInstaller executable
+    if not getattr(sys, "frozen",False):  # Running as a PyInstaller executable
         logging.disable(logging.CRITICAL)  # Disable all logging
         return
 
@@ -101,7 +101,7 @@ def setup_logging(config_path: str) -> None:  # Accept config_path as argument
     print("Logging setup complete.")
 
     # Set the global exception handler
-    sys.excepthook = log_uncaught_exceptions
+    # sys.excepthook = log_uncaught_exceptions
 
 
 if __name__ == "__main__":
