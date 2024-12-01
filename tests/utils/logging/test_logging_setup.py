@@ -33,7 +33,7 @@ def test_initialize_log_files_creates_log_file(mock_os, mock_builtins):
         mock_exists.assert_called_once_with("resources/logs/app.log")
         mock_open.assert_called_once_with("resources/logs/app.log", "w")
 
-    with mock_os, mock_builtins:
+    with mock_os.update_patch("path.exists",True), mock_builtins:
         initialize_log_files(log_dir,[log_file])
         mock_open.assert_not_called()
 def test_initialize_log_files_does_not_create_existing_file(mock_file_staging):
