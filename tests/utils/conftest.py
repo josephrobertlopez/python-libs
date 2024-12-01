@@ -1,5 +1,9 @@
+from unittest.mock import Mock
+
 import pygame
 import pytest
+
+from src.utils.test.MockManager import MockManager
 
 
 @pytest.fixture
@@ -59,8 +63,7 @@ def mock_file_staging(mocker):
 
 
 @pytest.fixture
-def mock_logging(mocker):
+def mock_logging():
     """Fixture to mock logging setup."""
-    mock_log = mocker.patch("logging.getLogger")
-    mock_file_config = mocker.patch("logging.config.fileConfig")
-    return mock_log, mock_file_config
+    return MockManager("logging",{"getLogger":Mock(),"config.fileConfig":Mock()})
+
