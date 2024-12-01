@@ -46,14 +46,14 @@ def test_load_logging_config_calls_file_config(mock_logging):
 
     mock_logging.get_mock("config.fileConfig").assert_called_once_with(config_path)
 
-def test_setup_logging_creates_log_directory(mock_os, mock_logging):
+def test_setup_logging_creates_log_directory(mock_os,mock_sys, mock_logging):
     """Test setup_logging creates the log directory."""
     config_ini_file = "resources/logging_config.ini"
 
     setup_logging(config_ini_file)
 
-    # Verify that the log directory was created
+    # # Verify that the log directory was created
     mock_os.get_mock("makedirs").assert_called_once_with("resources/logs")
-
-    # Verify that the logging configuration was loaded
+    #
+    # # Verify that the logging configuration was loaded
     mock_logging.get_mock("config.fileConfig").assert_called_once_with(config_ini_file)
