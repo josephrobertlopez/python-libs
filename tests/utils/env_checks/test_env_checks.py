@@ -11,8 +11,7 @@ def test_get_running_in_pyinstaller(mock_sys):
     path = get_running_in_pyinstaller()  # Assuming this checks sys.executable
     assert path == 'fake_executable_path'
 
-    with pytest.raises(AttributeError):
-        mock_sys.remove_patch("frozen")
+    with mock_sys.remove_patch("frozen"), pytest.raises(AttributeError):
         get_running_in_pyinstaller()
 
 
