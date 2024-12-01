@@ -1,11 +1,14 @@
 from typing import Mapping
 from src.utils.test.MockStrategies import MethodPatcherStrategy, AttributePatcherStrategy, MappingPatcherStrategy
+
 from contextlib import contextmanager
+
 
 class MockManager:
     """
     Manages patching multiple methods, attributes, or dictionary-like objects in a module or class.
     """
+
     def __init__(self, target_path, method_behaviors=None, attribute_values=None):
         """
         Initializes MockManager to mock specified methods, attributes, and dictionary-like objects.
@@ -39,6 +42,7 @@ class MockManager:
             mock_obj = patcher.start()
             self.active_mocks[attr_name] = mock_obj
             self.active_patchers[attr_name] = patcher
+
     @contextmanager
     def update_patch(self, name, new_value):
         """Updates the patch for a specific method, attribute, or dict."""
@@ -49,15 +53,23 @@ class MockManager:
         else:
             raise KeyError(f"'{name}' is not patched.")
 
-        patcher = self.active_patchers[name]
-        patcher.stop()  # Stop the current patch
-        new_patcher = patcher_strategy.patch(self.target_path, name, new_value)
-        new_mock_obj = new_patcher.start()  # Start the new patch
-        self.active_patchers[name] = new_patcher  # Update patcher
-        self.active_mocks[name] = new_mock_obj  # Update mock
-        self.method_behaviors[name] = new_value  # Update stored behavior
+        old_patcher = self.active_patchers[name]
+        old_behavior = self.method_behaviors[name]
 
-        yield new_mock_obj  # Yield the new mock object to be used in the context
+        try:
+            self.active_patchers[name].stop()
+            new_patcher = patcher_strategy.patch(self.target_path, name, new_value)
+            new_mock_obj = new_patcher.start()  # Start the new patch
+            self.active_patchers[name] = new_patcher  # Update patcher
+            self.active_mocks[name] = new_mock_obj  # Update mock
+            self.method_behaviors[name] = new_value  # Update stored behavior
+            yield new_mock_obj  # Yield the new mock object to be used in the context
+        finally:
+            self.active_patchers[name].stop()  # Ensure we stop the new patch before restoring the old one
+            # Restore the old patch and behavior
+            self.active_patchers[name] = old_patcher
+            self.active_mocks[name] = old_patcher.start()
+            self.method_behaviors[name] = old_behavior
 
     @contextmanager
     def remove_patch(self, name):
@@ -65,11 +77,12 @@ class MockManager:
         if name not in self.active_mocks:
             raise KeyError(f"'{name}' is not patched.")
 
-        patcher = self.active_patchers.pop(name)
-        patcher.stop()
+        old_patcher = self.active_patchers.pop(name)
+        old_patcher.stop()
         self.active_mocks.pop(name)
-
         yield  # Yield to allow for cleanup within the context
+        self.active_patchers[name] = old_patcher
+        self.active_mocks[name] = old_patcher.start()
 
     def get_mock(self, name):
         """Retrieves the mock object for a specific method, attribute, or dict."""
