@@ -10,31 +10,32 @@ from src.utils.logging.logging_setup import (
 )
 
 
-def test_create_log_directory_failure(mock_file_staging):
-    """Test create_log_directory handles failure to create directory."""
-    mock_makedirs, _, _, _ = mock_file_staging
-    mock_makedirs.side_effect = OSError("Failed to create directory")
+def test_create_log_directory(mock_os):
+    """Test create_log_directory"""
+    with mock_os:
+        create_log_directory("valid/log/dir")
 
     with pytest.raises(RuntimeError, match="Failed to create log directory"):
+        mock_os.update_patch("path.exists", False)
         create_log_directory("invalid/log/dir")
 
 
-def test_initialize_log_files_creates_log_file(mock_file_staging):
+def test_initialize_log_files_creates_log_file(mock_os, mock_builtins):
     """Test that initialize_log_files creates a single log file."""
-    (mock_makedirs,
-     mock_path_exists,
-     mock_path_join,
-     mock_open) = mock_file_staging
     log_dir = "resources/logs"
     log_file = "app.log"
 
-    mock_path_exists.return_value = False  # Simulate log file does not exist
+    # Mock path.exists to return False (file doesn't exist)
+    mock_os.update_patch("path.exists", False)
 
+    # Call the function that initializes the log file
     initialize_log_files(log_dir, [log_file])
 
-    # Verify that open was called with the correct log file path
-    expected_path = os.path.join(log_dir, log_file)
-    mock_open.assert_called_once_with(expected_path, "w")
+    # Verify that open was called with the correct log file path and mode 'w'
+    mock_builtins.get_mock("builtins.open").assert_called_once_with("resources/logs/app.log", "w")
+
+    # Optionally, check if path.exists was called with the correct file path
+    mock_os.get_mock("path.exists").assert_called_once_with("resources/logs/app.log")
 
 
 def test_initialize_log_files_does_not_create_existing_file(mock_file_staging):
