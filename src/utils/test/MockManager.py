@@ -43,25 +43,20 @@ class MockManager:
 
     def update_patch(self, name, new_value):
         """Updates the patch for a specific method, attribute, or dict."""
-        if name not in self.active_mocks:
+        if name in self.method_behaviors:
+            patcher_strategy = MethodPatcherStrategy()
+        elif name in self.attribute_values:
+            patcher_strategy = AttributePatcherStrategy()
+        else:
             raise KeyError(f"'{name}' is not patched.")
 
-        # Assuming we can update based on the value type (method, attribute, dict)
         patcher = self.active_patchers[name]
-        patcher.stop()
-        new_patcher = None
-
-        if isinstance(new_value, Mapping):
-            patcher_strategy = MappingPatcherStrategy()
-            new_patcher = patcher_strategy.patch(self.target_path, name, new_value)
-        else:
-            # Can be a method or an attribute
-            patcher_strategy = MethodPatcherStrategy() if callable(new_value) else AttributePatcherStrategy()
-            new_patcher = patcher_strategy.patch(self.target_path, name, new_value)
-
-        new_mock_obj = new_patcher.start()
-        self.active_mocks[name] = new_mock_obj
-        self.active_patchers[name] = new_patcher
+        patcher.stop()  # Stop the current patch
+        new_patcher = patcher_strategy.patch(self.target_path, name, new_value)
+        new_mock_obj = new_patcher.start()  # Start the new patch
+        self.active_patchers[name] = new_patcher  # Update patcher
+        self.active_mocks[name] = new_mock_obj  # Update mock
+        self.method_behaviors[name] = new_value  # Update stored behavior
 
     def remove_patch(self, name):
         """Removes the patch for a specific method, attribute, or dict."""
