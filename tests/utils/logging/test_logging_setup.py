@@ -25,18 +25,10 @@ def test_initialize_log_files_creates_log_file(mock_os, mock_builtins):
     log_dir = "resources/logs"
     log_file = "app.log"
 
-    # Mock path.exists to return False (file doesn't exist)
-    mock_os.update_patch("path.exists", False)
-
-    # Call the function that initializes the log file
-    initialize_log_files(log_dir, [log_file])
-
-    # Verify that open was called with the correct log file path and mode 'w'
-    mock_builtins.get_mock("builtins.open").assert_called_once_with("resources/logs/app.log", "w")
-
-    # Optionally, check if path.exists was called with the correct file path
-    mock_os.get_mock("path.exists").assert_called_once_with("resources/logs/app.log")
-
+    with mock_os.update_patch("path.exists", False) as m1, mock_builtins.get_mock("open") as m2:
+        initialize_log_files(log_dir, [log_file])
+        m1.assert_called_once_with("resources/logs/app.log")
+        m2.assert_called_once_with("resources/logs/app.log", "w")
 
 def test_initialize_log_files_does_not_create_existing_file(mock_file_staging):
     """Test that initialize_log_files does not create an existing log file."""
