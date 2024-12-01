@@ -77,18 +77,12 @@ class MockManager:
         yield self.active_mocks.get(name)
 
     def __enter__(self):
-        """Enters the context, returning self to allow method chaining."""
-        # Reset mocks before starting the context
+        """Enters the context, resetting all mocks."""
         for mock in self.active_mocks.values():
             mock.reset_mock()
-        yield self
+        return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exits the context, cleaning up mocks."""
-        # Clean up by stopping all active patchers
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exits the context, stopping all mocks."""
         for patcher in self.active_patchers.values():
             patcher.stop()
-        self.active_mocks.clear()
-        self.active_patchers.clear()
-        # If any exception occurred, suppress it by returning True (optional behavior)
-        return False
