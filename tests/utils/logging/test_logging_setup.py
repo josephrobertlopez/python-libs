@@ -8,7 +8,6 @@ from src.utils.logging.logging_setup import (
     initialize_log_files,
     load_logging_config,
     setup_logging,
-    log_uncaught_exceptions,
 )
 from src.utils.test.MockManager import MockManager
 
@@ -37,6 +36,7 @@ def test_initialize_log_files_creates_log_file(mock_os, mock_builtins):
     with mock_os, mock_builtins:
         initialize_log_files(log_dir,[log_file])
         mock_open.assert_not_called()
+
 
 def test_load_logging_config_calls_file_config(mock_logging):
     """Test load_logging_config loads the logging configuration."""
