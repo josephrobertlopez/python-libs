@@ -25,8 +25,7 @@ def main(*args) -> None:
 
     minutes = parsed_args.minutes
     if minutes < 0:
-        print("Minutes must be a natural number.")
-        return
+        raise ValueError("Minutes must be a natural number.")
 
     seconds = minutes * 60
     print(f"Pomodoro timer set for {minutes} minutes.")

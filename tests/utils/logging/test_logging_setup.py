@@ -1,6 +1,3 @@
-import os
-import sys
-from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from src.utils.logging.logging_setup import (
@@ -9,8 +6,6 @@ from src.utils.logging.logging_setup import (
     load_logging_config,
     setup_logging,
 )
-from src.utils.test.MockManager import MockManager
-
 
 def test_create_log_directory(mock_os):
     """Test create_log_directory"""
