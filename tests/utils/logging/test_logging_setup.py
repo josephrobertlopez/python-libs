@@ -20,7 +20,7 @@ def test_initialize_log_files(init_LoggingConfigSingleton, mock_os, mock_builtin
         mock_open.assert_called_once_with("resources/logs/app.log", "w")
 
     # if log file path exists, don't open
-    with mock_os.patch(), mock_builtins.patch():
+    with mock_os, mock_builtins:
         logging_setup.setup()
         mock_open.assert_not_called()
 

@@ -12,8 +12,7 @@ def test_main(mock_pomodoro_deps, mock_sleep):
         mock_get_env_var.assert_called_once_with("SOUND_FILE")
         mock_play_alarm_sound.assert_called_once_with("resources/sounds/alarm_sound.wav")
 
-    with mock_pomodoro_deps:
-        mock_sleep.reset_mock()
+    with pytest.raises(ValueError):
         main("-m", "-1")
         mock_play_alarm_sound.assert_not_called()
         mock_get_env_var.assert_not_called()
