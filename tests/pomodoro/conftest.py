@@ -1,6 +1,6 @@
 import pytest
 
-from src.utils.test.MockManager import MockManager
+from src.utils.test.MockContextManager import MockContextManager
 
 
 @pytest.fixture
@@ -11,5 +11,5 @@ def mock_pomodoro_deps():
         "get_env_var": SOUND_FILE,
         "play_alarm_sound": None,
     }
-    return MockManager(target_path=mock_path,
+    return MockContextManager(target_path=mock_path,
                        method_behaviors=default_behaviors)

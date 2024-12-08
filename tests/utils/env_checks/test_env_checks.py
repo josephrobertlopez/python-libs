@@ -8,8 +8,9 @@ from src.utils.env_checks.env_checks import (
 
 def test_get_running_in_pyinstaller(mock_sys):
     """Test get_running_in_pyinstaller when running inside PyInstaller."""
-    path = get_running_in_pyinstaller()  # Assuming this checks sys.executable
-    assert path == 'fake_executable_path'
+    with mock_sys:
+        path = get_running_in_pyinstaller()  # Assuming this checks sys.executable
+        assert path == 'fake_executable_path'
 
     with mock_sys.remove_patch("frozen"), pytest.raises(AttributeError):
         get_running_in_pyinstaller()
@@ -28,6 +29,6 @@ def test_load_environment_variables_file_exists(mock_os):
     with mock_os:
         load_environment_variables("fake_env_file")
 
-    with pytest.raises(FileNotFoundError,
-                       match="fake_env_file not found"):
+    with (mock_os.remove_patch("path.exists"),
+          pytest.raises(FileNotFoundError,match="fake_env_file not found")):
         load_environment_variables("fake_env_file")

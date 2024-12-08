@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
-from src.utils.test.MockManager import MockManager
+from src.utils.test.MockContextManager import MockContextManager
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def mock_sys():
         "executable": "fake_executable_path",
         "_MEIPASS": "pyinstaller/path",
     }
-    return MockManager(target_path="sys", attribute_values=default_attr)
+    return MockContextManager(target_path="sys", attribute_values=default_attr)
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def mock_os():
                          "path.join": lambda *args: "/".join(args),
                          "makedirs": True,
                          }
-    return MockManager(target_path="os", method_behaviors=default_behaviors)
+    return MockContextManager(target_path="os", method_behaviors=default_behaviors)
 
 
 @pytest.fixture
@@ -39,4 +39,4 @@ def mock_builtins():
         "open":Mock(),
         "print":Mock()
     }
-    return MockManager(target_path="builtins",method_behaviors=default_behaviors)
+    return MockContextManager(target_path="builtins",method_behaviors=default_behaviors)
