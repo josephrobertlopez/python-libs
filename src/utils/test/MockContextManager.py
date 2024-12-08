@@ -1,10 +1,10 @@
 from typing import Mapping
-from src.utils.test.MockStrategies import MethodPatcherStrategy, AttributePatcherStrategy, MappingPatcherStrategy
+from src.utils.test.MockPatchingStrategies import MethodPatcherStrategy, AttributePatcherStrategy, MappingPatcherStrategy
 
 from contextlib import contextmanager
 
 
-class MockManager:
+class MockContextManager:
     """
     Manages patching multiple methods, attributes, or dictionary-like objects in a module or class.
     """
