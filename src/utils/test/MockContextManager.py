@@ -1,8 +1,10 @@
 from contextlib import contextmanager
 from unittest.mock import Mock
-
-from src.utils.test.MockPatchingStrategies import AttributePatcherStrategy, MappingPatcherStrategy, \
-    MethodPatcherStrategy
+from src.utils.test.MockPatchingStrategies import (
+    AttributePatcherStrategy,
+    MappingPatcherStrategy,
+    MethodPatcherStrategy,
+)
 
 
 class MockContextManager:
