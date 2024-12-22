@@ -43,25 +43,6 @@ def mock_sound_loading_error(mocker):
         "pygame.mixer.Sound", side_effect=pygame.error("Error loading sound")
     )
 
-
-@pytest.fixture
-def mock_file_staging(mocker):
-    """Generic fixture to mock file staging components."""
-    # Mock os.makedirs to simulate creating the log directory
-    mock_makedirs = mocker.patch("os.makedirs", autospec=True)
-
-    mock_path_exists = mocker.patch("os.path.exists", autospec=True)
-    mock_path_join = mocker.patch("os.path.join", autospec=True)
-
-    # Mock open to simulate creating the log file
-    mock_open = mocker.patch("builtins.open", autospec=True)
-
-    # Customize path joining for tests
-    mock_path_join.side_effect = lambda *args: "/".join(args)
-
-    return mock_makedirs, mock_path_exists, mock_path_join, mock_open
-
-
 @pytest.fixture
 def mock_logging():
     """Fixture to mock logging setup."""
