@@ -111,8 +111,5 @@ class MockContextManager:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exits the context, stopping all patches."""
-        # for name, patcher in list(self.active_patchers.items()):
-        #     patcher.stop()
-        #     self.active_patchers.pop(name, None)
-        #     self.active_mocks.pop(name, None)
-        pass
+        for name, patcher in list(self.active_patchers.items()):
+            patcher.stop()
