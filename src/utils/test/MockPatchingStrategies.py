@@ -25,7 +25,7 @@ class MethodPatcherStrategy(PatcherStrategy):
             elif callable(behavior):
                 patcher = patch(full_path, side_effect=behavior, create=True)
             else:
-                patcher = patch(full_path, return_value=behavior, autospec=True)
+                patcher = patch(full_path, return_value=behavior)
 
             return patcher
         except Exception as e:
