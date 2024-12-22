@@ -34,7 +34,7 @@ class LoggingConfigSingleton:
     @staticmethod
     def _initialize_log_files(log_dir, log_files) -> None:
         """Ensure log files exist."""
-        os.makedirs(log_dir)
+        os.makedirs(log_dir,exist_ok=True)
         for log_file in log_files:
             log_file_path = os.path.join(log_dir, log_file)
             if not os.path.exists(log_file_path):
