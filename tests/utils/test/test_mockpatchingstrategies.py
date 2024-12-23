@@ -1,9 +1,11 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
-    MethodPatcherStrategy,
+    MethodPatcherStrategy, PatcherStrategy,
 )
 
 
@@ -42,3 +44,11 @@ def test_mapping_patcher(mock_context):
 
     assert mock_dict["key"] == "value"  # Testing mock dict behavior
     patcher.stop()
+
+
+def test_patcher_strategy_abstract(mock_context):
+    """Test that the base PatcherStrategy raises NotImplementedError."""
+    strategy = PatcherStrategy()
+
+    with pytest.raises(NotImplementedError):
+        strategy.patch(mock_context["target_path"], "name", "value")
