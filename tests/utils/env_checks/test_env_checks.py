@@ -10,7 +10,7 @@ def test_get_running_in_pyinstaller(mock_sys):
     """Test get_running_in_pyinstaller when running inside PyInstaller."""
     with mock_sys:
         path = get_running_in_pyinstaller()  # Assuming this checks sys.executable
-        assert path == 'fake_executable_path'
+        assert path.return_value == 'fake_executable_path'
 
     with mock_sys.remove_patch("frozen"), pytest.raises(EnvironmentError):
         get_running_in_pyinstaller()
