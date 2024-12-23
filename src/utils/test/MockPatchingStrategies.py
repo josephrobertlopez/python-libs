@@ -32,6 +32,9 @@ class MethodPatcherStrategy(PatcherStrategy):
             raise ValueError(f"Failed to patch {full_path}: {e}")
 
 
+from unittest.mock import patch, MagicMock
+
+
 class AttributePatcherStrategy(PatcherStrategy):
     """Strategy for patching attributes."""
 
@@ -39,18 +42,23 @@ class AttributePatcherStrategy(PatcherStrategy):
         full_path = f"{target_path}.{name}"
 
         try:
-            if isinstance(value, Mapping):
-                mock_attr = MagicMock()
-                mock_attr.__getitem__.side_effect = lambda key: value[key]
-                mock_attr.__setitem__.side_effect = lambda key, value_: value.__setitem__(key, value_)
-                mock_attr.__contains__.side_effect = lambda key: key in value
-                patcher = patch(full_path, new=mock_attr, create=True)
-            else:
-                patcher = patch(full_path, new=value, create=True)
+            # Create a MagicMock and set its return_value if it's not callable or a Mapping
+            mock_attr = MagicMock()
 
+            # If the behavior (value) is a callable, it will be used as the side effect
+            if callable(value):
+                mock_attr.side_effect = value
+            else:
+                mock_attr.return_value = value
+
+            # Patch the attribute with the mock object
+            patcher = patch(full_path, new=mock_attr, create=True)
+
+            # Return the patcher object
             return patcher
         except Exception as e:
             raise ValueError(f"Failed to patch {full_path}: {e}")
+
 
 class MappingPatcherStrategy(PatcherStrategy):
     """Strategy for patching dictionary-like objects."""
