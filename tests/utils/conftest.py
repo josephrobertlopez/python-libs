@@ -15,10 +15,7 @@ def mock_pygame_init(mocker):
 @pytest.fixture
 def mock_get_init(mocker):
     """Fixture to mock pygame.mixer.get_init."""
-    return mocker.patch(
-        "pygame.mixer.get_init",
-        return_value=True,
-        autospec=True)
+    return mocker.patch("pygame.mixer.get_init", return_value=True, autospec=True)
 
 
 @pytest.fixture
@@ -43,8 +40,9 @@ def mock_sound_loading_error(mocker):
         "pygame.mixer.Sound", side_effect=pygame.error("Error loading sound")
     )
 
+
 @pytest.fixture
 def mock_logging():
     """Fixture to mock logging setup."""
-    return MockContextManager("logging",{"getLogger":Mock(),"config.fileConfig":Mock()})
-
+    mock_behaviors = {"getLogger": Mock(), "config.fileConfig": Mock()}
+    return MockContextManager("logging", method_behaviors=mock_behaviors)

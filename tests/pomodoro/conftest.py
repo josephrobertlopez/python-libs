@@ -11,5 +11,4 @@ def mock_pomodoro_deps():
         "get_env_var": SOUND_FILE,
         "play_alarm_sound": None,
     }
-    return MockContextManager(target_path=mock_path,
-                       method_behaviors=default_behaviors)
+    return MockContextManager(target_path=mock_path, method_behaviors=default_behaviors)

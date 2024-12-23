@@ -19,7 +19,9 @@ class MethodPatcherStrategy(PatcherStrategy):
             if isinstance(behavior, Mapping):
                 mock_method = MagicMock()
                 mock_method.__getitem__.side_effect = lambda key: behavior[key]
-                mock_method.__setitem__.side_effect = lambda key, value: behavior.__setitem__(key, value)
+                mock_method.__setitem__.side_effect = (
+                    lambda key, value: behavior.__setitem__(key, value)
+                )
                 mock_method.__contains__.side_effect = lambda key: key in behavior
                 patcher = patch(full_path, new=mock_method, create=True)
             elif callable(behavior):
@@ -30,9 +32,6 @@ class MethodPatcherStrategy(PatcherStrategy):
             return patcher
         except Exception as e:
             raise ValueError(f"Failed to patch {full_path}: {e}")
-
-
-from unittest.mock import patch, MagicMock
 
 
 class AttributePatcherStrategy(PatcherStrategy):
@@ -69,7 +68,9 @@ class MappingPatcherStrategy(PatcherStrategy):
         try:
             mock_dict = MagicMock()
             mock_dict.__getitem__.side_effect = lambda key: behavior[key]
-            mock_dict.__setitem__.side_effect = lambda key, value: behavior.__setitem__(key, value)
+            mock_dict.__setitem__.side_effect = lambda key, value: behavior.__setitem__(
+                key, value
+            )
             mock_dict.__contains__.side_effect = lambda key: key in behavior
             patcher = patch(full_path, new=mock_dict, create=True)
 

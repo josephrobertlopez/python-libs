@@ -12,7 +12,13 @@ class MockContextManager:
     Manages patching multiple methods, attributes, or dictionary-like objects in a module or class.
     """
 
-    def __init__(self, target_path, method_behaviors=None, attribute_values=None, mapping_values=None):
+    def __init__(
+        self,
+        target_path,
+        method_behaviors=None,
+        attribute_values=None,
+        mapping_values=None,
+    ):
         if not isinstance(target_path, str):
             raise TypeError(f"target_path should be a string, got {type(target_path)}")
 
@@ -49,7 +55,7 @@ class MockContextManager:
             raise KeyError(f"'{name}' is not patched.")
 
         old_patcher = self.active_patchers.pop(name)
-        old_mock = self.active_mocks.pop(name)
+        self.active_mocks.pop(name)
 
         old_patcher.stop()
 

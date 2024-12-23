@@ -21,8 +21,7 @@ def test_play_alarm_sound_success(
     mock_get_busy.assert_called()
 
 
-def test_play_alarm_sound_mixer_not_initialized(
-        mock_get_init, mock_pygame_init):
+def test_play_alarm_sound_mixer_not_initialized(mock_get_init, mock_pygame_init):
     """Test play_alarm_sound when mixer is not initialized."""
     # Simulate mixer not initialized
     mock_get_init.return_value = False

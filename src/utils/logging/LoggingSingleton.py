@@ -17,9 +17,14 @@ class LoggingConfigSingleton:
             cls._instance = super(LoggingConfigSingleton, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, config_path: str, log_dir: str = "resources/logs", log_files: List[str] = None):
+    def __init__(
+        self,
+        config_path: str,
+        log_dir: str = "resources/logs",
+        log_files: List[str] = None,
+    ):
         """Initialize logger setup."""
-        if hasattr(self, '_initialized') and self._initialized:
+        if hasattr(self, "_initialized") and self._initialized:
             return  # Avoid reinitialization
         self._initialized = True  # Mark as initialized
         self.config_path = config_path
@@ -34,7 +39,7 @@ class LoggingConfigSingleton:
     @staticmethod
     def _initialize_log_files(log_dir, log_files) -> None:
         """Ensure log files exist."""
-        os.makedirs(log_dir,exist_ok=True)
+        os.makedirs(log_dir, exist_ok=True)
         for log_file in log_files:
             log_file_path = os.path.join(log_dir, log_file)
             if not os.path.exists(log_file_path):
@@ -64,8 +69,7 @@ class LoggingConfigSingleton:
 
     def setup(self) -> None:
         """Perform the full logger setup."""
-        self._initialize_log_files(self.log_dir,self.log_files)
+        self._initialize_log_files(self.log_dir, self.log_files)
         self.load_logging_config(self.config_path)
         self.redirect_print_to_logger()
         self._redirect_stdout_stderr_to_logger()
-

@@ -4,11 +4,15 @@ from src.utils.logging.LoggingSingleton import LoggingConfigSingleton
 
 @pytest.fixture
 def init_LoggingConfigSingleton():
-    logging_setup = LoggingConfigSingleton(config_path="path/to/config.ini", log_files=["app.log"])
+    logging_setup = LoggingConfigSingleton(
+        config_path="path/to/config.ini", log_files=["app.log"]
+    )
     return logging_setup
 
 
-def test_initialize_log_files(init_LoggingConfigSingleton, mock_os, mock_builtins, mock_logging):
+def test_initialize_log_files(
+    init_LoggingConfigSingleton, mock_os, mock_builtins, mock_logging
+):
     """Test that initialize_log_files creates a single log file."""
     logging_setup = init_LoggingConfigSingleton
     mock_open = mock_builtins.get_mock("open")

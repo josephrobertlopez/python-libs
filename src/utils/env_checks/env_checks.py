@@ -12,8 +12,8 @@ def get_running_in_pyinstaller() -> str:
     Raises:
         EnvironmentError: If not running in a PyInstaller bundle.
     """
-    if getattr(sys, "frozen",False):
-        return sys.executable  # Return the path to the executable
+    if getattr(sys, "frozen", False):
+        return sys.executable
     raise EnvironmentError("Not running in a PyInstaller bundle.")
 
 

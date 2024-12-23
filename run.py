@@ -1,8 +1,7 @@
 import argparse
 import importlib
-from src.utils.env_checks.env_checks import (load_environment_variables,
-                                             get_env_var)
-from  src.utils.logging.LoggingSingleton import LoggingConfigSingleton
+from src.utils.env_checks.env_checks import load_environment_variables, get_env_var
+from src.utils.logging.LoggingSingleton import LoggingConfigSingleton
 
 
 def main(module_name: str, module_args: list) -> None:
@@ -25,9 +24,8 @@ if __name__ == "__main__":
     logger_setup.setup()
     parser = argparse.ArgumentParser(description="Run the specified module.")
     parser.add_argument(
-        "module",
-        type=str,
-        help="The name of the module to run (e.g., 'pomodoro'.")
+        "module", type=str, help="The name of the module to run (e.g., 'pomodoro'."
+    )
 
     # Capture any additional arguments
     parser.add_argument(

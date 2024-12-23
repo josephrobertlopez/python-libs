@@ -25,18 +25,18 @@ def mock_sys():
 
 @pytest.fixture
 def mock_os():
-    default_behaviors = {"path.exists": True,
-                         "environ": {"TEST_VAR": "test_value"},
-                         "path.join": lambda *args: "/".join(args),
-                         "makedirs": True,
-                         }
+    default_behaviors = {
+        "path.exists": True,
+        "environ": {"TEST_VAR": "test_value"},
+        "path.join": lambda *args: "/".join(args),
+        "makedirs": True,
+    }
     return MockContextManager(target_path="os", method_behaviors=default_behaviors)
 
 
 @pytest.fixture
 def mock_builtins():
-    default_behaviors = {
-        "open":Mock(),
-        "print":Mock()
-    }
-    return MockContextManager(target_path="builtins",method_behaviors=default_behaviors)
+    default_behaviors = {"open": Mock(), "print": Mock()}
+    return MockContextManager(
+        target_path="builtins", method_behaviors=default_behaviors
+    )
