@@ -1,7 +1,7 @@
 import argparse
 import importlib
 from src.utils.env_checks.env_checks import load_environment_variables, get_env_var
-from src.utils.logging.LoggingSingleton import LoggingConfigSingleton
+from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
 
 
 def main(module_name: str, module_args: list) -> None:

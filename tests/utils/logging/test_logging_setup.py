@@ -1,5 +1,5 @@
 import pytest
-from src.utils.logging.LoggingSingleton import LoggingConfigSingleton
+from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
 
 
 @pytest.fixture
