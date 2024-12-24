@@ -1,18 +1,20 @@
 from unittest.mock import patch, MagicMock
 from typing import Mapping
 
-
-class PatcherStrategy:
-    """Base class for all patching strategies."""
-
-    def patch(self, target_path, name, value):
-        raise NotImplementedError
+from src.utils.abstract.abstract_strategy import AbstractStrategy
 
 
-class MethodPatcherStrategy(PatcherStrategy):
+class MethodPatcherStrategy(AbstractStrategy):
     """Strategy for patching methods."""
 
-    def patch(self, target_path, name, behavior):
+    def execute(self, *args):
+        """Patches a method on the target."""
+        if len(args) != 3:
+            raise ValueError(
+                "MethodPatcherStrategy expects 3 arguments: target_path, name, and behavior."
+            )
+
+        target_path, name, behavior = args
         full_path = f"{target_path}.{name}"
         if isinstance(behavior, Mapping):
             mock_method = MagicMock()
@@ -26,35 +28,45 @@ class MethodPatcherStrategy(PatcherStrategy):
             patcher = patch(full_path, side_effect=behavior, create=True)
         else:
             patcher = patch(full_path, return_value=behavior)
-
         return patcher
 
 
-class AttributePatcherStrategy(PatcherStrategy):
+class AttributePatcherStrategy(AbstractStrategy):
     """Strategy for patching attributes."""
 
-    def patch(self, target_path, name, value):
+    def execute(self, *args):
+        """Patches an attribute on the target."""
+        if len(args) != 3:
+            raise ValueError(
+                "AttributePatcherStrategy expects 3 arguments: target_path, name, and value."
+            )
+
+        target_path, name, value = args
         full_path = f"{target_path}.{name}"
 
         # Create a MagicMock and set its return_value if it's not callable or a Mapping
         mock_attr = MagicMock()
 
-        # If the behavior (value) is a callable, it will be used as the side effect
         if callable(value):
             mock_attr.side_effect = value
         else:
             mock_attr.return_value = value
 
-        # Patch the attribute with the mock object
         patcher = patch(full_path, new=mock_attr, create=True)
-
         return patcher
 
 
-class MappingPatcherStrategy(PatcherStrategy):
+class MappingPatcherStrategy(AbstractStrategy):
     """Strategy for patching dictionary-like objects."""
 
-    def patch(self, target_path, name, behavior):
+    def execute(self, *args):
+        """Patches a dictionary-like object."""
+        if len(args) != 3:
+            raise ValueError(
+                "MappingPatcherStrategy expects 3 arguments: target_path, name, and behavior."
+            )
+
+        target_path, name, behavior = args
         full_path = f"{target_path}.{name}"
 
         mock_dict = MagicMock()
@@ -64,5 +76,4 @@ class MappingPatcherStrategy(PatcherStrategy):
         )
         mock_dict.__contains__.side_effect = lambda key: key in behavior
         patcher = patch(full_path, new=mock_dict, create=True)
-
         return patcher

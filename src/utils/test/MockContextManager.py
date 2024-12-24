@@ -43,7 +43,7 @@ class MockContextManager:
         """Applies patches using the specified strategy."""
         strategy = self.strategies[patch_type]
         for name, value in patch_items.items():
-            patcher = strategy.patch(self.target_path, name, value)
+            patcher = strategy.execute(self.target_path, name, value)
             mock_obj = patcher.start()
             self.active_mocks[name] = mock_obj
             self.active_patchers[name] = patcher
@@ -62,7 +62,7 @@ class MockContextManager:
         patch_type = self._get_patch_type(name)
         strategy = self.strategies[patch_type]
 
-        new_patcher = strategy.patch(self.target_path, name, new_value)
+        new_patcher = strategy.execute(self.target_path, name, new_value)
         new_mock = new_patcher.start()
 
         self.active_patchers[name] = new_patcher
