@@ -46,13 +46,13 @@ def test_update_patch(mock_context):
         mock_context["target_path"],
         mock_context["method_behaviors"],
         mock_context["attribute_values"],
-        mock_context["mapping_values"]
+        mock_context["mapping_values"],
     ) as context:
         with context.update_patch("method_name", lambda x: x * 3) as new_mock:
             assert new_mock(4) == 12  # Testing the updated patch
-        with context.update_patch("attr_name",420) as new_mock:
+        with context.update_patch("attr_name", 420) as new_mock:
             assert new_mock.return_value == 420
-        with context.update_patch("map_name",{}) as new_mock:
+        with context.update_patch("map_name", {}) as new_mock:
             assert new_mock
         with pytest.raises(KeyError, match="is not patched."):
             with context.update_patch("not_patched_method", lambda x: x + 3):
@@ -65,7 +65,7 @@ def test_remove_patch(mock_context):
         mock_context["target_path"],
         mock_context["method_behaviors"],
         mock_context["attribute_values"],
-        mock_context["mapping_values"]
+        mock_context["mapping_values"],
     ) as context:
         with context.remove_patch("method_name"):
             assert "method_name" not in context.active_patchers
