@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
 
@@ -24,8 +26,10 @@ def test_initialize_log_files(
         mock_open.assert_called_once_with("resources/logs/app.log", "w")
 
     # if log file path exists, don't open
-    with mock_os, mock_builtins:
+    with mock_os, mock_builtins, mock_logging:
         logging_setup.setup()
+        sys.stderr.write("Test stderr redirection.\n")
+        sys.stderr.flush()
         mock_open.assert_not_called()
 
     with mock_logging.remove_patch("config.fileConfig"), pytest.raises(RuntimeError):
