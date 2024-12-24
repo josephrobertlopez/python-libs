@@ -102,7 +102,6 @@ class MockContextManager:
             return "attribute"
         if name in self.mapping_values:
             return "mapping"
-        raise KeyError(f"'{name}' is not patched.")
 
     def get_mock(self, name):
         """Retrieves the mock object for a specific method, attribute, or dict."""
