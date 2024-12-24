@@ -5,7 +5,8 @@ import pytest
 from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
-    MethodPatcherStrategy, PatcherStrategy,
+    MethodPatcherStrategy,
+    PatcherStrategy,
 )
 
 
