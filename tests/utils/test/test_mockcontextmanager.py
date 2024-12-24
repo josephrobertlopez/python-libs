@@ -1,8 +1,11 @@
+import pytest
+
 from src.utils.test.MockContextManager import MockContextManager
 
 
 def test_mock_context_manager(mock_context):
     """Test the MockContextManager with method, attribute, and mapping patches."""
+    # Happy Path
     with MockContextManager(
         mock_context["target_path"],
         mock_context["method_behaviors"],
@@ -26,6 +29,16 @@ def test_mock_context_manager(mock_context):
         mock_map.__getitem__.side_effect = lambda key: "new_value"
         assert mock_map["key"] == "new_value"
 
+    # Negative Path
+    mock_context["target_path"] = None
+    with pytest.raises(TypeError, match="target_path should be a string"):
+        MockContextManager(
+            mock_context["target_path"],
+            mock_context["method_behaviors"],
+            mock_context["attribute_values"],
+            mock_context["mapping_values"],
+        )
+
 
 def test_update_patch(mock_context):
     """Test the update_patch method of MockContextManager."""
@@ -33,9 +46,17 @@ def test_update_patch(mock_context):
         mock_context["target_path"],
         mock_context["method_behaviors"],
         mock_context["attribute_values"],
+        mock_context["mapping_values"]
     ) as context:
         with context.update_patch("method_name", lambda x: x * 3) as new_mock:
             assert new_mock(4) == 12  # Testing the updated patch
+        with context.update_patch("attr_name",420) as new_mock:
+            assert new_mock.return_value == 420
+        with context.update_patch("map_name",{}) as new_mock:
+            assert new_mock
+        with pytest.raises(KeyError, match="is not patched."):
+            with context.update_patch("not_patched_method", lambda x: x + 3):
+                pass
 
 
 def test_remove_patch(mock_context):
@@ -44,6 +65,10 @@ def test_remove_patch(mock_context):
         mock_context["target_path"],
         mock_context["method_behaviors"],
         mock_context["attribute_values"],
+        mock_context["mapping_values"]
     ) as context:
         with context.remove_patch("method_name"):
             assert "method_name" not in context.active_patchers
+        with pytest.raises(KeyError, match="is not patched."):
+            with context.remove_patch("not_patched_method"):
+                pass
