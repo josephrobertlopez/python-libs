@@ -20,13 +20,17 @@ class AbstractSingleton(ABC):
                     cls._instances[cls] = super(AbstractSingleton, cls).__new__(
                         cls, *args, **kwargs
                     )
-                    cls._instances[cls]._setup_called = False  # Initialize the setup called flag
+                    cls._instances[cls]._setup_called = (
+                        False  # Initialize the setup called flag
+                    )
         return cls._instances[cls]
 
     def setup(self):
         """Setup method that can only be called once per instance."""
         if self._setup_called:
-            raise RuntimeError(f"{self.__class__.__name__} setup() has already been called.")
+            raise RuntimeError(
+                f"{self.__class__.__name__} setup() has already been called."
+            )
         self._setup_called = True
         self._setup()
 

@@ -1,12 +1,9 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
     MethodPatcherStrategy,
-    AbstractStrategy,
 )
 
 
