@@ -8,6 +8,7 @@ class PygameMixerAudio(AbstractSingleton):
     def __init__(self):
         if not self.test_initialization():
             raise Exception("More than one singleton attempted to be created")
+        self.setup()
 
     def _setup(self) -> None:
         """Initialize the pygame mixer and check for successful initialization."""
@@ -54,9 +55,11 @@ class PygameMixerAudio(AbstractSingleton):
     def toggle_sound_on_or_off() -> None:
         """Play or pause sound."""
         if pygame.mixer.music.get_busy():
-            pygame.mixer.music.unpause()
-        else:
+            print("Music is playing. Pausing...")  # Debugging line
             pygame.mixer.music.pause()
+        else:
+            print("Music is not playing. Playing...")  # Debugging line
+            pygame.mixer.music.play()
 
     @staticmethod
     def set_volume(volume: float) -> None:
