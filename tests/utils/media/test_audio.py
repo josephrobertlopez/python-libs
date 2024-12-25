@@ -4,12 +4,12 @@ from unittest.mock import patch, MagicMock
 from src.utils.abstract.abstract_singleton import AbstractSingleton
 from src.utils.media.audio import PygameMixerAudio
 
-
 @pytest.fixture
 def pygame_mixer_audio():
-    """Fixture to instantiate the PygameMixerAudio singleton."""
-    audio_instance = PygameMixerAudio()
-    return audio_instance
+    with patch('src.utils.media.audio.PygameMixerAudio.setup') as mock_setup:
+        mock_setup.return_value = None  # Prevent the setup from raising an exception
+        pygame.mixer.init()
+        yield PygameMixerAudio()  # Use the mocked instance
 def test_play_alarm_sound_success(pygame_mixer_audio):
     """Test that the alarm sound is played successfully."""
     with patch('pygame.mixer.Sound') as mock_sound:
@@ -40,22 +40,24 @@ def test_is_sound_playing_false(pygame_mixer_audio):
     with patch('pygame.mixer.music.get_busy', return_value=False):
         assert pygame_mixer_audio.is_sound_playing() is False
 
-
 def test_toggle_sound_on_or_off_play(pygame_mixer_audio):
     """Test the toggle_sound_on_or_off method when the sound is paused."""
+    pygame.mixer.init()  # Ensure pygame.mixer is initialized
     with patch('pygame.mixer.music.get_busy', return_value=False):
         with patch('pygame.mixer.music.play') as mock_play:
             pygame_mixer_audio.toggle_sound_on_or_off()  # Should call play
             mock_play.assert_called_once()
+            print(f"play called: {mock_play.call_count}")  # Add this to check the call count
 
 
 def test_toggle_sound_on_or_off_pause(pygame_mixer_audio):
     """Test the toggle_sound_on_or_off method when sound is playing."""
+    pygame.mixer.init()  # Ensure pygame.mixer is initialized
     with patch('pygame.mixer.music.get_busy', return_value=True):
         with patch('pygame.mixer.music.pause') as mock_pause:
             pygame_mixer_audio.toggle_sound_on_or_off()  # Should call pause
             mock_pause.assert_called_once()
-
+            print(f"pause called: {mock_pause.call_count}")  # Add this to check the call count
 
 def test_set_volume_success(pygame_mixer_audio):
     """Test that the volume is set correctly."""
@@ -93,3 +95,4 @@ def test_load_sound_failure(pygame_mixer_audio):
 
         with pytest.raises(RuntimeError, match="Error loading sound: Sound error"):
             pygame_mixer_audio.load_sound('sound.wav')
+
