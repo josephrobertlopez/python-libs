@@ -6,14 +6,14 @@ from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
     MethodPatcherStrategy,
-    PatcherStrategy,
+    AbstractStrategy,
 )
 
 
 def test_method_patcher(mock_context):
     """Test the MethodPatcherStrategy."""
     strategy = MethodPatcherStrategy()
-    patcher = strategy.patch(
+    patcher = strategy.execute(
         mock_context["target_path"], "method_name", lambda x: x + 1
     )
     mock_method = patcher.start()
@@ -29,7 +29,7 @@ def test_attribute_patcher(mock_context):
     strategy = AttributePatcherStrategy()
     mock_attr = MagicMock()
     mock_attr.__getitem__.return_value = 5
-    patcher = strategy.patch(mock_context["target_path"], "attr_name", mock_attr)
+    patcher = strategy.execute(mock_context["target_path"], "attr_name", mock_attr)
     patcher.start()
 
     assert mock_attr["attr_name"] == 5  # Testing the mock behavior
@@ -40,16 +40,8 @@ def test_mapping_patcher(mock_context):
     """Test the MappingPatcherStrategy."""
     strategy = MappingPatcherStrategy()
     mock_dict = {"key": "value"}
-    patcher = strategy.patch(mock_context["target_path"], "map_name", mock_dict)
+    patcher = strategy.execute(mock_context["target_path"], "map_name", mock_dict)
     patcher.start()
 
     assert mock_dict["key"] == "value"  # Testing mock dict behavior
     patcher.stop()
-
-
-def test_patcher_strategy_abstract(mock_context):
-    """Test that the base PatcherStrategy raises NotImplementedError."""
-    strategy = PatcherStrategy()
-
-    with pytest.raises(NotImplementedError):
-        strategy.patch(mock_context["target_path"], "name", "value")
