@@ -46,3 +46,12 @@ class AbstractSingleton(ABC):
         with cls._lock:
             if cls in cls._instances:
                 del cls._instances[cls]
+
+
+class SampleConcreteSingleton(AbstractSingleton):
+    """Concrete class that implements the abstract singleton setup."""
+
+    def _setup(self):
+        """Setup method implementation."""
+        # Example setup process
+        self._initialized = True
