@@ -8,9 +8,8 @@ class PygameMixerAudio(AbstractSingleton):
     def __init__(self):
         if not self.test_initialization():
             raise Exception("More than one singleton attempted to be created")
-        self.setup()
 
-    def setup(self) -> None:
+    def _setup(self) -> None:
         """Initialize the pygame mixer and check for successful initialization."""
         pygame.mixer.init()
         if not pygame.mixer.get_init():
