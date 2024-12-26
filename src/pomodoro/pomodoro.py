@@ -47,7 +47,7 @@ class PomodoroRunner(AbstractRunner):
         SOUND_FILE = get_env_var("SOUND_FILE")
 
         # Initialize and play the alarm sound
-        audio_player = PygameMixerAudio()
+        audio_player = PygameMixerAudioSingleton()
         audio_player.play_alarm_sound(SOUND_FILE)
         print("Pomodoro session complete. Time to take a break!")
 
