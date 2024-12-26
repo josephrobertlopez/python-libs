@@ -3,7 +3,7 @@ import time
 from src.utils.abstract.abstract_singleton import AbstractSingleton
 
 
-class PygameMixerAudio(AbstractSingleton):
+class PygameMixerAudioSingleton(AbstractSingleton):
 
     def __init__(self):
         if not self.test_initialization():

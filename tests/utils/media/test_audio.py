@@ -7,7 +7,20 @@ from src.utils.test.MockPatchingStrategies import (
     MappingPatcherStrategy,
     MethodPatcherStrategy,
 )
-from src.utils.media.audio import PygameMixerAudio
+from src.utils.media.audio import PygameMixerAudioSingleton
+import pytest
+from pygame import error as pygame_error
+from unittest.mock import MagicMock, patch, Mock
+
+import pygame
+from src.utils.abstract.abstract_singleton import AbstractSingleton
+from src.utils.test.MockContextManager import MockContextManager
+from src.utils.test.MockPatchingStrategies import (
+    AttributePatcherStrategy,
+    MappingPatcherStrategy,
+    MethodPatcherStrategy,
+)
+from src.utils.media.audio import PygameMixerAudioSingleton
 import pytest
 from pygame import error as pygame_error
 from unittest.mock import MagicMock, patch, Mock
@@ -18,12 +31,13 @@ def mock_singleton_setup():
     """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
     # Patch the setup method in AbstractSingleton to prevent the singleton check
     with patch.object(AbstractSingleton, "setup", MagicMock()) as mock_setup:
+        # Ensure the singleton is set up before each test
+        mock_setup()
         yield mock_setup
         # After each test, delete the setup to ensure it does not interfere with other tests
         del mock_setup
 
 
-# Your fixture
 @pytest.fixture
 def pygame_mixer_audio():
     """Fixture to provide a PygameMixerAudio instance with mocked dependencies."""
@@ -43,14 +57,27 @@ def pygame_mixer_audio():
         class_values={"Sound": pygame.mixer.Sound}  # Pass the actual class
     )
     return manager
-def test_play_alarm_sound_success(pygame_mixer_audio):
-    """Test that the alarm sound is played successfully."""
-    mixer = PygameMixerAudio()
+
+@pytest.fixture
+def mixer(pygame_mixer_audio):
+    """Fixture to initialize PygameMixerAudio instance."""
+    # Initialize PygameMixerAudio instance before each test
+    mixer = PygameMixerAudioSingleton()
+    # Ensure the singleton is set up in the context
     with pygame_mixer_audio:
+        yield mixer
+
+def test_play_alarm_sound_success(mixer, pygame_mixer_audio):
+    """Test that the alarm sound is played successfully."""
+    with pygame_mixer_audio:
+        # Call the method that plays the sound
         mixer.play_alarm_sound("alarm.wav")
+        # Get the mock for pygame.mixer.Sound and assert it was called correctly
         sound_mock = pygame_mixer_audio.get_mock("Sound")
         sound_mock.assert_called_with("alarm.wav")
+        # Ensure the play method was called once
         sound_mock.return_value.play.assert_called_once()
+
 #
 #
 # def test_play_alarm_sound_failure(pygame_mixer_audio):

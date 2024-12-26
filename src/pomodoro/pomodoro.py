@@ -3,7 +3,7 @@ import time
 
 from src.utils.abstract.abstract_runner import AbstractRunner
 from src.utils.env_checks.env_checks import get_env_var
-from src.utils.media.audio import PygameMixerAudio
+from src.utils.media.audio import PygameMixerAudioSingleton
 
 
 class PomodoroRunner(AbstractRunner):
