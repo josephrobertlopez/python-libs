@@ -9,7 +9,7 @@ from src.utils.abstract.abstract_singleton import AbstractSingleton
 def mock_singleton_setup():
     """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
     # Patch the setup method in AbstractSingleton to prevent the singleton check
-    with patch.object(AbstractSingleton, 'setup', MagicMock()) as mock_setup:
+    with patch.object(AbstractSingleton, "setup", MagicMock()) as mock_setup:
         yield mock_setup
         # After each test, delete the setup to ensure it does not interfere with other tests
         del mock_setup
@@ -18,9 +18,9 @@ def mock_singleton_setup():
 @pytest.fixture
 def pygame_mixer_audio():
     """Fixture to mock pygame.mixer and initialize PygameMixerAudio."""
-    with patch("pygame.mixer.init") as mock_init, \
-         patch("pygame.mixer.music") as mock_music, \
-         patch("pygame.mixer.Sound") as mock_sound:
+    with patch("pygame.mixer.init") as mock_init, patch(
+        "pygame.mixer.music"
+    ) as mock_music, patch("pygame.mixer.Sound") as mock_sound:
         mock_init.return_value = None  # Mock the pygame.mixer initialization
         mock_music.get_busy.return_value = False  # Simulate no music playing
         mock_sound.return_value.play = MagicMock()  # Mock the play method for sounds

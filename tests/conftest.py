@@ -41,11 +41,13 @@ def mock_builtins():
         target_path="builtins", method_behaviors=default_behaviors
     )
 
+
 @pytest.fixture
 def mock_logging():
     """Fixture to mock logging setup."""
     mock_behaviors = {"getLogger": Mock(), "config.fileConfig": Mock()}
     return MockContextManager("logging", method_behaviors=mock_behaviors)
+
 
 @pytest.fixture
 def mock_context():
@@ -56,6 +58,7 @@ def mock_context():
         "attribute_values": {"attr_name": 42},
         "mapping_values": {"map_name": {"key": "value"}},
     }
+
 
 @pytest.fixture
 def mock_pomodoro_deps():
