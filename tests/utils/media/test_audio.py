@@ -1,29 +1,10 @@
-import pygame
-
-from src.utils.abstract.abstract_singleton import AbstractSingleton
-from src.utils.test.MockContextManager import MockContextManager
-from src.utils.test.MockPatchingStrategies import (
-    AttributePatcherStrategy,
-    MappingPatcherStrategy,
-    MethodPatcherStrategy,
-)
-from src.utils.media.audio import PygameMixerAudioSingleton
-import pytest
-from pygame import error as pygame_error
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, patch
 
 import pygame
 from src.utils.abstract.abstract_singleton import AbstractSingleton
 from src.utils.test.MockContextManager import MockContextManager
-from src.utils.test.MockPatchingStrategies import (
-    AttributePatcherStrategy,
-    MappingPatcherStrategy,
-    MethodPatcherStrategy,
-)
 from src.utils.media.audio import PygameMixerAudioSingleton
 import pytest
-from pygame import error as pygame_error
-from unittest.mock import MagicMock, patch, Mock
 
 
 @pytest.fixture(autouse=True)
@@ -44,19 +25,17 @@ def pygame_mixer_audio():
     # Set up the mock behaviors for methods you want to mock
     method_behaviors = {
         "init": MagicMock(),
-        "music.get_busy": MagicMock(return_value=False),
+        "music.get_busy": False,
         "music.play": MagicMock(),
         "music.pause": MagicMock(),
-        "music.set_volume": MagicMock(),
+        "Sound": MagicMock(),
     }
-
-    # Using MockContextManager to patch pygame.mixer.Sound (actual class)
     manager = MockContextManager(
         target_path="pygame.mixer",
         method_behaviors=method_behaviors,
-        class_values={"Sound": pygame.mixer.Sound}  # Pass the actual class
     )
     return manager
+
 
 @pytest.fixture
 def mixer(pygame_mixer_audio):
@@ -67,47 +46,52 @@ def mixer(pygame_mixer_audio):
     with pygame_mixer_audio:
         yield mixer
 
-def test_play_alarm_sound_success(mixer, pygame_mixer_audio):
-    """Test that the alarm sound is played successfully."""
-    with pygame_mixer_audio:
-        # Call the method that plays the sound
-        mixer.play_alarm_sound("alarm.wav")
-        # Get the mock for pygame.mixer.Sound and assert it was called correctly
-        sound_mock = pygame_mixer_audio.get_mock("Sound")
-        sound_mock.assert_called_with("alarm.wav")
-        # Ensure the play method was called once
-        sound_mock.return_value.play.assert_called_once()
 
-#
-#
-# def test_play_alarm_sound_failure(pygame_mixer_audio):
-#     """Test that an error is raised when playing the alarm sound fails."""
-#     manager = MockContextManager(
-#         target_path="pygame.mixer",
-#         method_behaviors={"Sound": MagicMock(side_effect=pygame_error("Sound error"))},
-#     )
-#     with manager:
-#         with pytest.raises(RuntimeError, match="Error playing sound: Sound error"):
-#             pygame_mixer_audio.play_alarm_sound("alarm.wav")
-#
-#
-# def test_is_sound_playing_true(pygame_mixer_audio):
-#     """Test that is_sound_playing returns True when sound is playing."""
-#     manager = MockContextManager(
-#         target_path="pygame.mixer.music", method_behaviors={"get_busy": MagicMock(return_value=True)}
-#     )
-#     with manager:
-#         assert pygame_mixer_audio.is_sound_playing() is True
-#
-#
-# def test_is_sound_playing_false(pygame_mixer_audio):
-#     """Test that is_sound_playing returns False when no sound is playing."""
-#     manager = MockContextManager(
-#         target_path="pygame.mixer.music", method_behaviors={"get_busy": MagicMock(return_value=False)}
-#     )
-#     with manager:
-#         assert pygame_mixer_audio.is_sound_playing() is False
-#
+# Define the behavior for the mock sound to simulate an error
+def raise_pygame_error(*args, **kwargs):
+    raise pygame.error("Sound error")
+
+
+def test_play_alarm_sound(mixer, pygame_mixer_audio):
+    # Mocking the pygame.mixer.Sound class to simulate successful sound playback
+    with pygame_mixer_audio:
+        # Run the play_alarm_sound method
+        mixer.play_alarm_sound("alarm.wav")
+
+        # Assert that the play method was called once
+        pygame_mixer_audio.get_mock("Sound")().play.assert_called_once()
+
+    with pygame_mixer_audio.update_patch("Sound", raise_pygame_error):
+        with pytest.raises(RuntimeError, match="Error playing sound: Sound error"):
+            mixer.play_alarm_sound("alarm.wav")
+
+
+def test_is_sound_playing(mixer, pygame_mixer_audio):
+    """Test that is_sound_playing returns True when sound is playing."""
+    with pygame_mixer_audio:
+        assert not mixer.is_sound_playing()
+    with pygame_mixer_audio.update_patch("music.get_busy", True):
+        assert mixer.is_sound_playing()
+
+
+def test_toggle_sound(mixer, pygame_mixer_audio):
+
+    # with pygame_mixer_audio.update_patch("music.get_busy",True):
+    #     mixer.toggle_sound()
+    #     pygame_mixer_audio.get_mock("music.play").assert_not_called()
+    #     pygame_mixer_audio.get_mock("music.pause").assert_called_once()
+    #
+
+    with pygame_mixer_audio:
+        mixer.toggle_sound()
+        pygame_mixer_audio.get_mock("music.play").assert_called_once()
+        pygame_mixer_audio.get_mock("music.pause").assert_not_called()
+    with pygame_mixer_audio:
+        mixer.toggle_sound()
+        pygame_mixer_audio.get_mock("music.play").assert_called_once()
+        pygame_mixer_audio.get_mock("music.pause").assert_not_called()
+
+
 #
 # def test_toggle_sound_on_or_off_play(pygame_mixer_audio):
 #     """Test the toggle_sound_on_or_off method when the sound is paused."""

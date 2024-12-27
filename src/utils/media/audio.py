@@ -52,7 +52,7 @@ class PygameMixerAudioSingleton(AbstractSingleton):
         return False
 
     @staticmethod
-    def toggle_sound_on_or_off() -> None:
+    def toggle_sound() -> None:
         """Play or pause sound."""
         if pygame.mixer.music.get_busy():
             print("Music is playing. Pausing...")  # Debugging line

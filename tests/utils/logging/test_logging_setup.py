@@ -5,32 +5,35 @@ from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
 
 
 @pytest.fixture
-def init_LoggingConfigSingleton():
+def get_singleton():
     logging_setup = LoggingConfigSingleton(
         config_path="path/to/config.ini", log_files=["app.log"]
     )
-    return logging_setup
+    yield logging_setup
 
 
-def test_initialize_log_files(
-    init_LoggingConfigSingleton, mock_os, mock_builtins, mock_logging
+def test_logging_setup_logging_file_dne(
+    get_singleton, mock_os, mock_builtins, mock_logging
 ):
-    """Test that initialize_log_files creates a single log file."""
-    logging_setup = init_LoggingConfigSingleton
-    mock_open = mock_builtins.get_mock("open")
-
-    # if log file path DNE, `touch it`
-    with mock_os.update_patch("path.exists", False) as mock_exists:
-        logging_setup.setup()
+    with mock_os.update_patch(
+        "path.exists", False
+    ) as mock_exists, mock_builtins, mock_logging:
+        get_singleton.setup()
         mock_exists.assert_called_once_with("resources/logs/app.log")
-        mock_open.assert_called_once_with("resources/logs/app.log", "w")
+        mock_builtins.get_mock("open").assert_called_once_with(
+            "resources/logs/app.log", "w"
+        )
 
+
+def test_logging_setup(get_singleton, mock_os, mock_builtins, mock_logging):
     # if log file path exists, don't open
     with mock_os, mock_builtins, mock_logging:
-        logging_setup.setup()
+        get_singleton.setup()
         sys.stderr.write("Test stderr redirection.\n")
         sys.stderr.flush()
-        mock_open.assert_not_called()
+        mock_builtins.get_mock("open").assert_not_called()
 
+
+def test_logging_failed_config_load(get_singleton, mock_builtins, mock_logging):
     with mock_logging.remove_patch("config.fileConfig"), pytest.raises(RuntimeError):
-        logging_setup.setup()
+        get_singleton.setup()
