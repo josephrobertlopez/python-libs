@@ -37,10 +37,6 @@ class MockContextManager:
         self.active_mocks = {}
         self.active_patchers = {}
 
-        self._apply_patches("method", self.method_behaviors)
-        self._apply_patches("attribute", self.attribute_values)
-        self._apply_patches("mapping", self.mapping_values)
-
     def _apply_patches(self, patch_type, patch_items):
         """Applies patches using the specified strategy."""
         strategy = self.strategies[patch_type]
@@ -52,6 +48,7 @@ class MockContextManager:
 
     @contextmanager
     def update_patch(self, name, new_value):
+        self.apply_all_patches()
         """Temporarily updates a patch for a specific method, attribute, or dict."""
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
@@ -80,6 +77,7 @@ class MockContextManager:
 
     @contextmanager
     def remove_patch(self, name):
+        self.apply_all_patches()
         """Temporarily removes a patch for a method, attribute, or dict."""
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
@@ -111,12 +109,26 @@ class MockContextManager:
 
     def __enter__(self):
         """Enters the context, resetting all mocks."""
-        for name, mock in self.active_mocks.items():
-            if isinstance(mock, Mock):
-                mock.reset_mock()
+        self.apply_all_patches()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exits the context, stopping all patches."""
-        for name, patcher in list(self.active_patchers.items()):
+        self.stop_all_mocks()
+
+    def stop_all_mocks(self):
+        """Resets all mocks to their original state."""
+        for name in self.active_mocks:
+            patcher = self.active_patchers[name]
             patcher.stop()
+
+    def start_all_mocks(self):
+        for name, mock in self.active_mocks.items():
+            if isinstance(mock, Mock):
+                mock.reset_mock()
+
+    def apply_all_patches(self):
+        """Applies all patches (methods, attributes, mappings)."""
+        self._apply_patches("method", self.method_behaviors)
+        self._apply_patches("attribute", self.attribute_values)
+        self._apply_patches("mapping", self.mapping_values)
