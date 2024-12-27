@@ -3,7 +3,7 @@ from unittest.mock import Mock
 from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
-    MethodPatcherStrategy, ClassPatcherStrategy,
+    MethodPatcherStrategy,
 )
 
 
@@ -33,8 +33,6 @@ class MockContextManager:
             "method": MethodPatcherStrategy(),
             "attribute": AttributePatcherStrategy(),
             "mapping": MappingPatcherStrategy(),
-            "class": ClassPatcherStrategy(),  # New strategy added here
-
         }
         self.active_mocks = {}
         self.active_patchers = {}
@@ -42,8 +40,6 @@ class MockContextManager:
         self._apply_patches("method", self.method_behaviors)
         self._apply_patches("attribute", self.attribute_values)
         self._apply_patches("mapping", self.mapping_values)
-        self._apply_patches("class",self.class_values)
-
 
     def _apply_patches(self, patch_type, patch_items):
         """Applies patches using the specified strategy."""
@@ -108,8 +104,6 @@ class MockContextManager:
             return "attribute"
         if name in self.mapping_values:
             return "mapping"
-        if name in self.class_values:
-            return "class"
 
     def get_mock(self, name):
         """Retrieves the mock object for a specific method, attribute, or dict."""

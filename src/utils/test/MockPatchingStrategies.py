@@ -77,37 +77,3 @@ class MappingPatcherStrategy(AbstractStrategy):
         mock_dict.__contains__.side_effect = lambda key: key in behavior
         patcher = patch(full_path, new=mock_dict, create=True)
         return patcher
-
-import inspect
-
-class ClassPatcherStrategy(AbstractStrategy):
-    """Strategy for patching classes and their attributes."""
-
-    def execute(self, *args):
-        """Patches a class and its attributes."""
-        if len(args) != 3:
-            raise ValueError(
-                "ClassPatcherStrategy expects 3 arguments: target_path, name, and class."
-            )
-
-        target_path, name, class_obj = args
-        full_path = f"{target_path}.{name}"
-
-        if not inspect.isclass(class_obj):
-            raise TypeError(f"{class_obj} is not a class")
-
-        # Create a mock of the class
-        class_mock = MagicMock(spec=class_obj)
-
-        # Iterate over the class attributes and patch inspectable ones
-        for attribute_name, attribute_value in class_obj.__dict__.items():
-            if not attribute_name.startswith("__"):  # Skip special attributes like __dict__, __module__
-                if callable(attribute_value):
-                    # If it's callable, set side_effect for methods
-                    setattr(class_mock, attribute_name, MagicMock(side_effect=attribute_value))
-                else:
-                    # Otherwise, set a return_value for attributes
-                    setattr(class_mock, attribute_name, MagicMock(return_value=attribute_value))
-
-        patcher = patch(full_path, new=class_mock, create=True)
-        return patcher
