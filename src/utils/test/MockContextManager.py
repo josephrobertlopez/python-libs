@@ -18,7 +18,7 @@ class MockContextManager:
         method_behaviors=None,
         attribute_values=None,
         mapping_values=None,
-        class_values = None,
+        class_values=None,
     ):
         if not isinstance(target_path, str):
             raise TypeError(f"target_path should be a string, got {type(target_path)}")

@@ -4,7 +4,6 @@ import pytest
 from src.utils.test.MockContextManager import MockContextManager
 
 
-
 @pytest.fixture
 def mock_sys():
     """

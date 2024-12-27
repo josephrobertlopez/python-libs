@@ -1,5 +1,5 @@
-from src.pomodoro.pomodoro import PomodoroRunner
-import pytest
+# from src.pomodoro.pomodoro import PomodoroRunner
+# import pytest
 
 
 # def test_main(mock_pomodoro_deps, mock_sleep):
