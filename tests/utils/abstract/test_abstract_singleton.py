@@ -3,18 +3,6 @@ from unittest.mock import patch
 from src.utils.abstract.abstract_singleton import SampleConcreteSingleton
 
 
-@pytest.fixture
-def sample_concrete_singleton():
-    """Fixture to instantiate the SampleConcreteSingleton."""
-    return SampleConcreteSingleton()
-
-
-def test_singleton_creation(sample_concrete_singleton):
-    """Test that only one instance of SampleConcreteSingleton can be created."""
-    second_singleton = SampleConcreteSingleton()
-    assert second_singleton == sample_concrete_singleton
-
-
 def test_setup_called_once(sample_concrete_singleton):
     """Test that setup can only be called once."""
     # We will patch the setup process (not pygame this time)
@@ -28,13 +16,19 @@ def test_setup_called_once(sample_concrete_singleton):
             sample_concrete_singleton.setup()  # Second call should raise an error
 
 
-def test_delete_and_reinstantiate_singleton():
+def test_singleton_creation(sample_concrete_singleton):
+    """Test that only one instance of SampleConcreteSingleton can be created."""
+    second_singleton = SampleConcreteSingleton()
+    assert second_singleton == sample_concrete_singleton
+
+
+def test_delete_and_reinstantiate_singleton(sample_concrete_singleton):
     """Test that deleting and re-instantiating the singleton works."""
     # First, create the instance
-    singleton_instance_1 = SampleConcreteSingleton()
+    sample_concrete_singleton = SampleConcreteSingleton()
 
     # Ensure the instance is created
-    assert singleton_instance_1 is not None
+    assert sample_concrete_singleton is not None
     assert (
         SampleConcreteSingleton.test_initialization() is True
     )  # Check that the class is initialized
@@ -53,7 +47,7 @@ def test_delete_and_reinstantiate_singleton():
     # Ensure the new instance is the same type and is created
     assert isinstance(singleton_instance_2, SampleConcreteSingleton)
     assert (
-        singleton_instance_1 is not singleton_instance_2
+        sample_concrete_singleton is not singleton_instance_2
     )  # Different instances, but valid
 
     # Setup the new instance

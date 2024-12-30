@@ -1,6 +1,11 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
+
+from src.utils.abstract.abstract_singleton import (
+    AbstractSingleton,
+    SampleConcreteSingleton,
+)
 from src.utils.test.MockContextManager import MockContextManager
 
 
@@ -63,3 +68,21 @@ def mock_pomodoro_deps():
         "play_alarm_sound": None,
     }
     return MockContextManager(target_path=mock_path, method_behaviors=default_behaviors)
+
+
+@pytest.fixture()
+def mock_singleton_setup():
+    """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
+    # Patch the setup method in AbstractSingleton to prevent the singleton check
+    with patch.object(AbstractSingleton, "setup", Mock()) as mock_setup:
+        # Ensure the singleton is set up before each test
+        mock_setup()
+        yield mock_setup
+        # After each test, delete the setup to ensure it does not interfere with other tests
+        del mock_setup
+
+
+@pytest.fixture
+def sample_concrete_singleton():
+    """Fixture to instantiate the SampleConcreteSingleton."""
+    return SampleConcreteSingleton()

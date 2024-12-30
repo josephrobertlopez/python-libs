@@ -5,18 +5,6 @@ from src.utils.media.audio import PygameMixerSoundSingleton
 import pytest
 
 
-@pytest.fixture(autouse=True)
-def mock_singleton_setup():
-    """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
-    # Patch the setup method in AbstractSingleton to prevent the singleton check
-    with patch.object(AbstractSingleton, "setup", Mock()) as mock_setup:
-        # Ensure the singleton is set up before each test
-        mock_setup()
-        yield mock_setup
-        # After each test, delete the setup to ensure it does not interfere with other tests
-        del mock_setup
-
-
 @pytest.fixture
 def pygame_mixer_audio():
     """Fixture to provide a PygameMixerAudio instance with mocked dependencies."""
@@ -46,6 +34,18 @@ def mixer(pygame_mixer_audio):
     # Ensure the singleton is set up in the context
     with pygame_mixer_audio:
         yield mixer
+
+
+@pytest.fixture(autouse=True)
+def mock_singleton_setup():
+    """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
+    # Patch the setup method in AbstractSingleton to prevent the singleton check
+    with patch.object(AbstractSingleton, "setup", Mock()) as mock_setup:
+        # Ensure the singleton is set up before each test
+        mock_setup()
+        yield mock_setup
+        # After each test, delete the setup to ensure it does not interfere with other tests
+        del mock_setup
 
 
 def test_load_sound(mixer, pygame_mixer_audio):
