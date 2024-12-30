@@ -3,7 +3,7 @@ import time
 
 from src.utils.abstract.abstract_runner import AbstractRunner
 from src.utils.env_checks.env_checks import get_env_var
-from src.utils.media.audio import PygameMixerAudioSingleton
+from src.utils.media.audio import PygameMixerSoundSingleton
 
 
 class PomodoroRunner(AbstractRunner):
@@ -47,9 +47,13 @@ class PomodoroRunner(AbstractRunner):
         SOUND_FILE = get_env_var("SOUND_FILE")
 
         # Initialize and play the alarm sound
-        audio_player = PygameMixerAudioSingleton()
-        audio_player.play_alarm_sound(SOUND_FILE)
-        print("Pomodoro session complete. Time to take a break!")
+        audio_player = PygameMixerSoundSingleton()
+        audio_player.load_sound(SOUND_FILE)
+        audio_player.play_sound()
+
+        if not audio_player.is_sound_playing():
+            print("Alarm sound played successfully.")
+            print("Pomodoro session complete. Time to take a break!")
 
 
 # Example of how to run the Pomodoro timer
