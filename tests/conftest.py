@@ -27,7 +27,7 @@ def mock_os():
     default_behaviors = {
         "path.exists": True,
         "environ": {"TEST_VAR": "test_value"},
-        "path.join": lambda *args: "/".join(args),
+        "path.join": lambda *args: "/".join(map(str, args)),
         "makedirs": True,
     }
     return MockContextManager(target_path="os", method_behaviors=default_behaviors)
