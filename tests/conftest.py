@@ -77,10 +77,12 @@ def sample_concrete_singleton():
     """Fixture to instantiate the SampleConcreteSingleton."""
     return SampleConcreteSingleton()
 
+
 @pytest.fixture
 def sample_concrete_runner():
     """Fixture to instantiate SampleConcreteRunner."""
     return SampleConcreteRunner()
+
 
 @pytest.fixture
 def pygame_mixer_audio():

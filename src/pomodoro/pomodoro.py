@@ -1,4 +1,3 @@
-import argparse
 import time
 
 from src.utils.abstract.abstract_runner import AbstractRunner
@@ -17,8 +16,16 @@ class PomodoroRunner(AbstractRunner):
     def argument_definitions(self):
         """Argument definitions for the Pomodoro timer."""
         return {
-            "-m": {"help": "Set the Pomodoro timer for this many minutes.", "type": int, "dest": "minutes"},
-            "--minutes": {"help": "Set the Pomodoro timer for this many minutes.", "type": int, "dest": "minutes"},
+            "-m": {
+                "help": "Set the Pomodoro timer for this many minutes.",
+                "type": int,
+                "dest": "minutes",
+            },
+            "--minutes": {
+                "help": "Set the Pomodoro timer for this many minutes.",
+                "type": int,
+                "dest": "minutes",
+            },
         }
 
     def main(self, *args) -> None:
@@ -32,7 +39,9 @@ class PomodoroRunner(AbstractRunner):
 
         # Ensure we have the minutes argument
         if self.parsed_args.minutes is None:
-            raise ValueError("You must specify the Pomodoro timer duration using --minutes or -m.")
+            raise ValueError(
+                "You must specify the Pomodoro timer duration using --minutes or -m."
+            )
 
         minutes = self.parsed_args.minutes
         if minutes < 0:
