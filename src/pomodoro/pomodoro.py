@@ -34,6 +34,7 @@ class PomodoroRunner(AbstractRunner):
 
         The expected argument is:
         - --minutes or -m: Set the Pomodoro timer for this many minutes.
+        lorem ipsum
         """
         self.initialized_arguments(*args)
 
