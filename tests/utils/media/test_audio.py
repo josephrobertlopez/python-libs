@@ -1,3 +1,11 @@
+import pytest
+from src.utils.media.audio import PygameMixerSoundSingleton
+
+
+def test_setup(mixer, pygame_mixer_audio):
+    with pytest.raises(RuntimeError,match="has already been called"):
+        PygameMixerSoundSingleton()
+
 def test_load_sound(mock_singleton_setup, mixer, pygame_mixer_audio):
     with pygame_mixer_audio:
         mixer.load_sound("Fake_sound.wav")
