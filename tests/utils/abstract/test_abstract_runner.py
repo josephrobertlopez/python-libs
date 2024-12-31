@@ -64,10 +64,10 @@ def test_no_arguments(sample_concrete_runner):
         (["--name", "Grace", "-a", "35"], "Hello Grace, I see you are 35 years old."),
     ],
 )
-def test_various_argument_combinations(runner, args, expected_output):
+def test_various_argument_combinations(sample_concrete_runner, args, expected_output):
     # Parametrized test for various combinations of arguments.
     with patch("sys.argv", ["program_name"] + args):
         with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
-            runner.run(*args)
+            sample_concrete_runner.run(*args)
             output = mock_stdout.getvalue()
             assert expected_output in output
