@@ -39,12 +39,22 @@ jobs:
         run: |
           poetry run flake8 .
 
-      # Step 6: Run pytest with coverage and coverage minimum of 0%
+      # Step 6: Run pytest with coverage
       - name: Run pytest with coverage
         run: |
-          poetry run pytest --cov=src --cov-report=xml --cov-fail-under=80 || true
+          poetry run pytest --cov=src --cov-report=xml --cov-fail-under=0
 
-      # Step 7: Upload coverage results to GitHub (optional, for viewing coverage reports in the GitHub UI)
+      # Step 7: Check if coverage is below 80%
+      - name: Check if coverage is below 80
+        run: |
+          coverage=$(pytest --cov=src --cov-report=xml | tee result.log | tail -n 10)
+          coverage_percentage=$(echo "$coverage" | grep -oP 'TOTAL\s+\K[0-9.]+')
+          if [[ "$coverage_percentage" != "0" && $(echo "$coverage_percentage >= 80" | bc -l) -ne 1 ]]; then
+            echo "Error: Coverage is below the acceptable thresholds (0% or >=80%). Coverage: $coverage_percentage%"
+            exit 1
+          fi
+
+      # Step 8: Upload coverage results to GitHub (optional, for viewing coverage reports in the GitHub UI)
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v3
         with:
