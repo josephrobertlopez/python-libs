@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
-
+import os
 from src.utils.abstract.abstract_runner import SampleConcreteRunner
 from src.utils.abstract.abstract_singleton import (
     AbstractSingleton,
@@ -125,3 +125,11 @@ def mock_singleton_setup():
         yield mock_setup
         # After each test, delete the setup to ensure it does not interfere with other tests
         del mock_setup
+
+
+@pytest.fixture(autouse=True)
+def setup_headless_audio():
+    """Set up the headless audio environment for Pygame in CI."""
+    os.environ["SDL_AUDIODRIVER"] = "dummy"
+    yield  # Allow tests to run
+    del os.environ["SDL_AUDIODRIVER"]
