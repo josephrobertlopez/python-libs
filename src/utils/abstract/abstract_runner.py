@@ -9,7 +9,8 @@ class AbstractRunner(ABC):
         """Initialize the runner."""
         pass
 
-    def parse_arguments(self, *args, **kwargs):
+    @staticmethod
+    def parse_arguments(*args, **kwargs):
         """Parse command-line arguments dynamically based on kwargs.
 
         Args:
@@ -32,3 +33,22 @@ class AbstractRunner(ABC):
     def main(self, *args) -> None:
         """Main method to execute the application logic."""
         pass
+
+
+class SampleConcreteRunner(AbstractRunner):
+    """Concrete implementation of AbstractRunner."""
+
+    def main(self, *args):
+        # Parse *args with parse_arguments method
+        parsed_args = self.parse_arguments(
+            **{
+                "--name": {"help": "Your name", "required": True},
+                "--age": {
+                    "help": "Your age",
+                    "type": int,
+                    "required": False,
+                    "default": 30,
+                },
+            }
+        )
+        print(f"Hello {parsed_args.name}, I see you are {parsed_args.age} years old.")
