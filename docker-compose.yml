@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  pomodoro-pytest:
+    build:
+      context: .
+      target: pomodoro-test  # Build stage to use for pytest
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+    volumes:
+      - .:/app  # Mount the current directory to the container for testing
+    environment:
+      - PYTHONPATH=/app/src:/app
+    command: ["poetry", "run", "pytest"]  # For running pytest
+    profiles:
+      - pytest  # Profile for running pytest
+
+
+  pomodoro-behave:
+    build:
+      context: .
+      target: pomodoro-test  # Build stage to use for behave
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+    volumes:
+      - .:/app  # Mount the current directory to the container for testing
+    environment:
+      - PYTHONPATH=/app/src:/app
+    command: ["poetry", "run", "behave"]  # For running behave
+    profiles:
+      - behave  # Profile for running behave
+
+
+  pomodoro-pyinstaller:
+    build:
+      context: .
+      target: pomodoro  # New build stage for PyInstaller
+      args:
+        MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
+    volumes:
+      - .:/app  # Mount the current directory
+    profiles:
+      - pyinstaller  # Profile for PyInstaller build
+    command: ["poetry", "run", "pyinstaller", "--onefile", "--add-data", "resources/logging_config.ini:resources", "--add-data", "resources/sounds/alarm_sound.wav:resources/sounds", "src/pomodoro/pomodoro.py"]
+    environment:
+      - PYTHONPATH=/app/src:/app
+    user: myuser
+
+
+
+  pomodoro-app:
+    build:
+      context: .
+      target: pomodoro  # Use the pomodoro build stage
+      args:
+        MODULE_GROUP: pomodoro  # Use runtime dependencies
+    volumes:
+      - .:/app  # Mount the current directory
+      - /dev/snd:/dev/snd  # Forward the sound device
+    devices:
+      - /dev/snd
+    environment:
+      - PYTHONPATH=/app/src:/app
+      - AUDIO_OUTPUT=alsa
+    command: ["sh", "-c", "poetry run python -m run pomodoro -m $MINS"]
+    profiles:
+      - pomodorop  # Profile for running the Pomodoro app
+    privileged: true  # Grant extended privileges for audio playback
