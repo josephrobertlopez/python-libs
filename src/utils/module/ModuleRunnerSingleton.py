@@ -30,4 +30,4 @@ class ModuleRunnerSingleton(AbstractSingleton):
         self.module_args = module_args
         factory = ModuleRunnerFactory(module_name, module_args)
         runner = factory.create_runner()
-        runner.main(*module_args)
+        runner.run(*module_args)

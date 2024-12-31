@@ -13,6 +13,14 @@ class PomodoroRunner(AbstractRunner):
         """Initialize the Pomodoro runner."""
         super().__init__()
 
+    @property
+    def argument_definitions(self):
+        """Argument definitions for the Pomodoro timer."""
+        return {
+            "-m": {"help": "Set the Pomodoro timer for this many minutes.", "type": int, "dest": "minutes"},
+            "--minutes": {"help": "Set the Pomodoro timer for this many minutes.", "type": int, "dest": "minutes"},
+        }
+
     def main(self, *args) -> None:
         """
         Set a Pomodoro timer for a given number of minutes.
@@ -20,20 +28,13 @@ class PomodoroRunner(AbstractRunner):
         The expected argument is:
         - --minutes or -m: Set the Pomodoro timer for this many minutes.
         """
-        # Define the arguments for the Pomodoro timer
-        parser = argparse.ArgumentParser()
-        group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument(
-            "-m",
-            "--minutes",
-            type=int,
-            help="Set the Pomodoro timer for this many minutes.",
-        )
+        self.initialized_arguments(*args)
 
-        # Parse the arguments
-        parsed_args = parser.parse_args(args)
+        # Ensure we have the minutes argument
+        if self.parsed_args.minutes is None:
+            raise ValueError("You must specify the Pomodoro timer duration using --minutes or -m.")
 
-        minutes = parsed_args.minutes
+        minutes = self.parsed_args.minutes
         if minutes < 0:
             raise ValueError("Minutes must be a natural number.")
 
@@ -59,6 +60,6 @@ class PomodoroRunner(AbstractRunner):
 # Example of how to run the Pomodoro timer
 if __name__ == "__main__":
     runner = PomodoroRunner()
-    runner.main("-m", "25")  # Example: 25-minute Pomodoro timer
+    runner.run("-m", "25")  # Example: 25-minute Pomodoro timer
     # Alternatively, you can use --minutes:
-    # runner.main("--minutes", "25")
+    # runner.run("--minutes", "25")

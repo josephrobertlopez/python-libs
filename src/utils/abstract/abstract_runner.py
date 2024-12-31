@@ -5,9 +5,10 @@ from abc import ABC, abstractmethod
 class AbstractRunner(ABC):
     """Abstract runner class to handle argument parsing and define the main method."""
 
-    def __init__(self):
+    def __init__(self,*args):
         """Initialize the runner."""
-        pass
+        self.parsed_args = None
+        self._arguments_initialized = False
 
     @staticmethod
     def parse_arguments(*args, **kwargs):
@@ -29,8 +30,32 @@ class AbstractRunner(ABC):
         parsed_args = parser.parse_args(args)
         return parsed_args
 
+    @property
     @abstractmethod
-    def main(self, *args) -> None:
+    def argument_definitions(self):
+        """Defines the arguments for the command-line parser.
+
+        Returns:
+            dict: A dictionary of argument names and their configurations.
+        """
+        pass
+
+    def initialized_arguments(self,*args):
+        if not self.argument_definitions:
+            raise NotImplementedError(
+                "Subclasses must define 'argument_definitions' to use initialize_argumsnts()"
+            )
+        self.parsed_args = self.parse_arguments(*args,**self.argument_definitions)
+        self._arguments_initialized = True
+
+    def run(self,*args):
+        self.main(*args)
+        if not self._arguments_initialized:
+            raise RuntimeError(
+                "The 'initialize_arguments' method must be called in the 'main' method of subclasses."
+            )
+    @abstractmethod
+    def main(self) -> None:
         """Main method to execute the application logic."""
         pass
 
@@ -38,17 +63,18 @@ class AbstractRunner(ABC):
 class SampleConcreteRunner(AbstractRunner):
     """Concrete implementation of AbstractRunner."""
 
-    def main(self, *args):
-        # Parse *args with parse_arguments method
-        parsed_args = self.parse_arguments(
-            **{
+    @property
+    def argument_definitions(self):
+        return {
                 "--name": {"help": "Your name", "required": True},
                 "--age": {
                     "help": "Your age",
                     "type": int,
                     "required": False,
                     "default": 30,
-                },
-            }
-        )
-        print(f"Hello {parsed_args.name}, I see you are {parsed_args.age} years old.")
+                }
+        }
+    def main(self, *args):
+        # Parse *args with parse_arguments method
+        self.initialized_arguments(*args)
+        print(f"Hello {self.parsed_args.name}, I see you are {self.parsed_args.age} years old.")
