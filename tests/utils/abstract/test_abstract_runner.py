@@ -3,6 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
+from src.utils.testing.MockMethods import method_called_in_mock
+
 
 def test_required_argument(sample_concrete_runner):
     # Test when the required argument '--name' is provided.
@@ -40,19 +42,20 @@ def test_invalid_argument_type(sample_concrete_runner):
             sample_concrete_runner.run(*["--name", "Charlie", "--age", "invalid_age"])
 
 
-def test_argument_alias(sample_concrete_runner):
+def test_argument_alias(sample_concrete_runner, mock_sys):
     # Test when '-a' is used instead of '--age'
-    with patch("sys.argv", ["program_name", "--name", "David", "-a", "40"]):
-        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
-            sample_concrete_runner.run(*["--name", "David", "-a", "40"])
-            output = mock_stdout.getvalue()
-            assert "Hello David, I see you are 40 years old." in output
+    with mock_sys.update_patch("argv", ["program_name", "--name", "David", "-a", "40"]):
+        sample_concrete_runner.run(*["--name", "David", "-a", "40"])
+        assert method_called_in_mock(
+            mock_sys.get_mock("stdout"),
+            "write",
+            "Hello David, I see you are 40 years old.",
+        )
 
 
-def test_no_arguments(sample_concrete_runner):
-    # Test when no arguments are provided, expecting an error since '--name' is required
-    with patch("sys.argv", ["program_name"]):
-        with pytest.raises(SystemExit):  # ArgumentParser should raise an error
+def test_no_arguments(sample_concrete_runner, mock_sys):
+    with mock_sys:
+        with pytest.raises(SystemExit):
             sample_concrete_runner.run()
 
 
@@ -65,7 +68,7 @@ def test_no_arguments(sample_concrete_runner):
     ],
 )
 def test_various_argument_combinations(sample_concrete_runner, args, expected_output):
-    # Parametrized test for various combinations of arguments.
+    # Parametrized testing for various combinations of arguments.
     with patch("sys.argv", ["program_name"] + args):
         with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
             sample_concrete_runner.run(*args)
