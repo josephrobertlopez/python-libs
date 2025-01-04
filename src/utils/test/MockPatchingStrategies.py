@@ -40,20 +40,13 @@ class AttributePatcherStrategy(AbstractStrategy):
             raise ValueError(
                 "AttributePatcherStrategy expects 3 arguments: target_path, name, and value."
             )
-
         target_path, name, value = args
         full_path = f"{target_path}.{name}"
-
         # Create a MagicMock and set its return_value if it's not callable or a Mapping
-        mock_attr = MagicMock()
-
         if callable(value):
-            mock_attr.side_effect = value
+            return patch(full_path, side_effect=value, create=True)
         else:
-            mock_attr.return_value = value
-
-        patcher = patch(full_path, new=mock_attr, create=True)
-        return patcher
+            return patch(full_path, new=value, create=True)
 
 
 class MappingPatcherStrategy(AbstractStrategy):

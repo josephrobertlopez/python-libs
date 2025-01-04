@@ -20,8 +20,12 @@ def mock_sys():
         "frozen": True,
         "executable": "fake_executable_path",
         "_MEIPASS": "pyinstaller/path",
+        "argv": ["program_name"],
     }
-    return MockContextManager(target_path="sys", attribute_values=default_attr)
+    method_calls = {"stdout": Mock(), "foo": Mock()}
+    return MockContextManager(
+        target_path="sys", attribute_values=default_attr, method_behaviors=method_calls
+    )
 
 
 @pytest.fixture

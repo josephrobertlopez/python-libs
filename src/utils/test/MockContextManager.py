@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from unittest.mock import Mock
+from unittest.mock import MagicMock
 from src.utils.test.MockPatchingStrategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
@@ -83,14 +83,13 @@ class MockContextManager:
         """Temporarily removes a patch for a method, attribute, or dict."""
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
-
+        # breakpoint()
         old_patcher = self.active_patchers.pop(name)
         old_patcher.stop()
-
-        mock_obj = self.active_mocks.pop(name)
+        self.active_mocks.pop(name, None)
 
         try:
-            yield mock_obj
+            yield
         finally:
             new_mock = old_patcher.start()
             self.active_patchers[name] = old_patcher
@@ -128,7 +127,7 @@ class MockContextManager:
 
     def start_all_mocks(self):
         for name, mock in self.active_mocks.items():
-            if isinstance(mock, Mock):
+            if isinstance(mock, MagicMock):
                 mock.reset_mock()
 
     def apply_all_patches(self):

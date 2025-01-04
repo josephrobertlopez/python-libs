@@ -23,8 +23,7 @@ def test_mock_context_manager(mock_context):
         mock_method.side_effect = lambda x: x + 10
         assert mock_method(5) == 15
 
-        mock_attr.__getitem__.side_effect = lambda key: 100
-        assert mock_attr["attr_name"] == 100
+        assert mock_attr == 42
 
         mock_map.__getitem__.side_effect = lambda key: "new_value"
         assert mock_map["key"] == "new_value"
@@ -51,7 +50,7 @@ def test_update_patch(mock_context):
         with context.update_patch("method_name", lambda x: x * 3) as new_mock:
             assert new_mock(4) == 12  # Testing the updated patch
         with context.update_patch("attr_name", 420) as new_mock:
-            assert new_mock.return_value == 420
+            assert new_mock == 420
         with context.update_patch("map_name", {}) as new_mock:
             assert new_mock
         with pytest.raises(KeyError, match="is not patched."):
