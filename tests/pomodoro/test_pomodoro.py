@@ -3,14 +3,12 @@ from unittest.mock import patch, MagicMock
 from src.pomodoro.pomodoro import PomodoroRunner
 
 
-# Mocking os and environment variable for the sound file path
 @pytest.fixture
 def mock_os():
     with patch.dict("os.environ", {"SOUND_FILE": "test_sound_file.wav"}):
         yield
 
 
-# Mocking PygameMixerSoundSingleton
 @pytest.fixture
 def mock_pygame_mixer(mock_singleton_setup):
     with patch("src.utils.media.audio.PygameMixerSoundSingleton") as mock_sound:
@@ -19,7 +17,6 @@ def mock_pygame_mixer(mock_singleton_setup):
         yield mock_sound_instance
 
 
-# Mocking time.sleep
 @pytest.fixture
 def mock_time():
     with patch("time.sleep") as mock_sleep:
