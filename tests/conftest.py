@@ -32,7 +32,7 @@ def mock_sys():
 def mock_os():
     default_behaviors = {
         "path.exists": True,
-        "environ": {"TEST_VAR": "test_value"},
+        "environ": {"TEST_VAR": "test_value", "LOG_CONFIG_FILE": "logging_config.ini"},
         "path.join": lambda *args: "/".join(map(str, args)),
         "makedirs": True,
     }
