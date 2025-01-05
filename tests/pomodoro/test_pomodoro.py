@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from src.pomodoro.pomodoro import PomodoroRunner
-from src.utils.media.audio import PygameMixerSoundSingleton
 
 
 # Mocking os and environment variable for the sound file path
@@ -28,7 +27,7 @@ def mock_time():
 
 
 # Test PomodoroRunner behavior
-def test_pomodoro_runner(mock_pygame_mixer, mock_time, mock_os,pygame_mixer_audio):
+def test_pomodoro_runner(mock_pygame_mixer, mock_time, mock_os, pygame_mixer_audio):
     # Initialize PomodoroRunner
     with pygame_mixer_audio:
         runner = PomodoroRunner()
