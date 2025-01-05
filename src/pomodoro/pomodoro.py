@@ -64,11 +64,3 @@ class PomodoroRunner(AbstractRunner):
         if not audio_player.is_sound_playing():
             print("Alarm sound played successfully.")
             print("Pomodoro session complete. Time to take a break!")
-
-
-# Example of how to run the Pomodoro timer
-if __name__ == "__main__":
-    runner = PomodoroRunner()
-    runner.run("-m", "25")  # Example: 25-minute Pomodoro timer
-    # Alternatively, you can use --minutes:
-    # runner.run("--minutes", "25")
