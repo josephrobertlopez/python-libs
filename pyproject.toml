@@ -5,6 +5,10 @@ description = "This is my monorepo for personal projects"
 authors = ["Joey <josephrobertlopez@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "pomodoro", from = "src" },
+    { include = "utils", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
