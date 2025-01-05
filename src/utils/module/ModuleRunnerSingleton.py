@@ -11,15 +11,7 @@ class ModuleRunnerSingleton(AbstractSingleton):
 
     def _setup(self):
         """Initialize environment variables and logging."""
-        self.load_environment_variables()
-        self.setup_logging()
-
-    def load_environment_variables(self):
-        """Loads environment variables."""
         load_environment_variables(".env")
-
-    def setup_logging(self):
-        """Sets up the logging configuration."""
         LOG_CONFIG_FILE = get_env_var("LOG_CONFIG_FILE")
         logger_setup = LoggingConfigSingleton(LOG_CONFIG_FILE)
         logger_setup.setup()
