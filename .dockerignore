@@ -1,0 +1,9 @@
+# Ignore pyproject.toml if it's not required in the container
+resources/logs/
+
+.github
+.vscode
+htmlcov
+.coverage
+.flake8
+.git
