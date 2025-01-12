@@ -8,7 +8,7 @@ services:
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for testing
     volumes:
-      - .:/app  # Mount the current directory to the container for testing
+      - .:/app:Z  # Mount the current directory to the container for testing
     environment:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "pytest"]  # For running pytest
@@ -23,7 +23,7 @@ services:
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for testing
     volumes:
-      - .:/app  # Mount the current directory to the container for testing
+      - .:/app:Z  # Mount the current directory to the container for testing
     environment:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "behave"]  # For running behave
@@ -38,7 +38,7 @@ services:
       args:
         MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
     volumes:
-      - .:/app  # Mount the current directory
+      - .:/app:Z  # Mount the current directory
     profiles:
       - pyinstaller  # Profile for PyInstaller build
     command: ["poetry", "run", "pyinstaller", "--onefile", "--add-data", "resources/logging_config.ini:resources", "--add-data", "resources/sounds/alarm_sound.wav:resources/sounds", "src/pomodoro/pomodoro.py"]
@@ -55,7 +55,7 @@ services:
       args:
         MODULE_GROUP: pomodoro  # Use runtime dependencies
     volumes:
-      - .:/app  # Mount the current directory
+      - .:/app:Z  # Mount the current directory
       - /dev/snd:/dev/snd  # Forward the sound device
     devices:
       - /dev/snd
