@@ -1,48 +1,40 @@
 import os
 import subprocess
 import time
-
 from behave import given, when, then
 
 
 @given("I have set the Pomodoro timer for {minutes:d} minute(s)")
 def step_impl_set_timer(context, minutes):
     context.minutes = minutes
-    context.timer_command = f"python3  run.py " f"pomodoro --minutes {context.minutes}"
-    context.process = subprocess.Popen(
-        context.timer_command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
 
 
 @given('I have set the Pomodoro timer for "{invalid_input}"')
 def step_impl_set_invalid_timer(context, invalid_input):
     context.minutes = invalid_input
-    context.timer_command = f"python3  run.py " f"pomodoro --minutes {context.minutes}"
-    context.process = subprocess.Popen(
-        context.timer_command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
 
 
 @given("I have not provided any timer arguments")
 def step_impl_no_arguments(context):
-    context.timer_command = f"python3  run.py " f"pomodoro --minutes {context.minutes}"
+    context.minutes = ""
+    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
+
+
+@when("the timer starts")
+def step_impl_start_timer(context):
+    # Start the timer process with additional context
     context.process = subprocess.Popen(
         context.timer_command,
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env={"PYTHONPATH": "."},  # Ensure modules are visible
     )
 
-
-@when("the timer starts")
-def step_impl_start_timer(context):
-    context.process.wait()  # Wait for the timer process to complete
+    # Wait for the timer process to complete
+    context.process.wait()
 
 
 @then("I should hear an alarm sound after {minutes:d} minute(s)")
