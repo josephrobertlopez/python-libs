@@ -36,7 +36,6 @@ class PomodoroRunner(AbstractRunner):
         - --minutes or -m: Set the Pomodoro timer for this many minutes.
         """
         self.initialized_arguments(*args)
-
         # Ensure we have the minutes argument
         if self.parsed_args.minutes is None:
             raise ValueError(

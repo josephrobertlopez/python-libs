@@ -1,40 +1,28 @@
 import os
-import subprocess
 import time
+from unittest import mock
+
 from behave import given, when, then
 
 
-@given("I have set the Pomodoro timer for {minutes:d} minute(s)")
+@given("I have set the Pomodoro timer for {minutes} minute(s)")
 def step_impl_set_timer(context, minutes):
-    context.minutes = minutes
-    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
-
-
-@given('I have set the Pomodoro timer for "{invalid_input}"')
-def step_impl_set_invalid_timer(context, invalid_input):
-    context.minutes = invalid_input
-    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
+    context.minutes = int(minutes)
 
 
 @given("I have not provided any timer arguments")
 def step_impl_no_arguments(context):
     context.minutes = ""
-    context.timer_command = f"python3 run.py " f"pomodoro --minutes {context.minutes}"
 
 
 @when("the timer starts")
 def step_impl_start_timer(context):
-    # Start the timer process with additional context
-    context.process = subprocess.Popen(
-        context.timer_command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env={"PYTHONPATH": "."},  # Ensure modules are visible
-    )
-
-    # Wait for the timer process to complete
-    context.process.wait()
+    with mock.patch("src.utils.media.audio.PygameMixerSoundSingleton.play_sound"):
+        try:
+            # Start the timer process with additional context
+            context.app.run("pomodoro", ["--minutes", context.minutes])
+        except Exception as e:
+            context.error = e
 
 
 @then("I should hear an alarm sound after {minutes:d} minute(s)")
@@ -65,10 +53,4 @@ def step_impl_hear_alarm(context, minutes):
 
 @then("I should see an error message")
 def step_impl_error_message(context):
-    stdout, stderr = context.process.communicate()
-    assert (
-        context.process.returncode != 0
-    ), "Process should not have completed successfully."
-    assert (
-        "error" in stderr.decode().lower()
-    ), "Expected an error message, but did not find one."
+    assert context.error
