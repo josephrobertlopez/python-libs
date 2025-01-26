@@ -26,21 +26,6 @@ services:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "behave"]  # For running behave
 
-
-  pomodoro-pyinstaller:
-    build:
-      context: .
-      target: pomodoro  # New build stage for PyInstaller
-      args:
-        MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
-    volumes:
-      - .:/app:Z  # Mount the current directory
-    command: ["poetry", "run", "pyinstaller", "--onefile", "--add-data", "resources/logging_config.ini:resources", "--add-data", "resources/sounds/alarm_sound.wav:resources/sounds", "src/pomodoro/pomodoro.py"]
-    environment:
-      - PYTHONPATH=/app/src:/app
-
-
-
   pomodoro-app:
     build:
       context: .
