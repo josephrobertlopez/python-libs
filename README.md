@@ -43,18 +43,25 @@ A brief description of what your project does.
 To activate the virtual environment and start working on the project:
 
 ```bash
-# Build tests
+# Set env vars
 
-docker-compose build --no-cache pomodoro-pytest 
-docker-compose run --rm pomodoro-pytest 
+# Run pytest
+docker-compose build --no-cache run-pytest 
+docker-compose run --rm run-pytest 
+
+# Run Behave
+export MODULE_GROUP=pomodoro
+export FEATURE=pomodoro
 
 docker-compose build --no-cache pomodoro-behave
 docker-compose run --rm pomodoro-behave
 
-# Build executable
-docker-compose build --no-cache pomodoro-pyinstaller
-docker-compose run --rm pomodoro-pyinstaller
-
 # Run app
-MINS=0 docker-compose --profile pomodoro-app run --rm pomodoro-app 
-poetry run python -m run pomodoro --minutes 0
+export $MIN=0
+export MODULE_GROUP=pomodoro
+docker-compose --profile pomodoro-app run --rm pomodoro-app 
+
+# Run on local
+EXPORT MODULE_GROUP=pomodoro
+poetry install --with $MODULE_GROUP --no-interaction --no-ansi -vvv
+poetry run python -m run $MODULE_GROUP --minutes 0

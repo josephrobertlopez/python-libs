@@ -4,9 +4,9 @@ services:
   run_pytest:
     build:
       context: .
-      target: pomodoro-test  # Build stage to use for pytest
+      target: app-test  # Build stage to use for pytest
       args:
-        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+        MODULE_GROUP: pomodoro  # Allow overriding with environment variables
     volumes:
       - .:/app:Z  # Mount the current directory to the container for testing
     environment:
@@ -17,9 +17,9 @@ services:
   run_behave:
     build:
       context: .
-      target: pomodoro-test  # Build stage to use for behave
+      target: app-test  # Build stage to use for behave
       args:
-        MODULE_GROUP: pomodoro  # Use development dependencies for testing
+        MODULE_GROUP: ${MODULE_GROUP:-pomodoro}  # Allow overriding with environment variables
     volumes:
       - .:/app:Z  # Mount the current directory to the container for testing
     environment:
@@ -29,9 +29,9 @@ services:
   run_app:
     build:
       context: .
-      target: pomodoro  # Use the pomodoro build stage
+      target: application  # Use the pomodoro build stage
       args:
-        MODULE_GROUP: pomodoro  # Use runtime dependencies
+        MODULE_GROUP: ${MODULE_GROUP:-pomodoro}  # Allow overriding with environment variables
     volumes:
       - .:/app:Z  # Mount the current directory
       - /dev/snd:/dev/snd  # Forward the sound device
@@ -41,4 +41,4 @@ services:
       - PYTHONPATH=/app/src:/app
       - AUDIO_OUTPUT=dummy
       - SDL_AUDIODRIVER=dummy  # Force pygame to use a virtual audio driver
-    command: ["sh", "-c", "poetry run python -m run pomodoro -m $MINS"]
+    command: ["sh", "-c", "poetry run python -m run $MODULE_GROUP -m $MINS"]

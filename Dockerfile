@@ -12,7 +12,7 @@ RUN pip install poetry
 RUN useradd -m myuser
 
 # Initial setup stage for installing system dependencies and audio drivers
-FROM base AS init_pomodoro
+FROM base AS init_app
 
 # Temporarily switch to root to install system dependencies
 USER root
@@ -33,14 +33,14 @@ VOLUME /app/resources
 
 # Switch back to the non-root user
 USER myuser
-# Stage for installing Pomodoro dependencies (excluding development dependencies)
-FROM init_pomodoro AS pomodoro
+# Stage for installing application dependencies (excluding development dependencies)
+FROM init_app AS application
 ARG MODULE_GROUP
 # Install only the necessary dependencies for running the Pomodoro app
 RUN poetry install --with ${MODULE_GROUP} --without dev --no-interaction --no-ansi -vvv
 
 # Stage for installing development dependencies
-FROM init_pomodoro AS pomodoro-test
+FROM init_app AS app-test
 ARG MODULE_GROUP
 # Set environment variables to use a dummy audio driver
 ENV SDL_AUDIODRIVER=dummy
