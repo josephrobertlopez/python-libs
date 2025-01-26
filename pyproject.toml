@@ -6,8 +6,7 @@ authors = ["Joey <josephrobertlopez@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "pomodoro", from = "src" },
-    { include = "utils", from = "src" }
+    { include = "*", from = "src" }
 ]
 
 [tool.poetry.dependencies]
