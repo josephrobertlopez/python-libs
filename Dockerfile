@@ -27,6 +27,7 @@ COPY . /app
 
 RUN chown -R myuser:myuser /app/resources
 
+RUN chown -R myuser:myuser /app/features
 # Declare /app/resources/logs as a volume
 VOLUME /app/resources
 
