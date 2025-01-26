@@ -57,3 +57,4 @@ docker-compose run --rm pomodoro-pyinstaller
 
 # Run app
 MINS=0 docker-compose --profile pomodoro-app run --rm pomodoro-app 
+poetry run python -m run pomodoro --minutes 0
