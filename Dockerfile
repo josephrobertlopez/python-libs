@@ -22,12 +22,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     binutils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Switch back to non-root user for security
-USER myuser
-
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+RUN chown -R myuser:myuser /app/resources
+
+# Declare /app/resources/logs as a volume
+VOLUME /app/resources
+
+# Switch back to the non-root user
+USER myuser
 # Stage for installing Pomodoro dependencies (excluding development dependencies)
 FROM init_pomodoro AS pomodoro
 ARG MODULE_GROUP
