@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  pomodoro-pytest:
+  run_pytest:
     build:
       context: .
       target: pomodoro-test  # Build stage to use for pytest
@@ -14,7 +14,7 @@ services:
     command: ["poetry", "run", "pytest"]  # For running pytest
 
 
-  pomodoro-behave:
+  run_behave:
     build:
       context: .
       target: pomodoro-test  # Build stage to use for behave
@@ -24,9 +24,9 @@ services:
       - .:/app:Z  # Mount the current directory to the container for testing
     environment:
       - PYTHONPATH=/app/src:/app
-    command: ["poetry", "run", "behave"]  # For running behave
+    command: ["poetry", "run", "behave", "features/$FEATURE.feature"]  # For running behave
 
-  pomodoro-app:
+  run_app:
     build:
       context: .
       target: pomodoro  # Use the pomodoro build stage
