@@ -12,8 +12,6 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "pytest"]  # For running pytest
-    profiles:
-      - pytest  # Profile for running pytest
 
 
   pomodoro-behave:
@@ -27,8 +25,6 @@ services:
     environment:
       - PYTHONPATH=/app/src:/app
     command: ["poetry", "run", "behave"]  # For running behave
-    profiles:
-      - behave  # Profile for running behave
 
 
   pomodoro-pyinstaller:
@@ -39,12 +35,9 @@ services:
         MODULE_GROUP: pomodoro  # Use development dependencies for PyInstaller
     volumes:
       - .:/app:Z  # Mount the current directory
-    profiles:
-      - pyinstaller  # Profile for PyInstaller build
     command: ["poetry", "run", "pyinstaller", "--onefile", "--add-data", "resources/logging_config.ini:resources", "--add-data", "resources/sounds/alarm_sound.wav:resources/sounds", "src/pomodoro/pomodoro.py"]
     environment:
       - PYTHONPATH=/app/src:/app
-    user: myuser
 
 
 
@@ -61,8 +54,6 @@ services:
       - /dev/snd
     environment:
       - PYTHONPATH=/app/src:/app
-      - AUDIO_OUTPUT=alsa
+      - AUDIO_OUTPUT=dummy
+      - SDL_AUDIODRIVER=dummy  # Force pygame to use a virtual audio driver
     command: ["sh", "-c", "poetry run python -m run pomodoro -m $MINS"]
-    profiles:
-      - pomodorop  # Profile for running the Pomodoro app
-    privileged: true  # Grant extended privileges for audio playback
