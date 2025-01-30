@@ -146,3 +146,10 @@ poetry run behave
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+pyinstaller --onefile \   feature/pomodoro.py ] 6:10 PM
+    --add-data "resources:resources" \
+    --add-data ".env:." \
+    --hidden-import "src.utils.module.ModuleRunnerSingleton" \
+    --hidden-import "src.pomodoro.pomodoro" \
+    run.py
