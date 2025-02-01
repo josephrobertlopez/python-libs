@@ -1,5 +1,6 @@
+import os
+import sys
 import importlib
-
 from src.utils.abstract.abstract_runner import AbstractRunner
 from src.utils.env_checks.env_checks import load_environment_variables, get_env_var
 from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
@@ -12,9 +13,25 @@ class ModuleRunnerSingleton(AbstractSingleton):
 
     def _setup(self):
         """Initialize environment variables and logging."""
-        load_environment_variables(".env")
-        LOG_CONFIG_FILE = get_env_var("LOG_CONFIG_FILE")
-        logger_setup = LoggingConfigSingleton(LOG_CONFIG_FILE)
+        # Determine the base directory
+        frozen_path = ""
+        if getattr(sys, "frozen", False):
+            # If the script is frozen (e.g., PyInstaller executable)
+            frozen_path = sys._MEIPASS
+        env_file_path = os.path.join(frozen_path, ".env")
+        log_dir = os.path.join(frozen_path, "resources/logs")
+
+        # Load env var
+        load_environment_variables(env_file_path)
+        log_config_file = get_env_var("LOG_CONFIG_FILE")
+
+        log_config_file_path = os.path.join(frozen_path, log_config_file)
+        # Load the environment variables
+
+        # Set up logging
+        logger_setup = LoggingConfigSingleton(
+            config_path=log_config_file_path, log_dir=log_dir
+        )
         logger_setup.setup()
 
     @staticmethod
