@@ -13,7 +13,6 @@ class ModuleRunnerSingleton(AbstractSingleton):
 
     def _setup(self):
         """Initialize environment variables and logging."""
-        frozen_path = ""
         if getattr(sys, "frozen", False):
             # If the script is frozen (e.g., PyInstaller executable)
             env_file_path = os.path.join(sys._MEIPASS, ".env")
