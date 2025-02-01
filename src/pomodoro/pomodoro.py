@@ -1,7 +1,7 @@
 import time
 
 from src.utils.abstract.abstract_runner import AbstractRunner
-from src.utils.env_checks.env_checks import get_env_var
+from src.utils.env_checks.env_checks import get_path_based_env_var
 from src.utils.media.audio import PygameMixerSoundSingleton
 
 
@@ -53,7 +53,7 @@ class PomodoroRunner(AbstractRunner):
         time.sleep(seconds)
 
         # Get the sound file path from the environment variable
-        SOUND_FILE = get_env_var("SOUND_FILE")
+        SOUND_FILE = get_path_based_env_var("SOUND_FILE")
 
         # Initialize and play the alarm sound
         audio_player = PygameMixerSoundSingleton()

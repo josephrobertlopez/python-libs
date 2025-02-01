@@ -35,6 +35,28 @@ def get_env_var(var_name: str) -> str:
         raise KeyError(f"Environment variable '{var_name}' not found.")
 
 
+def get_path_based_env_var(var_name: str) -> str:
+    """Get an environment variable based on root path.
+
+    Args:
+        var_name (str): The name of the environment variable to retrieve.
+
+    Returns:
+        str: Value of the environment variable.
+
+    Raises:
+        KeyError: If the environment variable is not found.
+    """
+    try:
+        var = os.environ[var_name]
+        if getattr(sys, "frozen", False):
+            return os.path.join(sys._MEIPASS, var)
+        else:
+            return var
+    except KeyError:
+        raise KeyError(f"Environment variable '{var_name}' not found.")
+
+
 def load_environment_variables(env_file: str = ".env_checks") -> None:
     """Load environment variables from a specified .env_checks file.
 
