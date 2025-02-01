@@ -7,25 +7,22 @@ from src.utils.module.ModuleRunnerSingleton import (
 
 
 def test_create_runner_fail_class_not_inheriting_AbstractRunner():
-    # Test that create_runner raises an error if the class doesn't inherit AbstractRunner
+    """Test that create_runner raises an error if the class does not inherit from AbstractRunner."""
     mock_module = MagicMock()
 
-    # Create a mock class that does not inherit from AbstractRunner
-    mock_runner_class = MagicMock()
+    # Create a mock class that does NOT inherit from AbstractRunner
+    class MockRunner:
+        pass  # This class does not extend AbstractRunner
 
-    # Mock that the class does not inherit from AbstractRunner
-    mock_runner_class.__class__ = (
-        object  # Ensure it's just a plain class, not inheriting from AbstractRunner
-    )
-    mock_module.PomodoroRunner = mock_runner_class
+    mock_module.PomodoroRunner = MockRunner  # Assign mock class to the module
 
-    # Instantiate ModuleRunnerSingleton and try to create the runner
-    module_runner = ModuleRunnerSingleton()
-    module_runner._setup()
-    module_runner.create_runner("pomodoro")
+    with patch("importlib.import_module", return_value=mock_module):
+        module_runner = ModuleRunnerSingleton()
 
-    with patch("importlib.import_module", return_value=False):
-        with pytest.raises(ValueError, match="No runner class found"):
+        # Expecting ValueError since the class doesn't inherit from AbstractRunner
+        with pytest.raises(
+            ValueError, match="No runner class found or class does not inherit"
+        ):
             module_runner.create_runner("pomodoro")
 
 

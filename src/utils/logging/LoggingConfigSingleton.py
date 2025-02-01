@@ -6,9 +6,10 @@ import sys
 from typing import List
 
 from src.utils.logging.LoggerStream import LoggerStream
+from src.utils.abstract.abstract_singleton import AbstractSingleton
 
 
-class LoggingConfigSingleton:
+class LoggingConfigSingleton(AbstractSingleton):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -67,7 +68,7 @@ class LoggingConfigSingleton:
         sys.stdout = LoggerStream(logger.debug)
         sys.stderr = LoggerStream(logger.error)
 
-    def setup(self) -> None:
+    def _setup(self) -> None:
         """Perform the full logger setup."""
         self._initialize_log_files(self.log_dir, self.log_files)
         self.load_logging_config(self.config_path)

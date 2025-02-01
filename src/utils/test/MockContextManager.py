@@ -83,7 +83,6 @@ class MockContextManager:
         """Temporarily removes a patch for a method, attribute, or dict."""
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
-        # breakpoint()
         old_patcher = self.active_patchers.pop(name)
         old_patcher.stop()
         self.active_mocks.pop(name, None)

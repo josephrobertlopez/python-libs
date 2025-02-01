@@ -28,7 +28,7 @@ def test_logging_setup_logging_file_dne(
 def test_logging_setup(get_singleton, mock_os, mock_builtins, mock_logging):
     # if log file path exists, don't open
     with mock_os, mock_builtins, mock_logging:
-        get_singleton.setup()
+        get_singleton._setup()
         sys.stderr.write("Test stderr redirection.\n")
         sys.stderr.flush()
         mock_builtins.get_mock("open").assert_not_called()
