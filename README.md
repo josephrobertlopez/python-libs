@@ -58,13 +58,13 @@ To run your tests using `pytest` in a Docker container:
 1. **Build the Docker image**:
 
     ```bash
-    docker-compose build --no-cache pomodoro-pytest
+    docker-compose build --no-cache run_pytest
     ```
 
 2. **Run pytest**:
 
     ```bash
-    docker-compose run --rm pomodoro-pytest
+    docker-compose run --rm run_pytest
     ```
 
 ### Running Behave Tests
@@ -81,13 +81,13 @@ To run your Behave tests in a Docker container:
 2. **Build the Docker image**:
 
     ```bash
-    docker-compose build --no-cache pomodoro-behave
+    docker-compose build --no-cache run_behave
     ```
 
 3. **Run Behave**:
 
     ```bash
-    docker-compose run --rm pomodoro-behave
+    docker-compose run --rm run_behave
     ```
 
 ### Running the Application
@@ -104,7 +104,7 @@ To run the application in Docker:
 2. **Run the app with Docker Compose**:
 
     ```bash
-    docker-compose --profile pomodoro-app run --rm pomodoro-app
+    docker-compose --profile pomodoro-app run --rm run_app
     ```
 
 ### Running the Application Locally (without Docker)
