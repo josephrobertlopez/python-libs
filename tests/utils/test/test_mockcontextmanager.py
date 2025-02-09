@@ -1,6 +1,6 @@
 import pytest
 
-from src.utils.test.MockContextManager import MockContextManager
+from src.utils.test.mock_context_manager import MockContextManager
 
 
 def test_mock_context_manager(mock_context):

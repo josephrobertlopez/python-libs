@@ -5,7 +5,7 @@ import os
 import sys
 from typing import List
 
-from src.utils.logging.LoggerStream import LoggerStream
+from src.utils.logging.logger_stream import LoggerStream
 from src.utils.abstract.abstract_singleton import AbstractSingleton
 
 

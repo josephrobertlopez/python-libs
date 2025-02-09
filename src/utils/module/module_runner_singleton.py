@@ -3,7 +3,7 @@ import sys
 import importlib
 from src.utils.abstract.abstract_runner import AbstractRunner
 from src.utils.env_checks.env_checks import load_environment_variables, get_env_var
-from src.utils.logging.LoggingConfigSingleton import LoggingConfigSingleton
+from src.utils.logging.logging_config_singleton import LoggingConfigSingleton
 from src.utils.abstract.abstract_singleton import AbstractSingleton
 
 
@@ -35,7 +35,7 @@ class ModuleRunnerSingleton(AbstractSingleton):
         """
         try:
             # Dynamically import the runner module (e.g., src.pomodoro.pomodoro)
-            module = importlib.import_module(f"src.{module_name}.{module_name}")
+            module = importlib.import_module(f"src.runners.{module_name}")
 
             # Check if the module has a class that inherits from AbstractRunner
             runner_class = getattr(module, module_name.capitalize() + "Runner", None)

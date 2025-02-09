@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from unittest.mock import MagicMock
-from src.utils.test.MockPatchingStrategies import (
+from src.utils.test.mock_patching_strategies import (
     AttributePatcherStrategy,
     MappingPatcherStrategy,
     MethodPatcherStrategy,

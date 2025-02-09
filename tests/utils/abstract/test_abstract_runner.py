@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.utils.test.MockMethods import method_called_in_mock
+from src.utils.test.mock_methods import method_called_in_mock
 
 
 def test_required_argument(sample_concrete_runner):

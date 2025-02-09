@@ -1,12 +1,3 @@
-# Project Name
-
-A brief description of what your project does.
-
-## Features
-
-- Feature 1
-- Feature 2
-- Feature 3
 
 ## Requirements
 
@@ -126,7 +117,7 @@ To run the application locally using Poetry, follow these steps:
 3. **Run the application**:
 
     ```bash
-    poetry run python -m run $MODULE_GROUP --minutes 0
+    poetry run python -m src.runners.run $MODULE_GROUP --minutes 0
     ```
 
 ## Development
@@ -143,13 +134,18 @@ Or to run Behave tests:
 poetry run behave
 ```
 
+## Pyinstaller
+
+The following is to have runners become executable via pyinstaller 
+```bash
+pyinstaller --add-data "resources:resources" \
+    --add-data ".env:." \
+    --hidden-import "src.utils.module.ModuleRunnerSingleton" \
+    --hidden-import "src.runners.pomodoro" \
+    src.runners.run.py
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-pyinstaller --onefile \   feature/pomodoro.py ] 6:10 PM
-    --add-data "resources:resources" \
-    --add-data ".env:." \
-    --hidden-import "src.utils.module.ModuleRunnerSingleton" \
-    --hidden-import "src.pomodoro.pomodoro" \
-    run.py

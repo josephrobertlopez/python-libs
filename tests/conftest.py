@@ -8,7 +8,7 @@ from src.utils.abstract.abstract_singleton import (
     SampleConcreteSingleton,
 )
 from src.utils.media.audio import PygameMixerSoundSingleton
-from src.utils.test.MockContextManager import MockContextManager
+from src.utils.test.mock_context_manager import MockContextManager
 
 
 @pytest.fixture

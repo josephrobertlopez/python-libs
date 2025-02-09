@@ -1,7 +1,7 @@
 import shutil
 import os
 
-from src.utils.module.ModuleRunnerSingleton import ModuleRunnerSingleton
+from src.utils.module.module_runner_singleton import ModuleRunnerSingleton
 
 
 def before_all(context):
