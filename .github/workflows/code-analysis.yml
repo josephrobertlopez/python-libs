@@ -46,6 +46,6 @@ jobs:
 
       # Step 7: Upload coverage results to GitHub (optional, for viewing coverage reports in the GitHub UI)
       - name: Upload coverage to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v3
         with:
           file: coverage.xml
