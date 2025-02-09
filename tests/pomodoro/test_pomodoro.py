@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from src.pomodoro.pomodoro import PomodoroRunner
+from src.runners.pomodoro import PomodoroRunner
 
 
 @pytest.fixture
