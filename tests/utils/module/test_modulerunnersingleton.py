@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 
 import pytest
-from src.utils.module.ModuleRunnerSingleton import (
+from src.utils.module.module_runner_singleton import (
     ModuleRunnerSingleton,
 )  # Correct class import
 

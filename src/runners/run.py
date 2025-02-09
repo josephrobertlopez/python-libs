@@ -1,6 +1,6 @@
 import argparse
 
-from src.utils.module.ModuleRunnerSingleton import ModuleRunnerSingleton
+from src.utils.module.module_runner_singleton import ModuleRunnerSingleton
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the specified module.")
