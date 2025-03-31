@@ -12,7 +12,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
 pyinstaller = "^6.11.0"
-python-dotenv = "^1.0.1"
+python-dotenv = "^1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 behave = "^1.2.6"
