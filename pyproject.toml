@@ -12,13 +12,13 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
 pyinstaller = "^6.11.0"
-python-dotenv = "^1.0.1"
+python-dotenv = "^1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 behave = "^1.2.6"
-pytest = "^8.3.3"
+pytest = "^8.3.5"
 pytest-mock = "^3.14.0"
-flake8 = "^7.1.1"
+flake8 = "^7.2.0"
 pytest-cov = "^6.0.0"
 pygame = "^2.1.3"
 
