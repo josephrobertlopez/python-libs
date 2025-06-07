@@ -50,8 +50,8 @@ class MockContextManager:
 
     @contextmanager
     def update_patch(self, name, new_value):
-        self.apply_all_patches()
         """Temporarily updates a patch for a specific method, attribute, or dict."""
+        self.apply_all_patches()
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
 
@@ -79,8 +79,8 @@ class MockContextManager:
 
     @contextmanager
     def remove_patch(self, name):
-        self.apply_all_patches()
         """Temporarily removes a patch for a method, attribute, or dict."""
+        self.apply_all_patches()
         if name not in self.active_patchers:
             raise KeyError(f"'{name}' is not patched.")
         old_patcher = self.active_patchers.pop(name)

@@ -1,0 +1,99 @@
+name: LocalStack CDK Test
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+  workflow_dispatch:  # Allow manual triggering
+
+env:
+  ENVIRONMENT: dev
+  PROJECT_NAME: python-libs
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+
+jobs:
+  test-localstack:
+    name: Test CDK with LocalStack
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Start LocalStack with Docker
+        uses: LocalStack/setup-localstack@v0.1.2
+        with:
+          image-tag: 'latest'
+          install-awslocal: true
+
+      - name: Verify LocalStack is running
+        run: |
+          curl -s http://localhost:4566/_localstack/health | jq
+          awslocal s3 mb s3://test-bucket
+          awslocal s3 ls
+          
+      - name: Install CDK and dependencies
+        run: |
+          npm install -g aws-cdk aws-cdk-local
+          pip install -r infra/requirements.txt
+          
+      - name: CDK Synth
+        run: |
+          cd infra/cdk
+          cdklocal synth
+          
+      - name: Bootstrap CDK in LocalStack
+        run: |
+          cd infra
+          make bootstrap
+          
+      - name: Deploy Artifact Stack
+        run: |
+          cd infra
+          make deploy
+          
+      - name: Verify Artifact Bucket
+        run: |
+          awslocal s3 ls
+          awslocal s3 ls s3://${{ env.PROJECT_NAME }}-artifacts-${{ env.ENVIRONMENT }}/
+          
+      - name: Deploy with Pipeline
+        run: |
+          cd infra
+          make deploy-with-pipeline
+          
+      - name: Verify CodePipeline Resources
+        run: |
+          awslocal codecommit list-repositories
+          awslocal codepipeline list-pipelines
+          awslocal codebuild list-projects
+          
+      - name: Run Pipeline Simulation
+        run: |
+          cd infra
+          python simulate_pipeline.py simulate-pipeline
+          
+      - name: Access Artifacts
+        run: |
+          cd infra
+          python access_artifacts.py list-pipelines
+          python access_artifacts.py list-final-artifacts
+          
+      - name: Create test summary
+        run: |
+          echo "## LocalStack CDK Test Results ✅" >> $GITHUB_STEP_SUMMARY
+          echo "All infrastructure components deployed successfully to LocalStack" >> $GITHUB_STEP_SUMMARY
+          echo "Artifact bucket and CodePipeline were created and verified" >> $GITHUB_STEP_SUMMARY
+          echo "Pipeline simulation completed successfully" >> $GITHUB_STEP_SUMMARY

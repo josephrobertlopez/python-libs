@@ -47,3 +47,22 @@ ENV SDL_AUDIODRIVER=dummy
 ENV AUDIODEV=null
 # Install all dependencies, including development, for testing
 RUN poetry install --with ${MODULE_GROUP} --no-interaction --no-ansi -vvv
+
+
+FROM init_app AS cdk-init
+USER root
+# Install required dependencies (curl, gnupg, ca-certificates) and Node.js
+RUN apt-get update && apt-get install -y curl gnupg ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+
+
+# Install specified versions of AWS CDK and AWS CDK Local globally
+RUN npm install -g aws-cdk@${AWS_CDK_VERSION} aws-cdk-local@${AWS_CDK_LOCAL_VERSION}
+
+# Install Python dependencies (e.g., aws-cdk-lib)
+RUN pip install --no-cache-dir aws-cdk-lib
+
+# Copy the rest of your project files into the container
+COPY . .

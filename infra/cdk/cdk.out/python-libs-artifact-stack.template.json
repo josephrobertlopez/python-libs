@@ -1,0 +1,154 @@
+{
+ "Resources": {
+  "ArtifactBucket7410C9EF": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "python-libs-artifacts-dev",
+    "CorsConfiguration": {
+     "CorsRules": [
+      {
+       "AllowedHeaders": [
+        "*"
+       ],
+       "AllowedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "AllowedOrigins": [
+        "*"
+       ],
+       "MaxAge": 3000
+      }
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "Id": "expire-old-versions",
+       "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 30
+       },
+       "Status": "Enabled"
+      },
+      {
+       "ExpirationInDays": 7,
+       "Id": "expire-test-logs",
+       "Prefix": "test-logs/",
+       "Status": "Enabled"
+      },
+      {
+       "ExpirationInDays": 30,
+       "Id": "expire-pipeline-artifacts",
+       "Prefix": "codepipeline/",
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "python-libs-artifact-stack/ArtifactBucket/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzQz0DNQTCwv1k1OydbNyUzSqw4uSUzO1gEKxRcb61U7lSZnp5boOKflQVi1IKZ/aUlBKVgwKLU4v7QoObVWJ6CyJCM/T99Yz9BQz1IxqzgzU7eoNK8kMzdVLwhCAwBsxn12bgAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "python-libs-artifact-stack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ArtifactBucketName": {
+   "Description": "Name of the S3 bucket for artifacts",
+   "Value": {
+    "Ref": "ArtifactBucket7410C9EF"
+   },
+   "Export": {
+    "Name": "python-libs-artifact-bucket-name"
+   }
+  },
+  "BinaryPath": {
+   "Description": "Path for binary artifacts in the S3 bucket",
+   "Value": "binaries/",
+   "Export": {
+    "Name": "python-libs-binary-path"
+   }
+  },
+  "SourcePath": {
+   "Description": "Path for source artifacts in the S3 bucket",
+   "Value": "source/",
+   "Export": {
+    "Name": "python-libs-source-path"
+   }
+  },
+  "TestLogsPath": {
+   "Description": "Path for test logs in the S3 bucket",
+   "Value": "test-logs/",
+   "Export": {
+    "Name": "python-libs-test-logs-path"
+   }
+  },
+  "BuildArtifactsPath": {
+   "Description": "Path for build artifacts in the S3 bucket",
+   "Value": "build-artifacts/",
+   "Export": {
+    "Name": "python-libs-build-artifacts-path"
+   }
+  },
+  "FinalArtifactsPath": {
+   "Description": "Path for final artifacts in the S3 bucket",
+   "Value": "final-artifacts/",
+   "Export": {
+    "Name": "python-libs-final-artifacts-path"
+   }
+  },
+  "CodePipelinePath": {
+   "Description": "Path for CodePipeline artifacts in the S3 bucket",
+   "Value": "codepipeline/",
+   "Export": {
+    "Name": "python-libs-codepipeline-path"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -11,5 +11,6 @@ def before_all(context):
 
 def after_all(context):
     del context.app
-    if os.path.exists("resources/logs"):
-        shutil.rmtree("resources/logs")
+    log_dir = os.path.join("resources", "logs")
+    if os.path.exists(log_dir):
+        shutil.rmtree(log_dir)

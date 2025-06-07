@@ -37,31 +37,43 @@ def get_env_var(var_name: str) -> str:
 
 def get_path_based_env_var(var_name: str) -> str:
     """Get an environment variable based on root path.
+    
+    Handles path separators for cross-platform compatibility.
 
     Args:
         var_name (str): The name of the environment variable to retrieve.
 
     Returns:
-        str: Value of the environment variable.
+        str: Value of the environment variable properly joined with base path if needed.
 
     Raises:
         KeyError: If the environment variable is not found.
     """
     try:
+        # Get the raw value from environment
         var = os.environ[var_name]
+        
+        # If path contains separators from the wrong OS, normalize them
+        var = var.replace('/', os.sep).replace('\\', os.sep)
+        
+        # If running in PyInstaller, prepend the _MEIPASS base directory
         if getattr(sys, "frozen", False):
             return os.path.join(sys._MEIPASS, var)
         else:
+            # For regular execution, check if it's an absolute path already
+            if os.path.isabs(var):
+                return var
+            # For relative paths, return as is (caller will resolve relative to their context)
             return var
     except KeyError:
         raise KeyError(f"Environment variable '{var_name}' not found.")
 
 
-def load_environment_variables(env_file: str = ".env_checks") -> None:
-    """Load environment variables from a specified .env_checks file.
+def load_environment_variables(env_file: str = ".env") -> None:
+    """Load environment variables from a specified .env file.
 
     Args:
-        env_file (str): The path to the .env_checks file to load.
+        env_file (str): The path to the .env file to load.
     """
     if not os.path.exists(env_file):
         raise FileNotFoundError(f"{env_file} not found.")
