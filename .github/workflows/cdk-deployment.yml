@@ -1,0 +1,143 @@
+name: CDK Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/cdk-deployment.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/cdk-deployment.yml'
+  workflow_dispatch:  # Allow manual triggering
+
+env:
+  ENVIRONMENT: dev
+  PROJECT_NAME: python-libs
+  AWS_REGION: us-east-1
+
+jobs:
+  validate:
+    name: Validate CDK Infrastructure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install CDK and LocalStack
+        run: |
+          npm install -g aws-cdk aws-cdk-local
+          pip install -r infra/requirements.txt
+          
+      - name: Start LocalStack
+        run: |
+          cd infra
+          python localstack_setup.py start
+          
+      - name: Validate CDK Synth
+        run: |
+          cd infra/cdk
+          cdk synth
+          
+      - name: Deploy to LocalStack for testing
+        run: |
+          cd infra
+          make bootstrap
+          make deploy
+          
+      - name: Run pipeline simulation
+        run: |
+          cd infra
+          python simulate_pipeline.py simulate-pipeline
+          
+      - name: List artifacts
+        run: |
+          cd infra
+          python access_artifacts.py list-pipelines
+          python access_artifacts.py list-final-artifacts
+          
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    environment: production  # Use GitHub environment for production deployment
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsCDKRole
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Install CDK
+        run: |
+          npm install -g aws-cdk
+          pip install -r infra/requirements.txt
+          
+      - name: Extract AWS account ID
+        id: aws-account
+        run: |
+          # Extract AWS account ID using the AWS CLI
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+          echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          
+      - name: Bootstrap CDK
+        run: |
+          cd infra/cdk
+          cdk bootstrap aws://${{ steps.aws-account.outputs.account_id }}/${{ env.AWS_REGION }}
+        
+      - name: Deploy artifact bucket
+        run: |
+          cd infra/cdk
+          cdk deploy ${{ env.PROJECT_NAME }}-artifact-stack --require-approval never
+        
+      - name: Check if pipeline is enabled
+        id: check-pipeline
+        run: |
+          # Simply set a default value - in real usage, this would be configured via GitHub Variables
+          echo "enable_pipeline=false" >> $GITHUB_OUTPUT
+        
+      - name: Deploy with pipeline
+        if: steps.check-pipeline.outputs.enable_pipeline == 'true'
+        run: |
+          cd infra/cdk
+          ENABLE_PIPELINE=true cdk deploy ${{ env.PROJECT_NAME }}-pipeline-stack --require-approval never
+        
+      - name: Create deployment summary
+        run: |
+          echo "## Deployment Complete u2705" >> $GITHUB_STEP_SUMMARY
+          echo "Artifact bucket deployed to ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
+          echo "Stack name: ${{ env.PROJECT_NAME }}-artifact-stack" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.check-pipeline.outputs.enable_pipeline }}" == "true" ]]; then
+            echo "Pipeline stack name: ${{ env.PROJECT_NAME }}-pipeline-stack" >> $GITHUB_STEP_SUMMARY
+          fi

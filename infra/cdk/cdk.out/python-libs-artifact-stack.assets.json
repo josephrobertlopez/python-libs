@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "eadac0eb366a1da183a054a4992501ec568657b3de55f4b1e092d9d7f3ca5a2e": {
+      "source": {
+        "path": "python-libs-artifact-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "000000000000-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-000000000000-us-east-1",
+          "objectKey": "eadac0eb366a1da183a054a4992501ec568657b3de55f4b1e092d9d7f3ca5a2e.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-file-publishing-role-000000000000-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
