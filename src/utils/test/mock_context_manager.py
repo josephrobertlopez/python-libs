@@ -42,26 +42,26 @@ class MockContextManager:
             mapping_values: A dictionary of mapping names to mock dictionaries
             class_values: A dictionary of class names to mock class configurations
             auto_mock: A dictionary of names to mock with auto-detected strategy
-            
+
         Raises:
             TypeError: If target_path is not a string or any of the dictionaries are not of the expected type
         """
         # Validate inputs
         if not isinstance(target_path, str):
             raise TypeError("target_path should be a string")
-            
+
         if method_behaviors is not None and not isinstance(method_behaviors, dict):
             raise TypeError("method_behaviors should be a dictionary")
-            
+
         if attribute_values is not None and not isinstance(attribute_values, dict):
             raise TypeError("attribute_values should be a dictionary")
-            
+
         if mapping_values is not None and not isinstance(mapping_values, dict):
             raise TypeError("mapping_values should be a dictionary")
-            
+
         if class_values is not None and not isinstance(class_values, dict):
             raise TypeError("class_values should be a dictionary")
-            
+
         if auto_mock is not None and not isinstance(auto_mock, dict):
             raise TypeError("auto_mock should be a dictionary")
 
@@ -95,7 +95,9 @@ class MockContextManager:
                 self.active_mocks[name] = mock_obj
                 self.active_patchers[name] = patcher
             except Exception as e:
-                raise RuntimeError(f"Error patching {name} with {patch_type} strategy: {str(e)}")
+                raise RuntimeError(
+                    f"Error patching {name} with {patch_type} strategy: {str(e)}"
+                )
 
     def apply_all_patches(self) -> None:
         """Apply all patches using their respective strategies."""
@@ -124,17 +126,17 @@ class MockContextManager:
         errors = []
         # Create a copy of the keys to avoid mutation during iteration
         patcher_names = list(self.active_patchers.keys())
-        
+
         for name in patcher_names:
             try:
                 patcher = self.active_patchers[name]
                 patcher.stop()
             except Exception as e:
                 errors.append(f"Error stopping patcher for {name}: {str(e)}")
-        
+
         self.active_patchers.clear()
         self.active_mocks.clear()
-        
+
         if errors:
             # Log errors but don't raise to ensure all patchers are stopped
             print(f"Errors occurred while stopping patchers: {', '.join(errors)}")
@@ -264,14 +266,16 @@ class _TempPatchUpdate:
         # Check if the mock exists
         if self.name not in self.mock_context.active_patchers:
             raise KeyError(f"Mock '{self.name}' is not patched.")
-            
+
         # Save the old patcher and behavior
         self.old_patcher = self.mock_context.active_patchers[self.name]
         self.old_patcher.stop()
 
         # Create a new patch
         strategy = self.mock_context.strategies["auto"]
-        patcher = strategy.execute(self.mock_context.target_path, self.name, self.new_behavior)
+        patcher = strategy.execute(
+            self.mock_context.target_path, self.name, self.new_behavior
+        )
         mock_obj = patcher.start()
         self.mock_context.active_mocks[self.name] = mock_obj
         self.mock_context.active_patchers[self.name] = patcher
@@ -301,7 +305,7 @@ class _TempPatchRemoval:
         # Check if the mock exists
         if self.name not in self.mock_context.active_patchers:
             raise KeyError(f"Mock '{self.name}' is not patched.")
-            
+
         # Save and remove the old patch
         self.old_patcher = self.mock_context.active_patchers[self.name]
         self.old_patcher.stop()

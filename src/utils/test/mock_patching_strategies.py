@@ -26,7 +26,7 @@ class MethodPatcherStrategy(AbstractStrategy):
 
         target_path, method_name, method_behavior = args
         full_path = f"{target_path}.{method_name}"
-        
+
         # Use create=True to allow patching of non-existent methods
         if callable(method_behavior):
             # Create a MagicMock with side_effect for callables
@@ -81,10 +81,10 @@ class MappingPatcherStrategy(AbstractStrategy):
 
         target_path, mapping_name, mapping_values = args
         full_path = f"{target_path}.{mapping_name}"
-        
+
         # Create a mock that behaves like a mapping
         mock_mapping = MagicMock()
-        
+
         # If we're given an actual mapping, configure the mock to use its values
         if isinstance(mapping_values, Mapping):
             # Set up __getitem__ to return values from the mapping
@@ -95,7 +95,7 @@ class MappingPatcherStrategy(AbstractStrategy):
             mock_mapping.values.return_value = mapping_values.values()
             mock_mapping.__iter__.return_value = iter(mapping_values)
             mock_mapping.__contains__.side_effect = lambda key: key in mapping_values
-        
+
         # Use create=True to allow patching of non-existent mappings
         return patch(full_path, mock_mapping, create=True)
 
@@ -120,27 +120,27 @@ class ClassPatcherStrategy(AbstractStrategy):
 
         target_path, class_name, class_methods = args
         full_path = f"{target_path}.{class_name}"
-        
+
         # Create a class mock with appropriate methods
         mock_class = MagicMock()
         instance_mock = MagicMock()
-        
+
         # Configure the instance mock with the provided methods
         if isinstance(class_methods, dict):
             for method_name, return_value in class_methods.items():
                 method_mock = MagicMock(return_value=return_value)
                 setattr(instance_mock, method_name, method_mock)
-        
+
         # Make the class return our configured instance
         mock_class.return_value = instance_mock
-        
+
         # Use create=True to allow patching of non-existent classes
         return patch(full_path, mock_class, create=True)
 
 
 class SmartPatcherStrategy(AbstractStrategy):
     """Strategy that automatically detects the type of input and uses the appropriate strategy.
-    
+
     This strategy will automatically detect the type of input and use the appropriate strategy:
     - For callable objects (functions, methods, etc.), it will use MethodPatcherStrategy
     - For class objects, it will create a class mock that returns instance mocks
@@ -171,8 +171,10 @@ class SmartPatcherStrategy(AbstractStrategy):
                 try:
                     # Try to create an instance of the class to inspect its methods
                     instance = behavior()
-                    for method_name, method in inspect.getmembers(instance, inspect.ismethod):
-                        if not method_name.startswith('__'):
+                    for method_name, method in inspect.getmembers(
+                        instance, inspect.ismethod
+                    ):
+                        if not method_name.startswith("__"):
                             try:
                                 # Try to get the return value of the method
                                 original_return = method()
@@ -193,14 +195,18 @@ class SmartPatcherStrategy(AbstractStrategy):
                 return mapping_strategy.execute(target_path, name, behavior)
 
             # Handle collection objects (list, tuple, set, etc.)
-            elif isinstance(behavior, Collection) and not isinstance(behavior, (str, bytes, bytearray)):
+            elif isinstance(behavior, Collection) and not isinstance(
+                behavior, (str, bytes, bytearray)
+            ):
                 return patch(full_path, behavior, create=True)
 
             # Handle everything else as a simple value
             else:
                 return patch(full_path, behavior, create=True)
-                
+
         except Exception as e:
             # Fallback to a simple patch if anything goes wrong
-            print(f"Warning: Error in SmartPatcherStrategy for {full_path}: {str(e)}. Falling back to simple patch.")
+            print(
+                f"Warning: Error in SmartPatcherStrategy for {full_path}: {str(e)}. Falling back to simple patch."
+            )
             return patch(full_path, MagicMock(), create=True)

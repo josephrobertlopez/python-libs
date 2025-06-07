@@ -1,11 +1,18 @@
-from unittest.mock import MagicMock, patch
+import sys
+from unittest.mock import MagicMock
 
 from src.utils.test.mock_patching_strategies import (
     AttributePatcherStrategy,
     ClassPatcherStrategy,
     MappingPatcherStrategy,
     MethodPatcherStrategy,
+    SmartPatcherStrategy,
 )
+
+
+class SampleClass:
+    def method(self):
+        return "original"
 
 
 def test_method_patcher(mock_context):
@@ -31,6 +38,8 @@ def test_method_patcher_with_mapping(mock_context):
     mock_method = patcher.start()
 
     try:
+        # With the updated implementation, a mapping is now directly patched (not as a callable)
+        assert mock_method == behavior
         assert mock_method["key1"] == "value1"
         assert mock_method["key2"] == "value2"
         assert "key1" in mock_method
@@ -42,13 +51,11 @@ def test_method_patcher_with_mapping(mock_context):
 def test_attribute_patcher(mock_context):
     """Test the AttributePatcherStrategy."""
     strategy = AttributePatcherStrategy()
-    mock_attr = MagicMock()
-    mock_attr.__getitem__.return_value = 5
-    patcher = strategy.execute(mock_context["target_path"], "attr_name", mock_attr)
-    
+    patcher = strategy.execute(mock_context["target_path"], "attr_name", 42)
+    mock_attr = patcher.start()
+
     try:
-        patcher.start()
-        assert mock_attr["attr_name"] == 5  # Testing the mock behavior
+        assert mock_attr == 42
     finally:
         patcher.stop()
 
@@ -56,15 +63,16 @@ def test_attribute_patcher(mock_context):
 def test_mapping_patcher(mock_context):
     """Test the MappingPatcherStrategy."""
     strategy = MappingPatcherStrategy()
-    mock_dict = {"key": "value", "another_key": 42}
-    patcher = strategy.execute(mock_context["target_path"], "map_name", mock_dict)
-    
+    mapping = {"a": 1, "b": 2, "c": 3}
+    patcher = strategy.execute(mock_context["target_path"], "mapping_name", mapping)
+    mock_mapping = patcher.start()
+
     try:
-        patcher.start()
-        assert mock_dict["key"] == "value"  # Testing mock dict behavior
-        assert mock_dict["another_key"] == 42
-        assert "key" in mock_dict
-        assert "nonexistent" not in mock_dict
+        assert mock_mapping["a"] == 1
+        assert mock_mapping["b"] == 2
+        assert mock_mapping["c"] == 3
+        assert "a" in mock_mapping
+        assert "z" not in mock_mapping
     finally:
         patcher.stop()
 
@@ -72,18 +80,67 @@ def test_mapping_patcher(mock_context):
 def test_class_patcher(mock_context):
     """Test the ClassPatcherStrategy."""
     strategy = ClassPatcherStrategy()
-    class_values = {"method1": "return1", "method2": 42}
-    patcher = strategy.execute(mock_context["target_path"], "TestClass", class_values)
-    
+    class_values = {"method1": "result1", "method2": 42}
+    patcher = strategy.execute(mock_context["target_path"], "class_name", class_values)
+    mock_class = patcher.start()
+
     try:
-        mock_class = patcher.start()
-        # Test the class methods directly
-        assert mock_class.method1() == "return1"
-        assert mock_class.method2() == 42
-        
-        # Test the instance methods
+        # Test the class methods
         instance = mock_class()
-        assert instance.method1() == "return1"
+        assert instance.method1() == "result1"
         assert instance.method2() == 42
     finally:
         patcher.stop()
+
+
+def test_smart_patcher_simple(mock_context):
+    """Test the SmartPatcherStrategy with different types of inputs."""
+    strategy = SmartPatcherStrategy()
+
+    # Test with a callable
+    callable_patcher = strategy.execute(
+        mock_context["target_path"], "func", lambda x: x * 2
+    )
+    mock_func = callable_patcher.start()
+
+    try:
+        assert callable(mock_func)
+        assert mock_func(5) == 10
+    finally:
+        callable_patcher.stop()
+
+    # Test with a value
+    value_patcher = strategy.execute(mock_context["target_path"], "value", 42)
+    mock_value = value_patcher.start()
+
+    try:
+        assert mock_value == 42
+    finally:
+        value_patcher.stop()
+
+    # Test with a dict
+    dict_patcher = strategy.execute(
+        mock_context["target_path"], "config", {"key": "value"}
+    )
+    mock_dict = dict_patcher.start()
+
+    try:
+        assert mock_dict["key"] == "value"
+        assert "key" in mock_dict
+    finally:
+        dict_patcher.stop()
+
+
+def test_smart_patcher_with_class(mock_context):
+    """Test the SmartPatcherStrategy with a class."""
+    strategy = SmartPatcherStrategy()
+    class_patcher = strategy.execute(
+        mock_context["target_path"], "TestClass", SampleClass
+    )
+    mock_class = class_patcher.start()
+
+    try:
+        instance = mock_class()
+        assert instance.method() == "original"
+    finally:
+        class_patcher.stop()
