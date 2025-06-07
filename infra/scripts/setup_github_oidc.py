@@ -27,6 +27,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+import re
 
 import boto3
 import typer
@@ -85,8 +86,9 @@ def create_oidc_provider(iam_client, thumbprint: str) -> str:
         response = iam_client.list_open_id_connect_providers()
         for provider in response["OpenIDConnectProviderList"]:
             provider_arn = provider["Arn"]
-            if "token.actions.githubusercontent.com" in provider_arn:
-                console.print(f"Using existing OIDC provider: {provider_arn}")
+            # Properly check for exact domain match with proper URL parsing
+            if re.match(r'^arn:aws:iam::[0-9]+:oidc-provider/token\.actions\.githubusercontent\.com$', provider_arn):
+                console.print(f"Using existing OIDC provider: {provider_arn}", style="green")
                 return provider_arn
         console.print("Could not find existing GitHub OIDC provider")
         sys.exit(1)
