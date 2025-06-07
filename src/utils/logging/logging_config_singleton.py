@@ -21,7 +21,7 @@ class LoggingConfigSingleton(AbstractSingleton):
     def __init__(
         self,
         config_path: str,
-        log_dir: str = "resources/logs",
+        log_dir: str = None,
         log_files: List[str] = None,
     ):
         """Initialize logger setup."""
@@ -29,7 +29,8 @@ class LoggingConfigSingleton(AbstractSingleton):
             return  # Avoid reinitialization
         self._initialized = True  # Mark as initialized
         self.config_path = config_path
-        self.log_dir = log_dir
+        # Use os.path.join for default log directory
+        self.log_dir = log_dir if log_dir is not None else os.path.join("resources", "logs")
         self.log_files = log_files or ["app.log", "error.log"]
 
     @staticmethod
