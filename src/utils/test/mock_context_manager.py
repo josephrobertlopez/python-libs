@@ -139,7 +139,9 @@ class MockContextManager:
 
         if errors:
             # Log errors but don't raise to ensure all patchers are stopped
-            print(f"Errors occurred while stopping patchers: {', '.join(errors)}")
+            import sys
+            sys.stdout.write(f"Errors occurred while stopping patchers: {', '.join(errors)}\n")
+            sys.stdout.flush()
 
     def __enter__(self):
         """Enter the context manager and apply all patches."""
@@ -152,7 +154,9 @@ class MockContextManager:
             self.remove_all_patches()
         except Exception as e:
             # Log the error but don't mask the original exception
-            print(f"Error during cleanup in MockContextManager.__exit__: {str(e)}")
+            import sys
+            sys.stdout.write(f"Error during cleanup in MockContextManager.__exit__: {str(e)}\n")
+            sys.stdout.flush()
         # Don't suppress exceptions from the with block
         return False
 
@@ -178,7 +182,9 @@ class MockContextManager:
             try:
                 self.active_patchers[name].stop()
             except Exception as e:
-                print(f"Warning: Error stopping existing patcher for {name}: {str(e)}")
+                import sys
+                sys.stdout.write(f"Warning: Error stopping existing patcher for {name}: {str(e)}\n")
+                sys.stdout.flush()
 
         # Use the auto-detect strategy for any type of behavior
         try:

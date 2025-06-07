@@ -1,7 +1,6 @@
-from unittest.mock import Mock, patch
-
 import pytest
 import os
+from unittest.mock import Mock, patch
 from src.utils.abstract.abstract_runner import SampleConcreteRunner
 from src.utils.abstract.abstract_singleton import (
     AbstractSingleton,
@@ -30,28 +29,34 @@ def mock_sys():
 
 @pytest.fixture
 def mock_os():
-    # Create a safe path joiner that won't cause recursion
-    def path_join(*args):
-        # Use the platform-specific separator
-        sep = os.sep
-        # Remove any leading/trailing separators from intermediate parts
+    """Fixture to mock os module for testing."""
+
+    # Create a mock path.join function
+    def path_join(*parts, sep="/"):
         clean_parts = []
-        for i, part in enumerate(args):
-            if i == 0:
-                clean_parts.append(part.rstrip(sep))
-            elif i == len(args) - 1:
-                clean_parts.append(part.lstrip(sep))
-            else:
-                clean_parts.append(part.strip(sep))
+        for part in parts:
+            if part:  # Skip empty parts
+                # Convert to string and remove leading/trailing separators
+                part_str = str(part).strip(sep)
+                if part_str:  # Only add if there's something left
+                    clean_parts.append(part_str)
         return sep.join(clean_parts)
-    
+
+    # Create a mock makedirs function
+    def mock_makedirs(path, exist_ok=False):
+        return True
+
+    # Create a mock path.exists function that returns True by default
+    def mock_exists(path):
+        return True
+
     with smart_mock(
         "os",
         **{
-            "path.exists": True,
+            "path.exists": mock_exists,  # Use our callable mock_exists function
             "environ": {"TEST_VAR": "test_value", "LOG_CONFIG_FILE": "logging_config.ini"},
             "path.join": path_join,  # Use our custom path_join function
-            "makedirs": True,
+            "makedirs": mock_makedirs,  # Use our custom makedirs function
         }
     ) as mock_ctx:
         yield mock_ctx
@@ -59,9 +64,16 @@ def mock_os():
 
 @pytest.fixture
 def mock_builtins():
+    # Create a mock file object with close method
+    mock_file = Mock()
+    mock_file.close = Mock()
+
+    # Create a mock open function that returns the mock file
+    mock_open = Mock(return_value=mock_file)
+
     with smart_mock(
         "builtins",
-        open=Mock(),
+        open=mock_open,
         print=Mock(),
     ) as mock_ctx:
         yield mock_ctx
@@ -70,10 +82,11 @@ def mock_builtins():
 @pytest.fixture
 def mock_logging():
     """Fixture to mock logging setup."""
+    mock_fileconfig = Mock()
     with smart_mock(
         "logging",
         getLogger=Mock(),
-        **{"config.fileConfig": Mock()}
+        **{"config.fileConfig": mock_fileconfig}
     ) as mock_ctx:
         yield mock_ctx
 
@@ -104,10 +117,15 @@ def sample_concrete_runner():
 @pytest.fixture
 def pygame_mixer_audio():
     """Fixture to provide a PygameMixerAudio instance with mocked dependencies."""
+    # Create a mock for get_init that returns True
+    def get_init_mock():
+        return True
+
     # Use smart_mock to automatically detect the best mocking strategy
     with smart_mock(
         "pygame.mixer",
         init=Mock(),
+        get_init=get_init_mock,  # Use our mock function that returns True
         **{
             "music.get_busy": False,
             "music.play": Mock(),
@@ -146,3 +164,14 @@ def setup_headless_audio():
     os.environ["SDL_AUDIODRIVER"] = "dummy"
     yield  # Allow tests to run
     del os.environ["SDL_AUDIODRIVER"]
+
+
+@pytest.fixture(autouse=True)
+def mock_dotenv():
+    """Mock dotenv.load_dotenv to prevent actual file loading."""
+    # Create a callable mock for load_dotenv that returns True
+    mock_load_dotenv = Mock(return_value=True)
+
+    # Directly patch the renamed function in the env_checks module
+    with patch('src.utils.env_checks.env_checks.dotenv_load_dotenv', mock_load_dotenv):
+        yield mock_load_dotenv

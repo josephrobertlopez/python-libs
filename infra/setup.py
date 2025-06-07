@@ -83,7 +83,7 @@ def install():
     
     # Install Python dependencies
     console.print("\n[bold]Installing Python dependencies...[/bold]")
-    os.system("pip install -r requirements.txt")
+    os.system("poetry install")
     
     # Install cdklocal if not already installed
     if os.system("which cdklocal > /dev/null 2>&1") != 0:

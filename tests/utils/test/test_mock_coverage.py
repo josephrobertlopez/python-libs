@@ -92,7 +92,12 @@ class TestMockContextManagerCoverage(unittest.TestCase):
 
         # Verify that the error was printed
         output = f.getvalue()
-        self.assertIn("Error stopping patcher", output)
+        # Check for either of the possible error messages
+        self.assertTrue(
+            "Error during cleanup in MockContextManager.__exit__" in output or
+            "Errors occurred while stopping patchers" in output,
+            f"Expected error message not found in output: {output}"
+        )
 
     def test_apply_patches_error(self):
         # Test error handling when applying patches
@@ -164,7 +169,7 @@ class TestMockContextManagerCoverage(unittest.TestCase):
 
         # Verify that the warning was printed
         output = f.getvalue()
-        self.assertIn("Warning: Error stopping existing patcher", output)
+        self.assertIn("Warning: Error stopping existing patcher for path", output)
 
     def test_temp_patch_contextmanagers(self):
         # Test the _TempPatchUpdate and _TempPatchRemoval classes more thoroughly

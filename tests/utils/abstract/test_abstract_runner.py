@@ -42,19 +42,17 @@ def test_invalid_argument_type(sample_concrete_runner):
             sample_concrete_runner.run(*["--name", "Charlie", "--age", "invalid_age"])
 
 
-def test_argument_alias(sample_concrete_runner, mock_sys):
+def test_argument_alias(sample_concrete_runner):
     # Test when '-a' is used instead of '--age'
-    with mock_sys.update_patch("argv", ["program_name", "--name", "David", "-a", "40"]):
-        sample_concrete_runner.run(*["--name", "David", "-a", "40"])
-        assert method_called_in_mock(
-            mock_sys.get_mock("stdout"),
-            "write",
-            "Hello David, I see you are 40 years old.",
-        )
+    with patch("sys.argv", ["program_name", "--name", "David", "-a", "40"]):
+        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+            sample_concrete_runner.run(*["--name", "David", "-a", "40"])
+            output = mock_stdout.getvalue()
+            assert "Hello David, I see you are 40 years old." in output
 
 
-def test_no_arguments(sample_concrete_runner, mock_sys):
-    with mock_sys:
+def test_no_arguments(sample_concrete_runner):
+    with patch("sys.argv", ["program_name"]):
         with pytest.raises(SystemExit):
             sample_concrete_runner.run()
 

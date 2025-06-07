@@ -1,6 +1,6 @@
 import os
 import sys
-from dotenv import load_dotenv
+from dotenv import load_dotenv as dotenv_load_dotenv
 
 
 def get_running_in_pyinstaller() -> str:
@@ -37,7 +37,7 @@ def get_env_var(var_name: str) -> str:
 
 def get_path_based_env_var(var_name: str) -> str:
     """Get an environment variable based on root path.
-    
+
     Handles path separators for cross-platform compatibility.
 
     Args:
@@ -52,10 +52,10 @@ def get_path_based_env_var(var_name: str) -> str:
     try:
         # Get the raw value from environment
         var = os.environ[var_name]
-        
+
         # If path contains separators from the wrong OS, normalize them
         var = var.replace('/', os.sep).replace('\\', os.sep)
-        
+
         # If running in PyInstaller, prepend the _MEIPASS base directory
         if getattr(sys, "frozen", False):
             return os.path.join(sys._MEIPASS, var)
@@ -78,5 +78,5 @@ def load_environment_variables(env_file: str = ".env") -> None:
     if not os.path.exists(env_file):
         raise FileNotFoundError(f"{env_file} not found.")
 
-    load_dotenv(env_file)
+    dotenv_load_dotenv(env_file)
     print(f"Environment variables loaded from {env_file}")

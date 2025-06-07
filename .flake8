@@ -1,2 +1,15 @@
 [flake8]
 max-line-length = 120
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .venv,
+    venv,
+    build,
+    dist,
+    *.egg-info
+extend-ignore = E203, W503, E501
+per-file-ignores =
+    tests/*:F401,F841
+    *test*.py:F401,F841

@@ -15,8 +15,12 @@ def get_singleton():
 def test_logging_setup_logging_file_dne(
     get_singleton, mock_os, mock_builtins, mock_logging
 ):
+    # Create a mock function that returns False for 'resources/logs/app.log' and True for anything else
+    def mock_path_exists(path):
+        return path != "resources/logs/app.log"
+
     with mock_os.update_patch(
-        "path.exists", False
+        "path.exists", mock_path_exists
     ) as mock_exists, mock_builtins, mock_logging:
         get_singleton.setup()
         mock_exists.assert_called_once_with("resources/logs/app.log")

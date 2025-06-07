@@ -72,6 +72,7 @@ cd python-libs
 2. Install dependencies:
 
 ```bash
+pip install poetry
 poetry install
 ```
 
@@ -81,24 +82,45 @@ poetry install
 cp .env.example .env
 ```
 
+### Working with Poetry
+
+This project uses Poetry for dependency management. Here are some common commands:
+
+```bash
+# Activate the virtual environment
+poetry shell
+
+# Install a new package
+poetry add <package-name>
+
+# Install a development dependency
+poetry add --group dev <package-name>
+
+# Update all dependencies
+poetry update
+
+# Generate requirements.txt (if needed)
+poetry export -f requirements.txt --output requirements.txt --without-hashes
+```
+
 ## Testing
 
 ### Running Unit Tests
 
 ```bash
-python -m pytest
+poetry run pytest
 ```
 
 ### Running Behavior Tests
 
 ```bash
-behave
+poetry run behave
 ```
 
 ## Using the Pomodoro Timer
 
 ```bash
-python src/runners/run.py pomodoro -m 25
+poetry run python src/runners/run.py pomodoro -m 25
 ```
 
 This sets a Pomodoro timer for 25 minutes.

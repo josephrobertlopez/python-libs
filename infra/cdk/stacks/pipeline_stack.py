@@ -84,16 +84,17 @@ class CodePipelineStack(Stack):
                             "python": "3.9",
                         },
                         "commands": [
-                            "pip install -r requirements.txt",
-                            "pip install pytest pytest-cov pyinstaller",
+                            "curl -sSL https://install.python-poetry.org | python3 -",
+                            "export PATH=\"$HOME/.local/bin:$PATH\"",
+                            "poetry install",
                         ],
                     },
                     "build": {
                         "commands": [
                             # Run tests and generate coverage report
-                            "pytest --cov=. --cov-report=xml:test-results/coverage.xml --junitxml=test-results/junit.xml",
+                            "poetry run pytest --cov=. --cov-report=xml:test-results/coverage.xml --junitxml=test-results/junit.xml",
                             # Build executables
-                            "python -m PyInstaller --onefile app.py -n pomodoro",
+                            "poetry run python -m PyInstaller --onefile app.py -n pomodoro",
                         ],
                     },
                     "post_build": {
