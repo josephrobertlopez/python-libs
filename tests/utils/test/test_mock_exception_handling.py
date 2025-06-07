@@ -19,7 +19,7 @@ def test_mock_context_manager_with_exception():
                 self.active_mocks[name] = mock_obj
                 self.active_patchers[name] = MagicMock()
         
-        def stop_all_mocks(self):
+        def remove_all_patches(self):
             """Override to mark patchers as stopped and clear dictionaries"""
             self.patchers_stopped = True
             self.active_mocks.clear()
