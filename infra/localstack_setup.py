@@ -6,6 +6,7 @@ import time
 import typer
 import boto3
 from dotenv import load_dotenv
+from typing import Optional
 
 # Load environment variables
 load_dotenv()
@@ -141,6 +142,49 @@ def list_objects(bucket_name: str):
             typer.echo(f"  - {obj['Key']} ({obj['Size']} bytes)")
     except Exception as e:
         typer.echo(f"Error listing objects: {e}")
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def create_bucket(bucket_name: Optional[str] = None):
+    """Create an S3 bucket for artifacts in LocalStack"""
+    if not check_localstack_running():
+        typer.echo("LocalStack is not running. Start it first.")
+        raise typer.Exit(code=1)
+    
+    # Use the default naming convention if no name provided
+    if not bucket_name:
+        bucket_name = "python-libs-artifacts-dev"
+    
+    s3_client = boto3.client(
+        "s3",
+        endpoint_url=get_localstack_endpoint(),
+        **get_aws_credentials(),
+    )
+    try:
+        # Check if bucket already exists
+        try:
+            s3_client.head_bucket(Bucket=bucket_name)
+            typer.echo(f"Bucket '{bucket_name}' already exists")
+            return bucket_name
+        except Exception:
+            # If a 404 error, the bucket does not exist
+            pass  # Bucket doesn't exist, we'll create it
+        
+        # Create the bucket
+        s3_client.create_bucket(Bucket=bucket_name)
+        
+        # Enable versioning
+        s3_client.put_bucket_versioning(
+            Bucket=bucket_name,
+            VersioningConfiguration={'Status': 'Enabled'}
+        )
+        
+        typer.echo(f"Created S3 bucket '{bucket_name}' with versioning enabled")
+        return bucket_name
+    
+    except Exception as e:
+        typer.echo(f"Error creating bucket: {e}")
         raise typer.Exit(code=1)
 
 
