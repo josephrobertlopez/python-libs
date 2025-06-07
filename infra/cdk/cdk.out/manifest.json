@@ -1,0 +1,114 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "python-libs-artifact-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "python-libs-artifact-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "python-libs-artifact-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://000000000000/us-east-1",
+      "properties": {
+        "templateFile": "python-libs-artifact-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-deploy-role-000000000000-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-exec-role-000000000000-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-000000000000-us-east-1/eadac0eb366a1da183a054a4992501ec568657b3de55f4b1e092d9d7f3ca5a2e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "python-libs-artifact-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-lookup-role-000000000000-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "python-libs-artifact-stack.assets"
+      ],
+      "metadata": {
+        "/python-libs-artifact-stack/ArtifactBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucket7410C9EF"
+          }
+        ],
+        "/python-libs-artifact-stack/ArtifactBucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ArtifactBucketName"
+          }
+        ],
+        "/python-libs-artifact-stack/BinaryPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BinaryPath"
+          }
+        ],
+        "/python-libs-artifact-stack/SourcePath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourcePath"
+          }
+        ],
+        "/python-libs-artifact-stack/TestLogsPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestLogsPath"
+          }
+        ],
+        "/python-libs-artifact-stack/BuildArtifactsPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildArtifactsPath"
+          }
+        ],
+        "/python-libs-artifact-stack/FinalArtifactsPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FinalArtifactsPath"
+          }
+        ],
+        "/python-libs-artifact-stack/CodePipelinePath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodePipelinePath"
+          }
+        ],
+        "/python-libs-artifact-stack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/python-libs-artifact-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/python-libs-artifact-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "python-libs-artifact-stack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

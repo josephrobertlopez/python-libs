@@ -30,10 +30,25 @@ def mock_sys():
 
 @pytest.fixture
 def mock_os():
+    # Create a safe path joiner that won't cause recursion
+    def path_join(*args):
+        # Use the platform-specific separator
+        sep = os.sep
+        # Remove any leading/trailing separators from intermediate parts
+        clean_parts = []
+        for i, part in enumerate(args):
+            if i == 0:
+                clean_parts.append(part.rstrip(sep))
+            elif i == len(args) - 1:
+                clean_parts.append(part.lstrip(sep))
+            else:
+                clean_parts.append(part.strip(sep))
+        return sep.join(clean_parts)
+    
     default_behaviors = {
         "path.exists": True,
         "environ": {"TEST_VAR": "test_value", "LOG_CONFIG_FILE": "logging_config.ini"},
-        "path.join": lambda *args: "/".join(map(str, args)),
+        "path.join": path_join,  # Use our custom path_join function
         "makedirs": True,
     }
     return MockContextManager(target_path="os", method_behaviors=default_behaviors)

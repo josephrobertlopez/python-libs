@@ -1,0 +1,188 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "python-libs-artifact-stack": {
+        "id": "python-libs-artifact-stack",
+        "path": "python-libs-artifact-stack",
+        "children": {
+          "ArtifactBucket": {
+            "id": "ArtifactBucket",
+            "path": "python-libs-artifact-stack/ArtifactBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "python-libs-artifact-stack/ArtifactBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketName": "python-libs-artifacts-dev",
+                    "corsConfiguration": {
+                      "corsRules": [
+                        {
+                          "maxAge": 3000,
+                          "allowedHeaders": [
+                            "*"
+                          ],
+                          "allowedMethods": [
+                            "GET",
+                            "HEAD"
+                          ],
+                          "allowedOrigins": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    },
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "id": "expire-old-versions",
+                          "noncurrentVersionExpiration": {
+                            "noncurrentDays": 30
+                          },
+                          "status": "Enabled"
+                        },
+                        {
+                          "expirationInDays": 7,
+                          "id": "expire-test-logs",
+                          "prefix": "test-logs/",
+                          "status": "Enabled"
+                        },
+                        {
+                          "expirationInDays": 30,
+                          "id": "expire-pipeline-artifacts",
+                          "prefix": "codepipeline/",
+                          "status": "Enabled"
+                        }
+                      ]
+                    },
+                    "versioningConfiguration": {
+                      "status": "Enabled"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.160.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.160.0"
+            }
+          },
+          "ArtifactBucketName": {
+            "id": "ArtifactBucketName",
+            "path": "python-libs-artifact-stack/ArtifactBucketName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "BinaryPath": {
+            "id": "BinaryPath",
+            "path": "python-libs-artifact-stack/BinaryPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "SourcePath": {
+            "id": "SourcePath",
+            "path": "python-libs-artifact-stack/SourcePath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "TestLogsPath": {
+            "id": "TestLogsPath",
+            "path": "python-libs-artifact-stack/TestLogsPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "BuildArtifactsPath": {
+            "id": "BuildArtifactsPath",
+            "path": "python-libs-artifact-stack/BuildArtifactsPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "FinalArtifactsPath": {
+            "id": "FinalArtifactsPath",
+            "path": "python-libs-artifact-stack/FinalArtifactsPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "CodePipelinePath": {
+            "id": "CodePipelinePath",
+            "path": "python-libs-artifact-stack/CodePipelinePath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.160.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "python-libs-artifact-stack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "python-libs-artifact-stack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.160.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "python-libs-artifact-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.160.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "python-libs-artifact-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.160.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.160.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.160.0"
+    }
+  }
+}
