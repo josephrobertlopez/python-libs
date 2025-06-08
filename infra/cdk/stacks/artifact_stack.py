@@ -10,7 +10,14 @@ from constructs import Construct
 
 
 class ArtifactStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, env_name: str, project_name: str, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        construct_id: str,
+        env_name: str,
+        project_name: str,
+        **kwargs,
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Create an S3 bucket for storing artifacts

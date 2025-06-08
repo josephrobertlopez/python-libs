@@ -30,7 +30,7 @@ def test_run():
     """Test that the run method works as expected using smart_mock utilities."""
     module_runner = ModuleRunnerSingleton()
     mock_runner = MagicMock()
-    
+
     with patch_object(module_runner, "create_runner", mock_runner):
         module_runner.run("pomodoro", ["-m", "0"])
         mock_runner.assert_called_once()

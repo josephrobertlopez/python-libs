@@ -54,7 +54,7 @@ def get_path_based_env_var(var_name: str) -> str:
         var = os.environ[var_name]
 
         # If path contains separators from the wrong OS, normalize them
-        var = var.replace('/', os.sep).replace('\\', os.sep)
+        var = var.replace("/", os.sep).replace("\\", os.sep)
 
         # If running in PyInstaller, prepend the _MEIPASS base directory
         if getattr(sys, "frozen", False):

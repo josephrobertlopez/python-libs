@@ -15,11 +15,11 @@ endpoint_url = "http://localhost:4566"
 
 # Create S3 client
 s3_client = boto3.client(
-    's3',
+    "s3",
     endpoint_url=endpoint_url,
     region_name="us-east-1",
     aws_access_key_id="test",
-    aws_secret_access_key="test"
+    aws_secret_access_key="test",
 )
 
 # Check if bucket exists
@@ -30,13 +30,12 @@ except Exception:
     # Create bucket
     print(f"Creating bucket '{BUCKET_NAME}'...")
     s3_client.create_bucket(Bucket=BUCKET_NAME)
-    
+
     # Enable versioning
     s3_client.put_bucket_versioning(
-        Bucket=BUCKET_NAME,
-        VersioningConfiguration={'Status': 'Enabled'}
+        Bucket=BUCKET_NAME, VersioningConfiguration={"Status": "Enabled"}
     )
-    
+
     print(f"Bucket '{BUCKET_NAME}' created successfully with versioning enabled")
 
 # Upload a test file
@@ -44,7 +43,7 @@ test_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "READM
 if os.path.exists(test_file_path):
     s3_key = "test/README.md"
     print(f"Uploading {test_file_path} to s3://{BUCKET_NAME}/{s3_key}")
-    with open(test_file_path, 'rb') as file_data:
+    with open(test_file_path, "rb") as file_data:
         s3_client.put_object(Bucket=BUCKET_NAME, Key=s3_key, Body=file_data)
     print(f"File uploaded successfully")
 else:
@@ -53,8 +52,8 @@ else:
 # List objects in bucket
 print(f"\nListing objects in bucket '{BUCKET_NAME}'...")
 response = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
-for obj in response.get('Contents', []):
+for obj in response.get("Contents", []):
     print(f"- {obj['Key']} ({obj['Size']} bytes)")
 
-if not response.get('Contents'):
+if not response.get("Contents"):
     print("No objects found in bucket")

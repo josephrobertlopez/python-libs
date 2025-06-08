@@ -9,14 +9,21 @@ from src.utils.abstract.abstract_singleton import (
 from src.utils.media.audio import PygameMixerSoundSingleton
 from src.utils.test import smart_mock, quick_mock, runtime_context
 from .shared_annotations import (
-    mock_test_sys, mock_test_os, mock_test_builtins, mock_test_logging,
-    mock_test_pygame, mock_runner_context, mock_audio_context, mock_logging_context
+    mock_test_sys,
+    mock_test_os,
+    mock_test_builtins,
+    mock_test_logging,
+    mock_test_pygame,
+    mock_runner_context,
+    mock_audio_context,
+    mock_logging_context,
 )
 
 
 # =============================================================================
 # LEGACY FIXTURES (for backward compatibility)
 # =============================================================================
+
 
 @pytest.fixture
 def mock_sys():
@@ -25,7 +32,7 @@ def mock_sys():
         yield
 
 
-@pytest.fixture  
+@pytest.fixture
 def mock_os():
     """Legacy fixture - use @mock_test_os decorator instead."""
     with mock_test_os():
@@ -50,6 +57,7 @@ def mock_logging():
 # ENHANCED CONTEXT FIXTURES (recommended approach)
 # =============================================================================
 
+
 @pytest.fixture
 def runner_context():
     """Context manager for runner tests with standard configuration."""
@@ -72,6 +80,7 @@ def logging_context():
 # DOMAIN-SPECIFIC FIXTURES
 # =============================================================================
 
+
 @pytest.fixture
 def sample_concrete_singleton():
     """Fixture to instantiate the SampleConcreteSingleton."""
@@ -88,6 +97,7 @@ def sample_concrete_runner():
 def pygame_mixer_audio():
     """Enhanced pygame mixer fixture using shared annotations."""
     from src.utils.test import runtime_context
+
     with runtime_context("audio_system"):
         yield
 
@@ -112,6 +122,7 @@ def mock_singleton_setup():
 # AUTO-USE FIXTURES (global test environment)
 # =============================================================================
 
+
 @pytest.fixture(autouse=True)
 def setup_headless_audio():
     """Set up the headless audio environment for Pygame in CI."""
@@ -124,13 +135,14 @@ def setup_headless_audio():
 def mock_dotenv():
     """Mock dotenv.load_dotenv to prevent actual file loading."""
     mock_load_dotenv = Mock(return_value=True)
-    with patch('src.utils.env_checks.env_checks.dotenv_load_dotenv', mock_load_dotenv):
+    with patch("src.utils.env_checks.env_checks.dotenv_load_dotenv", mock_load_dotenv):
         yield mock_load_dotenv
 
 
 # =============================================================================
 # LEGACY COMPATIBILITY FIXTURE
 # =============================================================================
+
 
 @pytest.fixture
 def mock_context():

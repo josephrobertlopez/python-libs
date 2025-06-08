@@ -47,7 +47,7 @@ from .runtime_annotations import (
     ASTAnalyzer,
     auto_analyze,
     intelligent_preset,
-    smart_mock_auto
+    smart_mock_auto,
 )
 
 # Mock Utilities - Context managers and utilities
@@ -55,22 +55,18 @@ from .mock_utilities import (
     # Core smart mock
     smart_mock,
     smart_patches,
-    
     # Quick utilities
     temporary_mock,
     patch_object,
-    
     # Advanced utilities
     MockFactory,
     MockBuilder,
     SmartMockContext,
     SmartPatcher,
-    
     # Introspection
     MockInspector,
-    
     # Legacy compatibility
-    create_mock_class
+    create_mock_class,
 )
 
 # Test Base - Base classes and patterns
@@ -88,7 +84,7 @@ from .test_base import (
     RuntimeMockMixin,
     AssertionMixin,
     FixtureMixin,
-    SmartTestCase
+    SmartTestCase,
 )
 
 # =============================================================================
@@ -108,8 +104,9 @@ try:
         audio_test,
         mock_runner_context,
         mock_audio_context,
-        mock_logging_context
+        mock_logging_context,
     )
+
     _LEGACY_SHARED_AVAILABLE = True
 except ImportError:
     _LEGACY_SHARED_AVAILABLE = False
@@ -122,20 +119,23 @@ try:
         mock_module,
         mock_output,
         mock_env_vars,
-        mock_file_system
+        mock_file_system,
     )
+
     _LEGACY_SMART_AVAILABLE = True
 except ImportError:
     _LEGACY_SMART_AVAILABLE = False
 
 try:
     from .config_mock_factory import ConfigMockFactory
+
     _LEGACY_CONFIG_AVAILABLE = True
 except ImportError:
     _LEGACY_CONFIG_AVAILABLE = False
 
 try:
     from .default_mocks import get_default_preset
+
     _LEGACY_DEFAULTS_AVAILABLE = True
 except ImportError:
     _LEGACY_DEFAULTS_AVAILABLE = False
@@ -144,25 +144,31 @@ except ImportError:
 # CONVENIENCE FUNCTIONS
 # =============================================================================
 
+
 def quick_mock(preset_name: str, **overrides):
     """Quick decorator factory for common mock presets."""
     return runtime_mock(preset_name, **overrides)
+
 
 def create_test_builder():
     """Create a mock builder for complex test configurations."""
     return MockBuilder()
 
+
 def create_runtime_config():
     """Create a new runtime configuration instance."""
     return RuntimeConfig()
+
 
 def inspect_test_context(context):
     """Inspect a test context and return debugging information."""
     return MockInspector.inspect_context(context)
 
+
 # =============================================================================
 # FRAMEWORK INFORMATION
 # =============================================================================
+
 
 def get_framework_info():
     """Get information about the consolidated framework."""
@@ -174,7 +180,7 @@ def get_framework_info():
             "shared_annotations": _LEGACY_SHARED_AVAILABLE,
             "smart_annotations": _LEGACY_SMART_AVAILABLE,
             "config_mock_factory": _LEGACY_CONFIG_AVAILABLE,
-            "default_mocks": _LEGACY_DEFAULTS_AVAILABLE
+            "default_mocks": _LEGACY_DEFAULTS_AVAILABLE,
         },
         "features": [
             "Runtime-configurable test annotations",
@@ -184,9 +190,10 @@ def get_framework_info():
             "Multi-framework support (unittest/pytest)",
             "Advanced mock introspection",
             "Backward compatibility",
-            "AST-enhanced intelligent testing"
-        ]
+            "AST-enhanced intelligent testing",
+        ],
     }
+
 
 def print_framework_help():
     """Print comprehensive help for the framework."""
@@ -236,59 +243,98 @@ def print_framework_help():
     """
     print(help_text)
 
+
 # =============================================================================
 # MAIN EXPORTS
 # =============================================================================
 
 __all__ = [
     # Core runtime annotations
-    'runtime_mock', 'runtime_context', 'RuntimeConfig', 'RuntimeContext',
-    'ASTAnalyzer', 'auto_analyze', 'intelligent_preset', 'smart_mock_auto',
-    
+    "runtime_mock",
+    "runtime_context",
+    "RuntimeConfig",
+    "RuntimeContext",
+    "ASTAnalyzer",
+    "auto_analyze",
+    "intelligent_preset",
+    "smart_mock_auto",
     # Mock utilities
-    'smart_mock', 'smart_patches', 'temporary_mock', 'patch_object',
-    'MockFactory', 'MockBuilder', 'SmartMockContext', 'SmartPatcher',
-    'MockInspector',
-    
+    "smart_mock",
+    "smart_patches",
+    "temporary_mock",
+    "patch_object",
+    "MockFactory",
+    "MockBuilder",
+    "SmartMockContext",
+    "SmartPatcher",
+    "MockInspector",
     # Base classes
-    'StandardTestCase', 'StandardPytestBase', 'RuntimeTestCase', 'SmartMockTestCase',
-    'BaseTestCase', 'PytestBase', 'ParametrizedTestCase',
-    
+    "StandardTestCase",
+    "StandardPytestBase",
+    "RuntimeTestCase",
+    "SmartMockTestCase",
+    "BaseTestCase",
+    "PytestBase",
+    "ParametrizedTestCase",
     # Utilities and helpers
-    'AssertionHelpers', 'CommonFixtures', 'TestUtilities',
-    
+    "AssertionHelpers",
+    "CommonFixtures",
+    "TestUtilities",
     # Mixins
-    'RuntimeMockMixin', 'AssertionMixin', 'FixtureMixin',
-    
+    "RuntimeMockMixin",
+    "AssertionMixin",
+    "FixtureMixin",
     # Convenience functions
-    'quick_mock', 'create_test_builder', 'create_runtime_config', 'inspect_test_context',
-    
+    "quick_mock",
+    "create_test_builder",
+    "create_runtime_config",
+    "inspect_test_context",
     # Preset and template management
-    'create_preset', 'list_presets', 'create_template', 'list_templates',
-    
+    "create_preset",
+    "list_presets",
+    "create_template",
+    "list_templates",
     # Framework info
-    'get_framework_info', 'print_framework_help', 'framework_info', 'list_available_presets',
-    'SmartTestCase'
+    "get_framework_info",
+    "print_framework_help",
+    "framework_info",
+    "list_available_presets",
+    "SmartTestCase",
 ]
 
 # Add legacy exports if available
 if _LEGACY_SHARED_AVAILABLE:
-    __all__.extend([
-        'mock_test_sys', 'mock_test_os', 'mock_test_builtins', 'mock_test_module',
-        'output_test', 'file_system_test', 'runner_test', 'audio_test'
-    ])
+    __all__.extend(
+        [
+            "mock_test_sys",
+            "mock_test_os",
+            "mock_test_builtins",
+            "mock_test_module",
+            "output_test",
+            "file_system_test",
+            "runner_test",
+            "audio_test",
+        ]
+    )
 
 if _LEGACY_SMART_AVAILABLE:
-    __all__.extend([
-        'mock_sys', 'mock_os', 'mock_builtins', 'mock_module', 
-        'mock_output', 'mock_env_vars', 'mock_file_system'
-    ])
+    __all__.extend(
+        [
+            "mock_sys",
+            "mock_os",
+            "mock_builtins",
+            "mock_module",
+            "mock_output",
+            "mock_env_vars",
+            "mock_file_system",
+        ]
+    )
 
 if _LEGACY_CONFIG_AVAILABLE:
-    __all__.append('ConfigMockFactory')
+    __all__.append("ConfigMockFactory")
 
 if _LEGACY_DEFAULTS_AVAILABLE:
-    __all__.append('get_default_preset')
+    __all__.append("get_default_preset")
 
 # =============================================================================
 # VERSION AND METADATA

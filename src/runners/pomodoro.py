@@ -63,6 +63,7 @@ class PomodoroRunner(AbstractRunner):
 
         # Verify the sound file exists
         import os
+
         if not os.path.exists(SOUND_FILE):
             print(f"Warning: Sound file not found at {SOUND_FILE}")
             # Try absolute path

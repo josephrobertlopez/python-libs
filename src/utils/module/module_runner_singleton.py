@@ -24,7 +24,7 @@ class ModuleRunnerSingleton(AbstractSingleton):
         # Set up logging
         logger_setup = LoggingConfigSingleton(
             config_path=get_env_var("LOG_CONFIG_FILE"),
-            log_dir=os.path.join("resources", "logs")
+            log_dir=os.path.join("resources", "logs"),
         )
         logger_setup.setup()
 
