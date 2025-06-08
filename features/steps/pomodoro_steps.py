@@ -1,9 +1,8 @@
-import os
 import time
+import os
 
 from behave import given, when, then
-from src.utils.test.smart_mock import smart_mock, create_mock_class
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 
 
 @given("I have set the Pomodoro timer for {minutes} minute(s)")
@@ -18,32 +17,29 @@ def step_impl_no_arguments(context):
 
 @when("the timer starts")
 def step_impl_start_timer(context):
-    # Create a mock for the PygameMixerSoundSingleton class
+    # Mock the audio system to avoid pygame dependencies
     mock_play_sound = MagicMock()
     
-    # Create a mock class with the required methods
-    MockAudioClass = create_mock_class(
-        class_methods={
-            "load_sound": lambda self, file_path: None,
-            "play_sound": lambda self, *args, **kwargs: mock_play_sound(*args, **kwargs),
-            "is_sound_playing": lambda self: True
-        }
-    )
-    
-    # Use the smart_mock context manager to mock the class
-    with smart_mock(
-        "src.utils.media.audio",
-        PygameMixerSoundSingleton=MockAudioClass
-    ) as mock_ctx:
-        # Store both the context and the specific mock function for later verification
-        context.mock_audio = mock_ctx
-        context.mock_play_sound = mock_play_sound
+    # Create a simple mock class
+    class MockAudioClass:
+        def load_sound(self, file_path):
+            pass
         
-        try:
-            # Start the timer process with additional context
-            context.app.run("pomodoro", ["--minutes", str(context.minutes)])
-        except Exception as e:
-            context.error = e
+        def play_sound(self, *args, **kwargs):
+            return mock_play_sound(*args, **kwargs)
+        
+        def is_sound_playing(self):
+            return True
+    
+    # Store mocks in context for testing
+    context.mock_audio = MockAudioClass()
+    context.mock_play_sound = mock_play_sound
+    
+    try:
+        # Start the timer process with additional context
+        context.app.run("pomodoro", ["--minutes", str(context.minutes)])
+    except Exception as e:
+        context.error = e
 
 
 @then("I should hear an alarm sound after {minutes:d} minute(s)")

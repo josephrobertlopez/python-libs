@@ -1,0 +1,62 @@
+{
+  "factory_configs": {
+    "cli_app": {
+      "sys": {
+        "argv": ["test_app"],
+        "executable": "test_executable"
+      },
+      "os": {
+        "getcwd": "lambda: '/test/working/dir'"
+      }
+    },
+    "file_processor": {
+      "os.path": {
+        "exists": "lambda path: path.endswith('.txt')"
+      },
+      "builtins": {
+        "open": "lambda f, mode='r': StringIO('test content')"
+      }
+    },
+    "network_service": {
+      "requests": {
+        "get": "lambda url: MockResponse(200, {})"
+      }
+    }
+  },
+  "annotation_templates": {
+    "basic_system": {
+      "modules": {
+        "sys": {
+          "argv": ["template_test"],
+          "platform": "test_platform"
+        }
+      }
+    },
+    "file_operations": {
+      "modules": {
+        "os.path": {
+          "exists": "lambda p: True",
+          "join": "lambda *parts: '/'.join(parts)"
+        },
+        "builtins": {
+          "open": "lambda f, m='r': StringIO('mock file content')"
+        }
+      }
+    }
+  },
+  "context_patterns": {
+    "runner_context": {
+      "sys": {
+        "argv": ["runner_app"],
+        "stdout": "StringIO()",
+        "stderr": "StringIO()"
+      }
+    },
+    "output_context": {
+      "sys": {
+        "stdout": "StringIO()",
+        "stderr": "StringIO()"
+      }
+    }
+  }
+}

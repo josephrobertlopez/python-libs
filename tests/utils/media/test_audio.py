@@ -1,41 +1,77 @@
-import pytest
+import unittest
+from unittest.mock import Mock, patch, MagicMock
+
+from tests.shared_annotations import StandardTestCase, mock_test_module
 from src.utils.media.audio import PygameMixerSoundSingleton
 
 
-def test_setup(mixer, pygame_mixer_audio):
-    with pytest.raises(RuntimeError, match="has already been called"):
-        PygameMixerSoundSingleton()
-
-
-def test_load_sound(mock_singleton_setup, mixer, pygame_mixer_audio):
-    # Print active patchers to debug
-    print("Active patchers:", pygame_mixer_audio.active_patchers.keys())
-
-    with pygame_mixer_audio:
-        mixer.load_sound("Fake_sound.wav")
-        pygame_mixer_audio.get_mock("Sound").assert_called_once()
-
-    # Since we now know the remove_patch approach is problematic,
-    # let's skip the removal tests and make the test simpler
-    # This will allow us to pass the test and move on
-    assert True
-
-
-def test_play_sound(mock_singleton_setup, mixer, pygame_mixer_audio):
-    # Mocking the pygame.mixer.Sound class to simulate successful sound playback
-    with pygame_mixer_audio:
-        # Run the play_alarm_sound method
-        # Assert that the play method was called once
-        mixer.load_sound("Fake_sound.wav")
-        mixer.play_sound(until_time=0.001)
-        pygame_mixer_audio.get_mock("Sound")().play.assert_called_once()
-        # Add for coverage
-        mixer.play_sound()
-
-
-def test_is_sound_playing(mock_singleton_setup, mixer, pygame_mixer_audio):
-    """Test that is_sound_playing returns True when sound is playing."""
-    with pygame_mixer_audio:
-        assert not mixer.is_sound_playing()
-        mixer.load_sound("Fake_sound.wav")
-        assert mixer.is_sound_playing()
+class TestPygameMixerSound(StandardTestCase):
+    def setUp(self):
+        super().setUp()
+        # Reset singleton state for each test
+        PygameMixerSoundSingleton._instances = {}
+        
+    @mock_test_module('pygame.mixer', 
+                     init=Mock(return_value=True),
+                     get_init=Mock(return_value=(22050, -16, 2)),
+                     Sound=Mock(return_value=Mock()),
+                     get_busy=Mock(return_value=False))
+    def test_setup(self):
+        mixer = PygameMixerSoundSingleton()
+        self.assertIsNotNone(mixer)
+        
+        # Test that attempting to create another instance with setup raises error
+        with self.assertRaises(RuntimeError):
+            mixer2 = PygameMixerSoundSingleton()
+            mixer2.setup()  # This should raise the error
+    
+    @mock_test_module('pygame.mixer',
+                     init=Mock(return_value=True),
+                     get_init=Mock(return_value=(22050, -16, 2)),
+                     Sound=Mock(return_value=Mock()),
+                     get_busy=Mock(return_value=False))
+    def test_load_sound(self):
+        mixer = PygameMixerSoundSingleton()
+        
+        # Mock the Sound constructor to return a mock sound object
+        mock_sound = Mock()
+        with patch('pygame.mixer.Sound', return_value=mock_sound):
+            mixer.load_sound("Fake_sound.wav")
+            self.assertEqual(mixer._sound, mock_sound)
+    
+    @mock_test_module('pygame.mixer',
+                     init=Mock(return_value=True),
+                     get_init=Mock(return_value=(22050, -16, 2)),
+                     Sound=Mock(return_value=Mock()),
+                     get_busy=Mock(return_value=False))
+    def test_play_sound(self):
+        mixer = PygameMixerSoundSingleton()
+        
+        # Mock the Sound constructor and play method
+        mock_sound = Mock()
+        with patch('pygame.mixer.Sound', return_value=mock_sound):
+            mixer.load_sound("Fake_sound.wav")
+            mixer.play_sound()
+            mock_sound.play.assert_called_once()
+    
+    @mock_test_module('pygame.mixer',
+                     init=Mock(return_value=True),
+                     get_init=Mock(return_value=(22050, -16, 2)),
+                     Sound=Mock(return_value=Mock()),
+                     get_busy=Mock(return_value=False))
+    def test_is_sound_playing(self):
+        mixer = PygameMixerSoundSingleton()
+        
+        # Mock the Sound constructor and configure get_num_channels
+        mock_sound = Mock()
+        mock_sound.get_num_channels.return_value = 0  # Configure return value
+        with patch('pygame.mixer.Sound', return_value=mock_sound):
+            mixer.load_sound("Fake_sound.wav")
+            
+            # Test when sound is not playing
+            mock_sound.get_num_channels.return_value = 0
+            self.assertFalse(mixer.is_sound_playing())
+            
+            # Test when sound is playing  
+            mock_sound.get_num_channels.return_value = 1
+            self.assertTrue(mixer.is_sound_playing())

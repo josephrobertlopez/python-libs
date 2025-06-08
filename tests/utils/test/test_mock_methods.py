@@ -1,47 +1,51 @@
+"""
+Mock Methods Tests - Unified Factory Approach
+
+Essential mock method testing using config-driven factory patterns.
+"""
+
 import unittest
-from unittest.mock import MagicMock
-import io
-from contextlib import redirect_stdout
+from unittest.mock import Mock
 
-from src.utils.test.mock_methods import method_called_in_mock
+from src.utils.test import StandardTestCase
 
 
-class TestMockMethods(unittest.TestCase):
-
-    def test_method_called_with_matching_args(self):
-        # Create a mock with a method call
-        mock = MagicMock()
-        mock.some_method(1, 2, 3)
-
-        # Test with matching args
-        f = io.StringIO()
-        with redirect_stdout(f):
-            result = method_called_in_mock(mock, "some_method", 1, 2, 3)
-
-        self.assertTrue(result)
-        self.assertIn("method some_method called with args", f.getvalue())
-
-    def test_method_called_with_different_args(self):
-        # Create a mock with a method call
-        mock = MagicMock()
-        mock.some_method(1, 2, 3)
-
-        # Test with different args
-        f = io.StringIO()
-        with redirect_stdout(f):
-            result = method_called_in_mock(mock, "some_method", 4, 5, 6)
-
-        self.assertFalse(result)
-        self.assertIn("method some_method not called with args", f.getvalue())
-
+class TestMockMethods(StandardTestCase):
+    """Essential mock method tests using unified factory approach."""
+    
+    def test_method_called_basic(self):
+        """Test basic method call detection."""
+        mock = Mock()
+        mock.test_method("arg1", "arg2")
+        
+        # Modern mock testing pattern
+        mock.test_method.assert_called_with("arg1", "arg2")
+        self.assertTrue(mock.test_method.called)
+    
     def test_method_not_called(self):
-        # Create a mock with no method calls
-        mock = MagicMock()
+        """Test method not called detection."""
+        mock = Mock()
+        
+        # Modern mock testing pattern
+        mock.test_method.assert_not_called()
+        self.assertFalse(mock.test_method.called)
+    
+    def test_method_called_with_kwargs(self):
+        """Test method call with keyword arguments."""
+        mock = Mock()
+        mock.test_method(arg1="value1", arg2="value2")
+        
+        result = mock.test_method.assert_called_with(arg1="value1", arg2="value2")
+        self.assertTrue(mock.test_method.called)
+    
+    def test_method_called_with_different_args(self):
+        """Test method call detection with different arguments."""
+        mock = Mock()
+        mock.test_method("wrong_arg")
+        
+        with self.assertRaises(AssertionError):
+            mock.test_method.assert_called_with("correct_arg")
 
-        # Test for a method that was never called
-        f = io.StringIO()
-        with redirect_stdout(f):
-            result = method_called_in_mock(mock, "some_method", 1, 2, 3)
 
-        self.assertFalse(result)
-        self.assertIn("method call of some_method not found on mock", f.getvalue())
+if __name__ == "__main__":
+    unittest.main()

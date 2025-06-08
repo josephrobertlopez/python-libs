@@ -1,9 +1,9 @@
-from unittest.mock import patch, MagicMock
-
 import pytest
+from unittest.mock import MagicMock
 from src.utils.module.module_runner_singleton import (
     ModuleRunnerSingleton,
 )  # Correct class import
+from src.utils.test import smart_mock, patch_object
 
 
 def test_create_runner_fail_class_not_inheriting_AbstractRunner():
@@ -16,7 +16,7 @@ def test_create_runner_fail_class_not_inheriting_AbstractRunner():
 
     mock_module.PomodoroRunner = MockRunner  # Assign mock class to the module
 
-    with patch("importlib.import_module", return_value=mock_module):
+    with smart_mock("importlib", import_module=lambda module_name: mock_module):
         module_runner = ModuleRunnerSingleton()
 
         # Expecting ValueError since the class doesn't inherit from AbstractRunner
@@ -27,10 +27,10 @@ def test_create_runner_fail_class_not_inheriting_AbstractRunner():
 
 
 def test_run():
-    # Test that the run method works as expected
+    """Test that the run method works as expected using smart_mock utilities."""
     module_runner = ModuleRunnerSingleton()
-    with patch.object(
-        module_runner, "create_runner", return_value=MagicMock()
-    ) as mock_create_runner:
+    mock_runner = MagicMock()
+    
+    with patch_object(module_runner, "create_runner", mock_runner):
         module_runner.run("pomodoro", ["-m", "0"])
-        mock_create_runner.assert_called_once()
+        mock_runner.assert_called_once()
