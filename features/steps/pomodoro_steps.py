@@ -1,8 +1,8 @@
-import os
 import time
+import os
 
 from behave import given, when, then
-from src.utils.test.mock_context_manager import MockContextManager
+from unittest.mock import MagicMock, Mock
 
 
 @given("I have set the Pomodoro timer for {minutes} minute(s)")
@@ -17,35 +17,49 @@ def step_impl_no_arguments(context):
 
 @when("the timer starts")
 def step_impl_start_timer(context):
-    # Use the MockContextManager to mock the sound playing
-    context.mock_audio = MockContextManager(
-        target_path="src.utils.media.audio.PygameMixerSoundSingleton",
-        method_behaviors={"play_sound": None},
-    )
-    
-    with context.mock_audio:
-        try:
-            # Start the timer process with additional context
-            context.app.run("pomodoro", ["--minutes", str(context.minutes)])
-        except Exception as e:
-            context.error = e
+    # Mock the audio system to avoid pygame dependencies
+    mock_play_sound = MagicMock()
+
+    # Create a simple mock class
+    class MockAudioClass:
+        def load_sound(self, file_path):
+            pass
+
+        def play_sound(self, *args, **kwargs):
+            return mock_play_sound(*args, **kwargs)
+
+        def is_sound_playing(self):
+            return True
+
+    # Store mocks in context for testing
+    context.mock_audio = MockAudioClass()
+    context.mock_play_sound = mock_play_sound
+
+    try:
+        # Start the timer process with additional context
+        context.app.run("pomodoro", ["--minutes", str(context.minutes)])
+    except Exception as e:
+        context.error = e
 
 
 @then("I should hear an alarm sound after {minutes:d} minute(s)")
 def step_impl_hear_alarm(context, minutes):
-    # Convert to seconds - to make tests run faster, we can simulate the time passing
-    # without actually waiting the full duration
-    if hasattr(context, 'mock_audio') and hasattr(context.mock_audio, 'get_mock'):
-        # Verify that play_sound was called, which means the alarm would have sounded
-        mock_play_sound = context.mock_audio.get_mock('play_sound')
-        assert mock_play_sound is not None, "The play_sound mock was not created properly"
-    
-    # Check the sound file exists (as in your original implementation)
+    # Verify that play_sound was called, which means the alarm would have sounded
+    assert hasattr(
+        context, "mock_play_sound"
+    ), "The play_sound mock was not created properly"
+    assert context.mock_play_sound.called, "The play_sound method was not called"
+
+    # Check the sound file exists
     sound_file = os.path.join("resources", "sounds", "alarm_sound.wav")
-    assert os.path.exists(sound_file), f"Alarm sound file does not exist at path: {os.path.abspath(sound_file)}"
+    assert os.path.exists(
+        sound_file
+    ), f"Alarm sound file does not exist at path: {os.path.abspath(sound_file)}"
 
 
 @then("I should see an error message")
 def step_impl_error_message(context):
-    assert hasattr(context, 'error'), "Expected an error but none was raised"
-    assert context.error is not None, f"Expected an error but none was raised. Current working directory is: {os.getcwd()}"
+    assert hasattr(context, "error"), "Expected an error but none was raised"
+    assert (
+        context.error is not None
+    ), f"Expected an error but none was raised. Current working directory is: {os.getcwd()}"

@@ -87,8 +87,13 @@ def create_oidc_provider(iam_client, thumbprint: str) -> str:
         for provider in response["OpenIDConnectProviderList"]:
             provider_arn = provider["Arn"]
             # Properly check for exact domain match with proper URL parsing
-            if re.match(r'^arn:aws:iam::[0-9]+:oidc-provider/token\.actions\.githubusercontent\.com$', provider_arn):
-                console.print(f"Using existing OIDC provider: {provider_arn}", style="green")
+            if re.match(
+                r"^arn:aws:iam::[0-9]+:oidc-provider/token\.actions\.githubusercontent\.com$",
+                provider_arn,
+            ):
+                console.print(
+                    f"Using existing OIDC provider: {provider_arn}", style="green"
+                )
                 return provider_arn
         console.print("Could not find existing GitHub OIDC provider")
         sys.exit(1)
@@ -188,20 +193,24 @@ def attach_inline_policy(iam_client, role_name: str, policy: dict) -> None:
 def generate_github_secret_instructions(role_arn: str) -> None:
     """Generate instructions for setting up GitHub secrets."""
     instructions = Text()
-    instructions.append("\n1. Go to your GitHub repository's Settings > Secrets and variables > Actions\n")
+    instructions.append(
+        "\n1. Go to your GitHub repository's Settings > Secrets and variables > Actions\n"
+    )
     instructions.append("2. Click on 'New repository secret'\n")
     instructions.append("3. Add the following secret:\n\n")
     instructions.append("   Name: AWS_ROLE_TO_ASSUME\n")
     instructions.append(f"   Value: {role_arn}\n\n")
     instructions.append("4. If you want to enable the CodePipeline deployment:\n")
     instructions.append("   - Go to 'Variables' tab\n")
-    instructions.append("   - Add a new variable named ENABLE_PIPELINE with value 'true'\n")
+    instructions.append(
+        "   - Add a new variable named ENABLE_PIPELINE with value 'true'\n"
+    )
 
     panel = Panel(
-        instructions, 
-        title="GitHub Secret Setup Instructions", 
+        instructions,
+        title="GitHub Secret Setup Instructions",
         expand=False,
-        border_style="green"
+        border_style="green",
     )
     console.print(panel)
 
@@ -214,7 +223,7 @@ def main(
     ref: str = typer.Option("refs/heads/main", help="Git reference to authorize"),
 ) -> None:
     """Set up GitHub OIDC integration with AWS for CDK deployment."""
-    
+
     # Create AWS clients
     try:
         iam_client = boto3.client("iam", region_name=region)
@@ -222,37 +231,41 @@ def main(
         console.print(f"Error creating AWS client: {str(e)}")
         console.print("Make sure you have AWS credentials configured properly.")
         sys.exit(1)
-        
+
     # Verify inputs
     if "/" not in repo:
         console.print("Error: Repository must be in format 'owner/repo'")
         sys.exit(1)
-        
+
     # Get the thumbprint for GitHub's OIDC provider
     thumbprint = get_github_oidc_thumbprint()
-    
+
     # Create or get the OIDC provider
     provider_arn = create_oidc_provider(iam_client, thumbprint)
-    
+
     # Create the trust policy
     trust_policy = create_trust_policy(provider_arn, repo, ref)
-    
+
     # Create or update the IAM role
     role_arn = create_iam_role(iam_client, role_name, trust_policy)
-    
+
     # Create and attach the CDK policy
     cdk_policy = create_cdk_policy()
     attach_inline_policy(iam_client, role_name, cdk_policy)
-    
+
     # Display success message and instructions
-    console.print("\nu2705 GitHub OIDC integration setup complete!\n", style="bold green")
+    console.print(
+        "\nu2705 GitHub OIDC integration setup complete!\n", style="bold green"
+    )
     console.print(f"OIDC Provider ARN: {provider_arn}")
     console.print(f"IAM Role ARN: {role_arn}")
-    
+
     # Generate GitHub secret instructions
     generate_github_secret_instructions(role_arn)
-    
-    console.print("\nYou can now use GitHub Actions to deploy your CDK stacks securely!")
+
+    console.print(
+        "\nYou can now use GitHub Actions to deploy your CDK stacks securely!"
+    )
 
 
 if __name__ == "__main__":

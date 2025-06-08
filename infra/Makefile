@@ -18,7 +18,7 @@ help:
 
 install:
 	@echo "Installing dependencies..."
-	pip install -r requirements.txt
+	poetry install
 
 bootstrap:
 	@echo "Bootstrapping LocalStack environment for CDK..."

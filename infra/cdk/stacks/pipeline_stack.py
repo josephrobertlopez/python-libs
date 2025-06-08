@@ -20,7 +20,7 @@ class CodePipelineStack(Stack):
         artifact_bucket: s3.IBucket,
         env_name: str,
         project_name: str,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -69,57 +69,56 @@ class CodePipelineStack(Stack):
                 "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(
                     value=artifact_bucket.bucket_name
                 ),
-                "ENVIRONMENT": codebuild.BuildEnvironmentVariable(
-                    value=env_name
-                ),
-                "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
-                    value=project_name
-                ),
+                "ENVIRONMENT": codebuild.BuildEnvironmentVariable(value=env_name),
+                "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
             },
-            build_spec=codebuild.BuildSpec.from_object({
-                "version": "0.2",
-                "phases": {
-                    "install": {
-                        "runtime-versions": {
-                            "python": "3.9",
+            build_spec=codebuild.BuildSpec.from_object(
+                {
+                    "version": "0.2",
+                    "phases": {
+                        "install": {
+                            "runtime-versions": {
+                                "python": "3.9",
+                            },
+                            "commands": [
+                                "curl -sSL https://install.python-poetry.org | python3 -",
+                                'export PATH="$HOME/.local/bin:$PATH"',
+                                "poetry install",
+                            ],
                         },
-                        "commands": [
-                            "pip install -r requirements.txt",
-                            "pip install pytest pytest-cov pyinstaller",
+                        "build": {
+                            "commands": [
+                                # Run tests and generate coverage report
+                                "poetry run pytest --cov=. --cov-report=xml:test-results/coverage.xml --junitxml=test-results/junit.xml",
+                                # Build executables
+                                "poetry run python -m PyInstaller --onefile app.py -n pomodoro",
+                            ],
+                        },
+                        "post_build": {
+                            "commands": [
+                                # Upload test logs
+                                "aws s3 cp test-results/ s3://${ARTIFACT_BUCKET}/test-logs/ --recursive",
+                                # Upload build artifacts
+                                "aws s3 cp dist/ s3://${ARTIFACT_BUCKET}/final-artifacts/ --recursive",
+                                # Create metadata file
+                                'echo "Build completed on `date`" > build-info.txt',
+                                "aws s3 cp build-info.txt s3://${ARTIFACT_BUCKET}/codepipeline/build-info-${CODEBUILD_BUILD_ID}.txt",
+                            ],
+                        },
+                    },
+                    "artifacts": {
+                        "files": [
+                            "dist/**/*",
+                            "test-results/**/*",
                         ],
                     },
-                    "build": {
-                        "commands": [
-                            # Run tests and generate coverage report
-                            "pytest --cov=. --cov-report=xml:test-results/coverage.xml --junitxml=test-results/junit.xml",
-                            # Build executables
-                            "python -m PyInstaller --onefile app.py -n pomodoro",
+                    "cache": {
+                        "paths": [
+                            "/root/.cache/pip",
                         ],
                     },
-                    "post_build": {
-                        "commands": [
-                            # Upload test logs
-                            "aws s3 cp test-results/ s3://${ARTIFACT_BUCKET}/test-logs/ --recursive",
-                            # Upload build artifacts
-                            "aws s3 cp dist/ s3://${ARTIFACT_BUCKET}/final-artifacts/ --recursive",
-                            # Create metadata file
-                            "echo \"Build completed on `date`\" > build-info.txt",
-                            "aws s3 cp build-info.txt s3://${ARTIFACT_BUCKET}/codepipeline/build-info-${CODEBUILD_BUILD_ID}.txt",
-                        ],
-                    },
-                },
-                "artifacts": {
-                    "files": [
-                        "dist/**/*",
-                        "test-results/**/*",
-                    ],
-                },
-                "cache": {
-                    "paths": [
-                        "/root/.cache/pip",
-                    ],
-                },
-            }),
+                }
+            ),
         )
 
         # Grant permissions to the build project

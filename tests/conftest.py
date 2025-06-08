@@ -1,83 +1,84 @@
-from unittest.mock import Mock, patch
-
 import pytest
 import os
+from unittest.mock import Mock, patch
 from src.utils.abstract.abstract_runner import SampleConcreteRunner
 from src.utils.abstract.abstract_singleton import (
     AbstractSingleton,
     SampleConcreteSingleton,
 )
 from src.utils.media.audio import PygameMixerSoundSingleton
-from src.utils.test.mock_context_manager import MockContextManager
+from src.utils.test import smart_mock, quick_mock, runtime_context
+from .shared_annotations import (
+    mock_test_sys,
+    mock_test_os,
+    mock_test_builtins,
+    mock_test_logging,
+    mock_test_pygame,
+    mock_runner_context,
+    mock_audio_context,
+    mock_logging_context,
+)
+
+
+# =============================================================================
+# LEGACY FIXTURES (for backward compatibility)
+# =============================================================================
 
 
 @pytest.fixture
 def mock_sys():
-    """
-    Preconfigured MockFixture for sys module.
-    """
-    default_attr = {
-        "frozen": True,
-        "executable": "fake_executable_path",
-        "_MEIPASS": "pyinstaller/path",
-        "argv": ["program_name"],
-    }
-    method_calls = {"stdout": Mock(), "foo": Mock()}
-    return MockContextManager(
-        target_path="sys", attribute_values=default_attr, method_behaviors=method_calls
-    )
+    """Legacy fixture - use @mock_test_sys decorator instead."""
+    with mock_test_sys():
+        yield
 
 
 @pytest.fixture
 def mock_os():
-    # Create a safe path joiner that won't cause recursion
-    def path_join(*args):
-        # Use the platform-specific separator
-        sep = os.sep
-        # Remove any leading/trailing separators from intermediate parts
-        clean_parts = []
-        for i, part in enumerate(args):
-            if i == 0:
-                clean_parts.append(part.rstrip(sep))
-            elif i == len(args) - 1:
-                clean_parts.append(part.lstrip(sep))
-            else:
-                clean_parts.append(part.strip(sep))
-        return sep.join(clean_parts)
-    
-    default_behaviors = {
-        "path.exists": True,
-        "environ": {"TEST_VAR": "test_value", "LOG_CONFIG_FILE": "logging_config.ini"},
-        "path.join": path_join,  # Use our custom path_join function
-        "makedirs": True,
-    }
-    return MockContextManager(target_path="os", method_behaviors=default_behaviors)
+    """Legacy fixture - use @mock_test_os decorator instead."""
+    with mock_test_os():
+        yield
 
 
 @pytest.fixture
 def mock_builtins():
-    default_behaviors = {"open": Mock(), "print": Mock()}
-    return MockContextManager(
-        target_path="builtins", method_behaviors=default_behaviors
-    )
+    """Legacy fixture - use @mock_test_builtins decorator instead."""
+    with mock_test_builtins():
+        yield
 
 
 @pytest.fixture
 def mock_logging():
-    """Fixture to mock logging setup."""
-    mock_behaviors = {"getLogger": Mock(), "config.fileConfig": Mock()}
-    return MockContextManager("logging", method_behaviors=mock_behaviors)
+    """Legacy fixture - use @mock_test_logging decorator instead."""
+    with mock_test_logging():
+        yield
+
+
+# =============================================================================
+# ENHANCED CONTEXT FIXTURES (recommended approach)
+# =============================================================================
 
 
 @pytest.fixture
-def mock_context():
-    """Fixture to set up common mock context for tests."""
-    return {
-        "target_path": "tests.utils.test.test_mockcontextmanager",
-        "method_behaviors": {"method_name": lambda x: x * 2},
-        "attribute_values": {"attr_name": 42},
-        "mapping_values": {"map_name": {"key": "value"}},
-    }
+def runner_context():
+    """Context manager for runner tests with standard configuration."""
+    return mock_runner_context
+
+
+@pytest.fixture
+def audio_context():
+    """Context manager for audio tests with pygame mocking."""
+    return mock_audio_context
+
+
+@pytest.fixture
+def logging_context():
+    """Context manager for logging tests."""
+    return mock_logging_context
+
+
+# =============================================================================
+# DOMAIN-SPECIFIC FIXTURES
+# =============================================================================
 
 
 @pytest.fixture
@@ -94,50 +95,61 @@ def sample_concrete_runner():
 
 @pytest.fixture
 def pygame_mixer_audio():
-    """Fixture to provide a PygameMixerAudio instance with mocked dependencies."""
-    # set up the mock behaviors for methods you want to mock
-    method_behaviors = {
-        "init": Mock(),
-        "music.get_busy": False,
-        "music.play": Mock(),
-        "music.pause": Mock(),
-        "music.set_volume": Mock(),
-    }
+    """Enhanced pygame mixer fixture using shared annotations."""
+    from src.utils.test import runtime_context
 
-    class_values = {"Sound": {"get_num_channels": 1}}
-    manager = MockContextManager(
-        target_path="pygame.mixer",
-        method_behaviors=method_behaviors,
-        class_values=class_values,
-    )
-    return manager
+    with runtime_context("audio_system"):
+        yield
 
 
 @pytest.fixture
 def mixer(pygame_mixer_audio):
     """Fixture to initialize PygameMixerAudio instance."""
-    # Initialize PygameMixerAudio instance before each test
     mixer = PygameMixerSoundSingleton()
-    # Ensure the singleton is set up in the context
-    with pygame_mixer_audio:
-        yield mixer
+    yield mixer
 
 
 @pytest.fixture()
 def mock_singleton_setup():
     """Fixture to mock AbstractSingleton setup and ensure it's called only once."""
-    # Patch the setup method in AbstractSingleton to prevent the singleton check
-    with patch.object(AbstractSingleton, "setup", Mock()) as mock_setup:
-        # Ensure the singleton is set up before each test
+    with patch_object(AbstractSingleton, "setup", Mock()) as mock_setup:
         mock_setup()
         yield mock_setup
-        # After each test, delete the setup to ensure it does not interfere with other tests
         del mock_setup
+
+
+# =============================================================================
+# AUTO-USE FIXTURES (global test environment)
+# =============================================================================
 
 
 @pytest.fixture(autouse=True)
 def setup_headless_audio():
     """Set up the headless audio environment for Pygame in CI."""
     os.environ["SDL_AUDIODRIVER"] = "dummy"
-    yield  # Allow tests to run
+    yield
     del os.environ["SDL_AUDIODRIVER"]
+
+
+@pytest.fixture(autouse=True)
+def mock_dotenv():
+    """Mock dotenv.load_dotenv to prevent actual file loading."""
+    mock_load_dotenv = Mock(return_value=True)
+    with patch("src.utils.env_checks.env_checks.dotenv_load_dotenv", mock_load_dotenv):
+        yield mock_load_dotenv
+
+
+# =============================================================================
+# LEGACY COMPATIBILITY FIXTURE
+# =============================================================================
+
+
+@pytest.fixture
+def mock_context():
+    """Legacy fixture for backward compatibility."""
+    return {
+        "target_path": "tests.utils.test.test_mockcontextmanager",
+        "method_behaviors": {"method_name": lambda x: x * 2},
+        "attribute_values": {"attr_name": 42},
+        "mapping_values": {"map_name": {"key": "value"}},
+    }

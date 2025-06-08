@@ -20,7 +20,7 @@ project_name = os.getenv("PROJECT_NAME", "python-libs")
 # Define the AWS environment (account and region)
 aws_env = Environment(
     account=os.getenv("CDK_DEFAULT_ACCOUNT", "000000000000"),
-    region=os.getenv("CDK_DEFAULT_REGION", "us-east-1")
+    region=os.getenv("CDK_DEFAULT_REGION", "us-east-1"),
 )
 
 # Create the artifact stack

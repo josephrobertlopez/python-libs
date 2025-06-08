@@ -50,14 +50,27 @@ def start():
 
     typer.echo("Starting LocalStack...")
     subprocess.run(
-        ["docker", "run", "-d", "--name", "python-libs-localstack", "-p", "4566:4566", "-p", "4510-4559:4510-4559", "localstack/localstack:latest"],
+        [
+            "docker",
+            "run",
+            "-d",
+            "--name",
+            "python-libs-localstack",
+            "-p",
+            "4566:4566",
+            "-p",
+            "4510-4559:4510-4559",
+            "localstack/localstack:latest",
+        ],
         check=True,
     )
 
     # Wait for LocalStack to be ready
     max_retries = 10
     for i in range(max_retries):
-        typer.echo(f"Waiting for LocalStack to be ready (attempt {i+1}/{max_retries})...")
+        typer.echo(
+            f"Waiting for LocalStack to be ready (attempt {i+1}/{max_retries})..."
+        )
         if check_localstack_running():
             typer.echo("LocalStack is now running")
             return
@@ -128,7 +141,7 @@ def list_objects(bucket_name: str):
         endpoint_url=get_localstack_endpoint(),
         **get_aws_credentials(),
     )
-    
+
     try:
         response = s3_client.list_objects_v2(Bucket=bucket_name)
         objects = response.get("Contents", [])
@@ -151,11 +164,11 @@ def create_bucket(bucket_name: Optional[str] = None):
     if not check_localstack_running():
         typer.echo("LocalStack is not running. Start it first.")
         raise typer.Exit(code=1)
-    
+
     # Use the default naming convention if no name provided
     if not bucket_name:
         bucket_name = "python-libs-artifacts-dev"
-    
+
     s3_client = boto3.client(
         "s3",
         endpoint_url=get_localstack_endpoint(),
@@ -170,19 +183,18 @@ def create_bucket(bucket_name: Optional[str] = None):
         except Exception:
             # If a 404 error, the bucket does not exist
             pass  # Bucket doesn't exist, we'll create it
-        
+
         # Create the bucket
         s3_client.create_bucket(Bucket=bucket_name)
-        
+
         # Enable versioning
         s3_client.put_bucket_versioning(
-            Bucket=bucket_name,
-            VersioningConfiguration={'Status': 'Enabled'}
+            Bucket=bucket_name, VersioningConfiguration={"Status": "Enabled"}
         )
-        
+
         typer.echo(f"Created S3 bucket '{bucket_name}' with versioning enabled")
         return bucket_name
-    
+
     except Exception as e:
         typer.echo(f"Error creating bucket: {e}")
         raise typer.Exit(code=1)

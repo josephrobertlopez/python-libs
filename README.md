@@ -12,7 +12,7 @@ A cross-platform compatible collection of Python utilities and features includin
 This project serves as a monorepo containing various Python utilities and features:
 
 - **Pomodoro Timer**: A simple Pomodoro timer with sound notifications
-- **Custom Mocking Framework**: A flexible framework for mocking in tests
+- **Smart Mocking Framework**: A flexible, resilient framework for mocking in tests with automatic type detection
 - **Infrastructure as Code**: AWS CDK implementation for artifact deployment
 
 ## Key Features
@@ -20,6 +20,7 @@ This project serves as a monorepo containing various Python utilities and featur
 - **Cross-Platform Compatibility**: Works on both Windows and Linux
 - **Modular Design**: Components can be used independently
 - **Comprehensive Testing**: Unit tests and behavior tests using pytest and behave
+- **Smart Mocking**: Intelligent mocking system that handles any type of input
 - **Infrastructure as Code**: AWS CDK for deployment infrastructure
 
 ## GitHub Actions Workflows
@@ -71,6 +72,7 @@ cd python-libs
 2. Install dependencies:
 
 ```bash
+pip install poetry
 poetry install
 ```
 
@@ -80,27 +82,78 @@ poetry install
 cp .env.example .env
 ```
 
+### Working with Poetry
+
+This project uses Poetry for dependency management. Here are some common commands:
+
+```bash
+# Activate the virtual environment
+poetry shell
+
+# Install a new package
+poetry add <package-name>
+
+# Install a development dependency
+poetry add --group dev <package-name>
+
+# Update all dependencies
+poetry update
+
+# Generate requirements.txt (if needed)
+poetry export -f requirements.txt --output requirements.txt --without-hashes
+```
+
 ## Testing
 
 ### Running Unit Tests
 
 ```bash
-python -m pytest
+poetry run pytest
 ```
 
 ### Running Behavior Tests
 
 ```bash
-behave
+poetry run behave
 ```
 
 ## Using the Pomodoro Timer
 
 ```bash
-python src/runners/run.py pomodoro -m 25
+poetry run python src/runners/run.py pomodoro -m 25
 ```
 
 This sets a Pomodoro timer for 25 minutes.
+
+## Using the Smart Mocking Framework
+
+The smart mocking framework provides a resilient, type-aware mocking system that automatically detects the appropriate mocking strategy based on the input type.
+
+```python
+from src.utils.test.smart_mock import smart_mock, patch_object, create_mock_class
+
+# Simple mocking with automatic type detection
+with smart_mock(
+    "my_module",
+    function=lambda x: x * 2,
+    config={"key": "value"},
+    items=[1, 2, 3]
+) as mock_ctx:
+    # Use the mocks
+    result = my_module.function(5)  # Returns 10
+    
+# Patch an object attribute or method
+with patch_object(some_object, "method_name", lambda x: x + 1):
+    result = some_object.method_name(5)  # Returns 6
+    
+# Create a mock class with methods and attributes
+MockDB = create_mock_class(
+    class_methods={"query": lambda: [{"id": 1}]},
+    class_attributes={"connection_string": "mock://db"}
+)
+```
+
+See [Smart Mocking Framework README](./src/utils/test/README.md) for more details and advanced usage.
 
 ## Infrastructure Deployment
 
