@@ -33,7 +33,7 @@ jobs:
           node-version: '18'
           
       - name: Start LocalStack with Docker
-        uses: LocalStack/setup-localstack@v0.1.2
+        uses: LocalStack/setup-localstack@v0.2.4
         with:
           image-tag: 'latest'
           install-awslocal: true
